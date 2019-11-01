@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">AnnuaireLauriats</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Prenom Nom</string>
+    <string name="nav_header_subtitle">username</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Parametres</string>
+
+    <string name="menu_home">Accueil</string>
+    <string name="menu_gallery">Filter</string>
+    <string name="menu_slideshow">Trouver sur la carte</string>
+    <string name="menu_tools">Tools</string>
+
+    <string name="app_options">Options</string>
+    <string name="menu_propos">A propos de nous</string>
+    <string name="menu_standards">Standards de Communité</string>
+    <string name="menu_help">Aide</string>
+    <string name="menu_Signaler">Signaler un Problème</string>
+
+    <string name="communicate">Partage</string>
+    <string name="menu_share">Partager L\'application</string>
+    <string name="menu_send">Envoyer sous message</string>
+
+
+    <string name="title_activity_login">Annuaire</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="title_activity_register">S\'enregistrer</string>
+    <string name="share_button"> </string>
+    <string name="shareourapp">Partager App</string>
+    <string name="content_profile">image_pdp</string>
+</resources>

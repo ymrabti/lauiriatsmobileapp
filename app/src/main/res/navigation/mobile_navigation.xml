@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.annuairelauriats.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.example.annuairelauriats.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.example.annuairelauriats.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_tools"
+        android:name="com.example.annuairelauriats.ui.tools.ToolsFragment"
+        android:label="@string/menu_tools"
+        tools:layout="@layout/fragment_tools" />
+
+    <fragment
+        android:id="@+id/nav_share"
+        android:name="com.example.annuairelauriats.ui.share.ShareFragment"
+        android:label="@string/menu_share"
+        tools:layout="@layout/fragment_share" />
+
+    <fragment
+        android:id="@+id/nav_send"
+        android:name="com.example.annuairelauriats.ui.send.SendFragment"
+        android:label="@string/menu_send"
+        tools:layout="@layout/fragment_send" />
+
+
+
+    <fragment
+        android:id="@+id/nav_proposnous"
+        android:name="com.example.annuairelauriats.ui.about_us.AboutFragment"
+        android:label="@string/menu_propos"
+        tools:layout="@layout/aproposdenous" />
+    <fragment
+        android:id="@+id/nav_stndrds"
+        android:name="com.example.annuairelauriats.ui.standards.StandardsFragment"
+        android:label="@string/menu_standards"
+        tools:layout="@layout/standardscommunute" />
+    <fragment
+        android:id="@+id/nav_aide"
+        android:name="com.example.annuairelauriats.ui.aide.HelpFragment"
+        android:label="@string/menu_help"
+        tools:layout="@layout/aide" />
+    <fragment
+        android:id="@+id/nav_signaler"
+        android:name="com.example.annuairelauriats.ui.signaler.SignalerFragment"
+        android:label="@string/menu_Signaler"
+        tools:layout="@layout/signalerproblem" />
+</navigation>
