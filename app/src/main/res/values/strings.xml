@@ -49,10 +49,13 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="title_activity_register">S\'enregistrer</string>
+    <string name="title_activity_register">Annuaire</string>
     <string name="share_button"> </string>
     <string name="shareourapp">Partager App</string>
     <string name="content_profile">image_pdp</string>
     <string name="connectez_vous">vous avez deja un coöpte? connectez vous</string>
     <string name="inscrivez_vous">ou bien inscrivez vous</string>
+    <string name="send">send</string>
+    <string name="response">response</string>
+    <string name="response_de_server">response de server</string>
 </resources>

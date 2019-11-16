@@ -25,8 +25,6 @@ import android.widget.Toast;
 
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.ui.login.LoginViewModel;
-import com.example.annuairelauriats.ui.login.LoginViewModelFactory;
 import com.example.annuairelauriats.ui.register.RegisterActivity;
 
 public class LoginActivity extends AppCompatActivity {
