@@ -58,4 +58,9 @@
     <string name="send">send</string>
     <string name="response">response</string>
     <string name="response_de_server">response de server</string>
+    <string name="prenom">description image</string>
+    <string name="nom_monu">nom et prenom laureat</string>
+    <string name="description_monument">description</string>
+    <string name="avis">avis</string>
+    <string name="nom_monu_org">organisation</string>
 </resources>
