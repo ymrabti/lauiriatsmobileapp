@@ -12,13 +12,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import com.example.annuairelauriats.R;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+
 import java.io.BufferedReader;
-import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 public class HomeFragment extends Fragment  {
     private EditText result_http_client;
@@ -50,29 +50,46 @@ public class HomeFragment extends Fragment  {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                URL laureatEndpoint;
+                /*HttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpget = new HttpGet(url);
+                HttpResponse response;
                 try {
-                    laureatEndpoint = new URL(url);
-                    result_http_client.append(url+"\n");
-                    HttpURLConnection myConnection = (HttpURLConnection) laureatEndpoint.openConnection();
-                    myConnection.setRequestProperty("User-Agent", "my-rest-app-v0.1");
-                    result_http_client.append("RESPONSE CODE  :  "+myConnection.getResponseCode()+" \n\n");
-                    if (myConnection.getResponseCode() == 200) {
-                        InputStream responseBody = myConnection.getInputStream();
-                        InputStreamReader responseBodyReader = new InputStreamReader(responseBody, StandardCharsets.UTF_8);
-                        DataInputStream in = new DataInputStream(responseBody);
-                        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-                        String strLine;
-                        while ((strLine = br.readLine()) != null) {
-                            result_http_client.append(strLine+"\n");
-                        }
-                        in.close();br.close();responseBody.close();
+                    response = httpClient.execute(httpget);
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        InputStream instream = entity.getContent();
+                        String result= convertStreamToString(instream);
+                        result_http_client.setText(result);
+                        instream.close();
                     }
-                    myConnection.disconnect();
+
                 } catch (Exception e) {
-                    result_http_client.append(e+" \nexception\n"+" \n\n");
-                }
+                    result_http_client.append(e+" :    "+url+" \n");
+                }*/
+
             }
         });
+    }
+
+    private static String convertStreamToString(InputStream is) {
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
     }
 }

@@ -23,7 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.SettingsActivity;
 import com.example.annuairelauriats.ui.login.LoginActivity;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -50,7 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        registerViewModel.getLoginFormState().observe(this, new Observer<RegisterFormState>() {
+        registerViewModel.getREgisterFormState().observe(this, new Observer<RegisterFormState>() {
             @Override
             public void onChanged(@Nullable RegisterFormState loginFormState) {
                 if (loginFormState == null) {
@@ -66,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        registerViewModel.getLoginResult().observe(this, new Observer<RegisterResult>() {
+        registerViewModel.getRegistreResult().observe(this, new Observer<RegisterResult>() {
             @Override
             public void onChanged(@Nullable RegisterResult loginResult) {
                 if (loginResult == null) {
@@ -128,12 +130,13 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void updateUiWithUser(RegisterUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
         // TODO : initiate successful logged in experience
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(),model.getDisplayName() , Toast.LENGTH_LONG).show();
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);startActivity(i);
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(getApplicationContext(), SettingsActivity.class);startActivity(i);
     }
 }

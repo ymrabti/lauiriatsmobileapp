@@ -20,11 +20,11 @@ public class RegisterViewModel extends ViewModel {
         this.registerRepository = registerRepository;
     }
 
-    LiveData<RegisterFormState> getLoginFormState() {
+    LiveData<RegisterFormState> getREgisterFormState() {
         return registerFormState;
     }
 
-    LiveData<RegisterResult> getLoginResult() {
+    LiveData<RegisterResult> getRegistreResult() {
         return registerResult;
     }
 
@@ -34,7 +34,7 @@ public class RegisterViewModel extends ViewModel {
 
         if (result instanceof Result.Success) {
             RegistredUser data = ((Result.Success<RegistredUser>) result).getData();
-            //registerResult.setValue(new RegisterResult(new RegistredUser(data.getUserId(),data.getDisplayName())));
+            registerResult.setValue(new RegisterResult(new RegisterUserView(data.getDisplayName())));
         } else {
             registerResult.setValue(new RegisterResult(R.string.login_failed));
         }
