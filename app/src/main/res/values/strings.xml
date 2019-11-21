@@ -63,4 +63,13 @@
     <string name="description_monument">description</string>
     <string name="avis">avis</string>
     <string name="nom_monu_org">organisation</string>
+    <string name="prmpt_nom_laureat">Votre Nom</string>
+    <string name="prmpt_tel_laureat">06...</string>
+    <string name="selectionner_image">SELECTIONNER IMAGE</string>
+    <string name="selectionner_image_result">aucune image selectionnée</string>
+    <string name="organisation">Organisation</string>
+    <string name="organisation_non_existe">L\'organisation n\'est pas reconnue ?</string>
+    <string name="close">fermer</string>
+    <string name="text">description</string>
+    <string name="personnaliser_votre_filtre">personnaliser votre filtre</string>
 </resources>

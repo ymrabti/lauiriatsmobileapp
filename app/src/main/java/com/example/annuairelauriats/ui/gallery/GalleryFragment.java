@@ -7,7 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -18,18 +22,20 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class GalleryFragment extends Fragment {
     public static ArrayList<Laureat> Laureats;
-    private Dialog myDialog;
-    private LaureatAdapter adaptateur;
-    private GalleryViewModel galleryViewModel;
+    private Dialog myDialog,dialogFilter;
+
+    Spinner findbyprovince,findbyfiliere,findbypromotion;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
+        GalleryViewModel galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
         final TextView textView = root.findViewById(R.id.text_gallery);
         galleryViewModel.getText().observe(this, new Observer<String>() {
@@ -609,10 +615,54 @@ public class GalleryFragment extends Fragment {
         Laureats.add(new Laureat(laureatdeux, "Dodjo Akakpo", "ANCFCC","no description"));
         Laureats.add(new Laureat(laureattrois, "Sara Ainane", "GeoNet",""));
         Laureats.add(new Laureat(laureatquatre, "Harbass Ouliya", "MarMap","ing"));
-        adaptateur = new LaureatAdapter(getContext(), Laureats);
+        Laureats.add(new Laureat(laureatun, "M'rabti Younes", "BROME","pas de description"));
+        Laureats.add(new Laureat(laureatdeux, "Dodjo Akakpo", "ANCFCC","no description"));
+        Laureats.add(new Laureat(laureattrois, "Sara Ainane", "GeoNet",""));
+        Laureats.add(new Laureat(laureatquatre, "Harbass Ouliya", "MarMap","ing"));
+        Laureats.add(new Laureat(laureatun, "M'rabti Younes", "BROME","pas de description"));
+        Laureats.add(new Laureat(laureatdeux, "Dodjo Akakpo", "ANCFCC","no description"));
+        Laureats.add(new Laureat(laureattrois, "Sara Ainane", "GeoNet",""));
+        Laureats.add(new Laureat(laureatquatre, "Harbass Ouliya", "MarMap","ing"));
+        LaureatAdapter adaptateur = new LaureatAdapter(getContext(), Laureats);
         myDialog = new Dialog(Objects.requireNonNull(getActivity()));
+        dialogFilter=new Dialog(getActivity());
         malist.setAdapter(adaptateur);
-
+        malist.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Laureat C ;
+                        C= Laureats.get(position);
+                        ShowPopup(1,1);
+                    }
+                }
+        );
+        FloatingActionButton filter_fab = root.findViewById(R.id.fab_filter_laureat);
+        filter_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowPopupfilter();
+            }
+        });
+        findbyfiliere = root.findViewById(R.id.snipper_filtre_laureat_filiere);
+        findbypromotion = root.findViewById(R.id.snipper_filtre_laureat_promotion);
+        findbyprovince = root.findViewById(R.id.snipper_filtre_laureat_province);
         return root;
+    }
+    private void ShowPopup(double lon,double lat) {
+        myDialog.setContentView(R.layout.laureat_show_position_pop_up);
+
+        myDialog.show();
+    }
+    private void ShowPopupfilter() {
+        dialogFilter.setContentView(R.layout.filter_pop_up_liste);
+        dialogFilter.show();
+        List filieres = new ArrayList();filieres.add("SIG");filieres.add("GC");filieres.add("GHEV");filieres.add("GE");
+        List promotions = new ArrayList();promotions.add("2015");promotions.add("2016");promotions.add("2017");promotions.add("2018");promotions.add("2019");
+        List provinces = new ArrayList();provinces.add("province1");provinces.add("province 2");provinces.add("province 3");provinces.add("province 4");
+        /*ArrayAdapter filieresadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,filieres);filieresadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter promotionsadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,promotions);promotionsadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter provincesadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,provinces);provincesadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        findbyfiliere.setAdapter(filieresadapter);findbypromotion.setAdapter(promotionsadapter);findbyprovince.setAdapter(provincesadapter);*/
     }
 }

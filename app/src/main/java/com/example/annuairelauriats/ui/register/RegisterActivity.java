@@ -19,7 +19,10 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,13 +34,13 @@ import com.example.annuairelauriats.ui.login.LoginActivity;
 public class RegisterActivity extends AppCompatActivity {
 
     private RegisterViewModel registerViewModel;
-
+    private RadioGroup radioOrgGroup;
+    private RadioButton radioButton;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        registerViewModel = ViewModelProviders.of(this, new RegisterViewModelFactory())
-                .get(RegisterViewModel.class);
+        registerViewModel = ViewModelProviders.of(this, new RegisterViewModelFactory()).get(RegisterViewModel.class);
 
         final EditText usernameEditText = findViewById(R.id.usernamename);
         final EditText passwordEditText = findViewById(R.id.passwordword);
@@ -101,8 +104,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                registerViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                registerViewModel.loginDataChanged(usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
@@ -112,8 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    registerViewModel.register(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    registerViewModel.register(usernameEditText.getText().toString(), passwordEditText.getText().toString());
                 }
                 return false;
             }
@@ -123,10 +124,25 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                registerViewModel.register(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                registerViewModel.register(usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
+    radioOrgGroup = findViewById(R.id.radio_organisation);
+    radioOrgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            radioButton = findViewById(checkedId);
+            LinearLayout linearLayout;LinearLayout linearLayoutChecked;
+            if (radioButton.getText().toString().contains("Organisation")){
+                linearLayout  = findViewById(R.id.org_no_connue);linearLayout.setVisibility(View.GONE);
+                linearLayoutChecked  = findViewById(R.id.org_connue);linearLayout.setVisibility(View.VISIBLE);
+            }
+            else{
+                linearLayout  = findViewById(R.id.org_connue);linearLayout.setVisibility(View.GONE);
+                linearLayoutChecked  = findViewById(R.id.org_no_connue);linearLayout.setVisibility(View.VISIBLE);
+            }
+        }
+    });
     }
 
     private void updateUiWithUser(RegisterUserView model) {
