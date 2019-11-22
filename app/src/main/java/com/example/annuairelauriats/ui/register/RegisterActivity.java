@@ -17,12 +17,14 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,9 +32,20 @@ import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.SettingsActivity;
 import com.example.annuairelauriats.ui.login.LoginActivity;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class RegisterActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
 
+public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private MapView mapView;
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private RegisterViewModel registerViewModel;
     private RadioGroup radioOrgGroup;
     private RadioButton radioButton;
@@ -41,7 +54,13 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         registerViewModel = ViewModelProviders.of(this, new RegisterViewModelFactory()).get(RegisterViewModel.class);
-
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+        mapView = findViewById(R.id.map_put_org);
+        mapView.onCreate(mapViewBundle);
+        mapView.getMapAsync(this);
         final EditText usernameEditText = findViewById(R.id.usernamename);
         final EditText passwordEditText = findViewById(R.id.passwordword);
         final Button loginButton = findViewById(R.id.register);
@@ -143,6 +162,25 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
     });
+
+
+        Spinner gender = findViewById(R.id.snipper_gender_laureat);
+        Spinner promotion = findViewById(R.id.snipper_promotion_laureat);
+        Spinner filiere = findViewById(R.id.snipper_filiere_laureat);
+        List genders = new ArrayList();genders.add("Male");genders.add("Female");
+
+        List promotions = new ArrayList();promotions.add("2015");promotions.add("2016");promotions.add("2017");promotions.add("2018");promotions.add("2019");
+
+        List filieress = new ArrayList();filieress.add("SIG");filieress.add("GC");filieress.add("GHEV");filieress.add("GE");
+
+        ArrayAdapter genderadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,genders);genderadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        ArrayAdapter promotionsadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,promotions);promotionsadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        ArrayAdapter filiereadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,filieress);filiereadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        gender.setAdapter(genderadapter);promotion.setAdapter(promotionsadapter);filiere.setAdapter(filiereadapter);
+
     }
 
     private void updateUiWithUser(RegisterUserView model) {
@@ -155,4 +193,50 @@ public class RegisterActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
         Intent i = new Intent(getApplicationContext(), SettingsActivity.class);startActivity(i);
     }
+    @Override public void onMapReady(GoogleMap googleMap) {
+
+        final GoogleMap gmap;
+        gmap = googleMap;
+        gmap.setMinZoomPreference(1);
+        final LatLng[] latLngs = {};
+        gmap.setIndoorEnabled(true);
+        UiSettings uiSettings = gmap.getUiSettings();
+        uiSettings.setIndoorLevelPickerEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(true);
+        uiSettings.setMapToolbarEnabled(true);
+        uiSettings.setCompassEnabled(true);
+        uiSettings.setZoomControlsEnabled(true);
+        gmap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                gmap.addMarker(markerOptions);
+            }
+        });
+        gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                marker.setTitle(""+marker.getPosition().toString());
+                return false;
+            }
+        });
+        gmap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+    }
+    @Override public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+        mapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override protected void onResume() { super.onResume();mapView.onResume(); }
+    @Override protected void onStart() { super.onStart();mapView.onStart(); }
+    @Override protected void onStop() { super.onStop();mapView.onStop(); }
+    @Override protected void onPause() { mapView.onPause();super.onPause(); }
+    @Override protected void onDestroy() { mapView.onDestroy();super.onDestroy(); }
+    @Override public void onLowMemory() { super.onLowMemory();mapView.onLowMemory(); }
 }

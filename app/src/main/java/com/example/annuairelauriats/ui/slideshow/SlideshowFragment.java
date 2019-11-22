@@ -109,7 +109,7 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         markerOptions.position(ny);
         gmap.addMarker(markerOptions);
         gmap.moveCamera(CameraUpdateFactory.newLatLng(ny));
-        
+
 
         getLocationPermission();
         updateLocationUI();
