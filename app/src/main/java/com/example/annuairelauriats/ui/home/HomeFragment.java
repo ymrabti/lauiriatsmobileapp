@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment  {
@@ -40,7 +39,7 @@ public class HomeFragment extends Fragment  {
         but_connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                read_json();
+                read_json_array();
 //                String ok = URL_TextEdit.getText().toString();
 //                result_http_client.setText("");
 //                connecting_rest(ok);
@@ -108,9 +107,25 @@ public class HomeFragment extends Fragment  {
             JSONArray m_jArry = obj.getJSONArray("formules");
             for (int i = 0; i < m_jArry.length(); i++) {
                 JSONObject jo_inside = m_jArry.getJSONObject(i);
-                String formula_value = jo_inside.getString("formule");
-                String url_value = jo_inside.getString("url");
-                result_http_client.append("formule : "+formula_value+"  url value :  "+url_value+"\n");
+                result_http_client.append("formule : "+jo_inside.getString("formule")+"  url value :  "+jo_inside.getString("url")+"\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();result_http_client.append(e.toString());
+        }
+    }
+    private void read_json_array(){
+        try {
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset());
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+                result_http_client.append("objet "+(i+1)+"  begin \n\n");
+                result_http_client.append("nom : "+jo_inside.getString("nom"));
+                result_http_client.append("  id :  "+jo_inside.getInt("id"));
+                result_http_client.append("  genre :  "+jo_inside.getString("genre"));
+                result_http_client.append("  longitude :  "+jo_inside.get("longitude"));
+                result_http_client.append("  mail :  "+jo_inside.getString("email"));
+                result_http_client.append("  photo base 64 :  "+jo_inside.getString("image"));
+                result_http_client.append("\n\n");
             }
         } catch (Exception e) {
             e.printStackTrace();result_http_client.append(e.toString());
@@ -119,10 +134,9 @@ public class HomeFragment extends Fragment  {
     private String loadJSONFromAsset() {
         String json;
         try {
-            File myExternalFile = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir("Annuaire"), "file.json");
+            File myExternalFile = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir("Annuaire"), "myjson.json");
             FileInputStream fis = new FileInputStream(myExternalFile);
             DataInputStream in = new DataInputStream(fis);
-            //InputStream is = getActivity().getAssets().open("file.json");
             int size = in.available();
             byte[] buffer = new byte[size];
             in.read(buffer);

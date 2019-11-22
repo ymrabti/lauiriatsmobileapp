@@ -22,12 +22,16 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,12 +54,7 @@ public class GalleryFragment extends Fragment{
         final Spinner findbyprovince = root.findViewById(R.id.snipper_filtre_laureat_province);
 
         ListView malist = root.findViewById(R.id.list_laureat);
-        Laureats= new ArrayList<>();
-
-        Laureats.add(new Laureat(read__file_data("younes.txt"), "M'rabti Younes", "BROME","pas de description"));
-        Laureats.add(new Laureat(read__file_data("dodji.txt"), "Dodjo Akakpo", "ANCFCC","no description"));
-        Laureats.add(new Laureat(read__file_data("sara.txt"), "Sara Ainane", "GeoNet",""));
-        Laureats.add(new Laureat(read__file_data("ol.txt"), "Harbass Ouliya", "MarMap","ing"));
+        Laureats= new ArrayList<>();peupler_array_list();
         LaureatAdapter adaptateur = new LaureatAdapter(getContext(), Laureats);
         myDialog = new Dialog(Objects.requireNonNull(getActivity()));
         dialogFilter=new Dialog(getActivity());
@@ -98,25 +97,39 @@ public class GalleryFragment extends Fragment{
         ArrayAdapter provincesadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,provinces);provincesadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         findbyfiliere.setAdapter(filieresadapter);findbypromotion.setAdapter(promotionsadapter);findbyprovince.setAdapter(provincesadapter);*/
     }
-
-    private String read__file_data(String filenameExternal){
-        StringBuilder myData = new StringBuilder();
+    
+    private void peupler_array_list(){
         try {
-            File myExternalFile = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir("Annuaire"), filenameExternal);
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset());
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+
+                Laureats.add(
+                        new Laureat(
+                                jo_inside.getString("image")+"",
+                                jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
+                                jo_inside.getString("organisme")+"",
+                                jo_inside.getString("email")+""));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private String loadJSONFromAsset() {
+        String json;
+        try {
+            File myExternalFile = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir("Annuaire"), "myjson.json");
             FileInputStream fis = new FileInputStream(myExternalFile);
             DataInputStream in = new DataInputStream(fis);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                myData.append(strLine);
-            }
-            br.close();
+            int size = in.available();
+            byte[] buffer = new byte[size];
+            in.read(buffer);
             in.close();
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(getActivity(),e+"hh",Toast.LENGTH_SHORT).show();
+            json = new String(buffer, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
         }
-        return myData.toString();
+        return json;
     }
 }
