@@ -181,6 +181,9 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
 
         gender.setAdapter(genderadapter);promotion.setAdapter(promotionsadapter);filiere.setAdapter(filiereadapter);
 
+
+        //write_file_data(laureatun,"younes.txt");write_file_data(laureattrois,"sara.txt");
+        //write_file_data(laureatdeux,"dodji.txt");write_file_data(laureatquatre,"ol.txt");
     }
 
     private void updateUiWithUser(RegisterUserView model) {

@@ -105,9 +105,6 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(ny);
-        gmap.addMarker(markerOptions);
         gmap.moveCamera(CameraUpdateFactory.newLatLng(ny));
 
 
