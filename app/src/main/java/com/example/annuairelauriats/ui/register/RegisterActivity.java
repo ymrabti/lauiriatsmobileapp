@@ -6,12 +6,16 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -20,6 +24,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -46,17 +51,20 @@ import org.json.JSONObject;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private RegisterViewModel registerViewModel;
-    private RadioGroup radioOrgGroup;
+    ImageView imageView;
+    Button button_select_photo_laureat ;
+    private static final int PICK_IMAGE=100;
     private RadioButton radioButton;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -155,7 +163,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 registerViewModel.register(usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
-    radioOrgGroup = findViewById(R.id.radio_organisation);
+        RadioGroup radioOrgGroup = findViewById(R.id.radio_organisation);
     radioOrgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -178,7 +186,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         Spinner filiere = findViewById(R.id.snipper_filiere_laureat);
         List genders = new ArrayList();genders.add("Male");genders.add("Female");
 
-        List promotions = peupler_list("promotion","promotions.json");;
+        List promotions = peupler_list("promotion","promotions.json");
 
         List filieress = peupler_list("filiere","filieres.json");
 
@@ -193,6 +201,16 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
 
         gender.setAdapter(genderadapter);promotion.setAdapter(promotionsadapter);filiere.setAdapter(filiereadapter);
 
+        button_select_photo_laureat = findViewById(R.id.select_file_image8laureat);
+        button_select_photo_laureat.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        OpenGallery();
+
+                    }
+                });
+        imageView =findViewById(R.id.selected_file_image8laureat);
 
         //write_file_data(laureatun,"younes.txt");write_file_data(laureattrois,"sara.txt");
         //write_file_data(laureatdeux,"dodji.txt");write_file_data(laureatquatre,"ol.txt");
@@ -237,9 +255,30 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         });
         gmap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
+
+    private void OpenGallery(){
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery,PICK_IMAGE);
+    }
+    @Override
+    protected void onActivityResult(int requestCode,int resultCode,Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if(resultCode==RESULT_OK && requestCode==PICK_IMAGE){
+            final Uri imageUriii = data.getData();
+            try {
+                final InputStream imageStream;
+                assert imageUriii != null;
+                imageStream = getContentResolver().openInputStream(imageUriii);
+                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                imageView.setImageBitmap(selectedImage);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private List<String> peupler_list(String Champ,String file){
         List<String> list_a_peupler = new ArrayList<>();
-        list_a_peupler.add("ALL");
         try {
             JSONArray m_jArry = new JSONArray(loadJSONFromAsset(file));
             for (int i = 0; i < m_jArry.length(); i++) {
