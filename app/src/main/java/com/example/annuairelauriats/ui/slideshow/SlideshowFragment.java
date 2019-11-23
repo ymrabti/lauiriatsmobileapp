@@ -1,6 +1,7 @@
 package com.example.annuairelauriats.ui.slideshow;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -8,8 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -33,7 +37,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static android.content.ContentValues.TAG;
@@ -48,7 +63,7 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
-    private Location mLastKnownLocation;
+    private Location mLastKnownLocation;private Dialog dialogFilter;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
@@ -68,11 +83,20 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
             mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
         }
+        dialogFilter=new Dialog(getActivity());
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
         mapView = root.findViewById(R.id.map_view) ;
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
+
+        FloatingActionButton filter_fab = root.findViewById(R.id.fab_filter_laureat_on_map);
+        filter_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowPopupfilter();
+            }
+        });
         return root;
     }
     @Override
@@ -87,6 +111,68 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
 
         mapView.onSaveInstanceState(mapViewBundle);
     }
+    private void ShowPopupfilter() {
+        dialogFilter.setContentView(R.layout.filter_pop_up_liste);
+        final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
+        final Spinner findbypromotion = dialogFilter.findViewById(R.id.snipper_filtre_laureat_promotion);
+        final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
+        List<String> filieres = peupler_list("filiere");
+        List<String> promotions = peupler_list("promotion");
+        List<String> provinces = new ArrayList();provinces.add("province1");provinces.add("province 2");provinces.add("province 3");provinces.add("province 4");
+        ArrayAdapter filieresadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,filieres);filieresadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter promotionsadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,promotions);promotionsadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter provincesadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,provinces);provincesadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        findbyfiliere.setAdapter(filieresadapter);findbypromotion.setAdapter(promotionsadapter);
+        findbyprovince.setAdapter(provincesadapter);
+        dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getActivity(),
+                                "filiere : "+findbyfiliere.getSelectedItem()
+                                        +"\npromotion : "+findbypromotion.getSelectedItem()
+                                        +"\nprovince "+ findbyprovince.getSelectedItem(),
+                                Toast.LENGTH_LONG).show();
+                        dialogFilter.dismiss();
+                    }
+                }
+        );
+        dialogFilter.setCancelable(false);
+        dialogFilter.show();
+    }
+
+    private List<String> peupler_list(String Champ){
+        List<String> list_a_peupler = new ArrayList<>();
+        list_a_peupler.add("ALL");
+        try {
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset("myjson.json"));
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+                list_a_peupler.add(jo_inside.getString(Champ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list_a_peupler;
+    }
+    private String loadJSONFromAsset(String fichier) {
+        String json;
+        try {
+            File myExternalFile = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir("Annuaire"), fichier);
+            FileInputStream fis = new FileInputStream(myExternalFile);
+            DataInputStream in = new DataInputStream(fis);
+            int size = in.available();
+            byte[] buffer = new byte[size];
+            in.read(buffer);
+            in.close();
+            json = new String(buffer, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
     @Override public void onResume() { super.onResume();mapView.onResume(); }
     @Override public void onStart() { super.onStart();mapView.onStart(); }
     @Override public void onStop() { super.onStop();mapView.onStop(); }

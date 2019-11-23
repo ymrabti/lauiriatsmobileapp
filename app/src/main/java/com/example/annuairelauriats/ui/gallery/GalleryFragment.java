@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -37,11 +38,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class GalleryFragment extends Fragment{
-    public static ArrayList<Laureat> Laureats;
+    public static ArrayList<Laureat> Laureats;ListView malist;
     private Dialog myDialog,dialogFilter;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         GalleryViewModel galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+        myDialog = new Dialog(Objects.requireNonNull(getActivity()));
+        dialogFilter=new Dialog(getActivity());
+
         final TextView textView = root.findViewById(R.id.text_gallery);
         galleryViewModel.getText().observe(this, new Observer<String>() {
             @Override
@@ -49,16 +53,8 @@ public class GalleryFragment extends Fragment{
                 textView.setText(s);
             }
         });
-        final Spinner findbyfiliere = root.findViewById(R.id.snipper_filtre_laureat_filiere);
-        final Spinner findbypromotion = root.findViewById(R.id.snipper_filtre_laureat_promotion);
-        final Spinner findbyprovince = root.findViewById(R.id.snipper_filtre_laureat_province);
-
-        ListView malist = root.findViewById(R.id.list_laureat);
-        Laureats= new ArrayList<>();peupler_array_list();
-        LaureatAdapter adaptateur = new LaureatAdapter(getContext(), Laureats);
-        myDialog = new Dialog(Objects.requireNonNull(getActivity()));
-        dialogFilter=new Dialog(getActivity());
-        malist.setAdapter(adaptateur);
+        malist = root.findViewById(R.id.list_laureat);
+        peupler_array_list("ALL");
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
@@ -88,37 +84,83 @@ public class GalleryFragment extends Fragment{
     }
     private void ShowPopupfilter() {
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
-        dialogFilter.show();
-        List filieres = new ArrayList();filieres.add("SIG");filieres.add("GC");filieres.add("GHEV");filieres.add("GE");
-        List promotions = new ArrayList();promotions.add("2015");promotions.add("2016");promotions.add("2017");promotions.add("2018");promotions.add("2019");
-        List provinces = new ArrayList();provinces.add("province1");provinces.add("province 2");provinces.add("province 3");provinces.add("province 4");
-        /*ArrayAdapter filieresadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,filieres);filieresadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
+        final Spinner findbypromotion = dialogFilter.findViewById(R.id.snipper_filtre_laureat_promotion);
+        final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
+        List<String> filieres = peupler_list("filiere");
+        List<String> promotions = peupler_list("promotion");
+        List<String> provinces = new ArrayList();provinces.add("province1");provinces.add("province 2");provinces.add("province 3");provinces.add("province 4");
+        ArrayAdapter filieresadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,filieres);filieresadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ArrayAdapter promotionsadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,promotions);promotionsadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ArrayAdapter provincesadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,provinces);provincesadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        findbyfiliere.setAdapter(filieresadapter);findbypromotion.setAdapter(promotionsadapter);findbyprovince.setAdapter(provincesadapter);*/
+        findbyfiliere.setAdapter(filieresadapter);findbypromotion.setAdapter(promotionsadapter);
+        findbyprovince.setAdapter(provincesadapter);
+        dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getActivity(),
+                                "filiere : "+findbyfiliere.getSelectedItem()
+                                        +"\npromotion : "+findbypromotion.getSelectedItem()
+                                        +"\nprovince "+ findbyprovince.getSelectedItem(),
+                                Toast.LENGTH_LONG).show();
+                        peupler_array_list(findbyfiliere.getSelectedItem().toString());
+                        dialogFilter.dismiss();
+                    }
+                }
+        );
+        dialogFilter.setCancelable(false);
+        dialogFilter.show();
     }
     
-    private void peupler_array_list(){
+    private void peupler_array_list(String filiere){
+        Laureats= new ArrayList<>();
         try {
-            JSONArray m_jArry = new JSONArray(loadJSONFromAsset());
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset("myjson.json"));
             for (int i = 0; i < m_jArry.length(); i++) {
                 JSONObject jo_inside = m_jArry.getJSONObject(i);
+                if (filiere.equals("ALL")){
 
-                Laureats.add(
-                        new Laureat(
-                                jo_inside.getString("image")+"",
-                                jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
-                                jo_inside.getString("organisme")+"",
-                                jo_inside.getString("email")+""));
+                    Laureats.add(
+                            new Laureat(jo_inside.getString("image")+"",
+                                    jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
+                                    jo_inside.getString("organisme")+"", jo_inside.getString("email")+""));
+                }
+                else{
+                    if (jo_inside.getString("filiere").equals(filiere)){
+                        Laureats.add(
+                                new Laureat(jo_inside.getString("image")+"",
+                                        jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
+                                        jo_inside.getString("organisme")+"", jo_inside.getString("email")+""));
+                    }
+                }
             }
+
+            LaureatAdapter adaptateur = new LaureatAdapter(getContext(), Laureats);
+            malist.setAdapter(adaptateur);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    private String loadJSONFromAsset() {
+
+    private List<String> peupler_list(String Champ){
+        List<String> list_a_peupler = new ArrayList<>();
+        list_a_peupler.add("ALL");
+        try {
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset("myjson.json"));
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+                list_a_peupler.add(jo_inside.getString(Champ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list_a_peupler;
+    }
+    private String loadJSONFromAsset(String fichier) {
         String json;
         try {
-            File myExternalFile = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir("Annuaire"), "myjson.json");
+            File myExternalFile = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir("Annuaire"), fichier);
             FileInputStream fis = new FileInputStream(myExternalFile);
             DataInputStream in = new DataInputStream(fis);
             int size = in.available();

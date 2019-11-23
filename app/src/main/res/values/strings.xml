@@ -72,4 +72,5 @@
     <string name="close">fermer</string>
     <string name="text">description</string>
     <string name="personnaliser_votre_filtre">personnaliser votre filtre</string>
+    <string name="save_filter">save</string>
 </resources>

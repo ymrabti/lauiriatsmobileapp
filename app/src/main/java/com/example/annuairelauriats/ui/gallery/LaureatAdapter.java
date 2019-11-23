@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 public class LaureatAdapter extends ArrayAdapter {
     private ArrayList<Laureat> listLaureats;
     private Context mContext;
-    private Bitmap bm;
 
     LaureatAdapter(Context context, ArrayList<Laureat> listLaureat)
     {
@@ -54,23 +52,15 @@ public class LaureatAdapter extends ArrayAdapter {
         holder.nomlaureat.setText(LaureatCourant.getNameLaureat());
         holder.orgLaureat.setText(LaureatCourant.getOrganisation());
         holder.descLaureat.setText(LaureatCourant.getDescription());
-        holder.imageLaureat.setImageBitmap(base642Image( LaureatCourant.getImage()));
+        holder.imageLaureat.setImageBitmap(base64toImage( LaureatCourant.getImage()));
 
         return convertView;
     }
     @SuppressLint("StaticFieldLeak")
-    private Bitmap base642Image(final String imageString){
-        new AsyncTask<Void, Void, Bitmap>() {
-            @Override
-            protected Bitmap doInBackground(Void... voids) {
-                byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
-                Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                bm=decodedImage;
-                return decodedImage;
-            }
-            protected void onPostExecute(Bitmap bitmap){
-            }
-        }.execute();
-        return bm;
+    private Bitmap base64toImage(final String imageString){
+        Bitmap new_bitmap;
+        byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
+        new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        return new_bitmap;
     }
 }
