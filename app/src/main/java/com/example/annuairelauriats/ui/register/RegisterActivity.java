@@ -40,8 +40,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
@@ -169,15 +178,18 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         Spinner filiere = findViewById(R.id.snipper_filiere_laureat);
         List genders = new ArrayList();genders.add("Male");genders.add("Female");
 
-        List promotions = new ArrayList();promotions.add("2015");promotions.add("2016");promotions.add("2017");promotions.add("2018");promotions.add("2019");
+        List promotions = peupler_list("promotion","promotions.json");;
 
-        List filieress = new ArrayList();filieress.add("SIG");filieress.add("GC");filieress.add("GHEV");filieress.add("GE");
+        List filieress = peupler_list("filiere","filieres.json");
 
-        ArrayAdapter genderadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,genders);genderadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter genderadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,genders);
+        genderadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        ArrayAdapter promotionsadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,promotions);promotionsadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter promotionsadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,promotions);
+        promotionsadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        ArrayAdapter filiereadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,filieress);filiereadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter filiereadapter = new ArrayAdapter(this,android.R.layout.simple_spinner_item,filieress);
+        filiereadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         gender.setAdapter(genderadapter);promotion.setAdapter(promotionsadapter);filiere.setAdapter(filiereadapter);
 
@@ -201,7 +213,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         final GoogleMap gmap;
         gmap = googleMap;
         gmap.setMinZoomPreference(1);
-        final LatLng[] latLngs = {};
         gmap.setIndoorEnabled(true);
         UiSettings uiSettings = gmap.getUiSettings();
         uiSettings.setIndoorLevelPickerEnabled(true);
@@ -226,6 +237,38 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         });
         gmap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
+    private List<String> peupler_list(String Champ,String file){
+        List<String> list_a_peupler = new ArrayList<>();
+        list_a_peupler.add("ALL");
+        try {
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(file));
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+                list_a_peupler.add(jo_inside.getString(Champ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list_a_peupler;
+    }
+    private String loadJSONFromAsset(String fichier) {
+        String json;
+        try {
+            File myExternalFile = new File(getExternalFilesDir("Annuaire"), fichier);
+            FileInputStream fis = new FileInputStream(myExternalFile);
+            DataInputStream in = new DataInputStream(fis);
+            int size = in.available();
+            byte[] buffer = new byte[size];
+            in.read(buffer);
+            in.close();
+            json = new String(buffer, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
     @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);

@@ -87,9 +87,9 @@ public class GalleryFragment extends Fragment{
         final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
         final Spinner findbypromotion = dialogFilter.findViewById(R.id.snipper_filtre_laureat_promotion);
         final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
-        List<String> filieres = peupler_list("filiere");
-        List<String> promotions = peupler_list("promotion");
-        List<String> provinces = new ArrayList();provinces.add("province1");provinces.add("province 2");provinces.add("province 3");provinces.add("province 4");
+        List<String> filieres = peupler_list("filiere","filieres.json");
+        List<String> promotions = peupler_list("promotion","promotions.json");
+        List<String> provinces = peupler_list("province","provinces.json");
         ArrayAdapter filieresadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,filieres);filieresadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ArrayAdapter promotionsadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,promotions);promotionsadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ArrayAdapter provincesadapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,provinces);provincesadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -143,11 +143,11 @@ public class GalleryFragment extends Fragment{
         }
     }
 
-    private List<String> peupler_list(String Champ){
+    private List<String> peupler_list(String Champ,String file){
         List<String> list_a_peupler = new ArrayList<>();
         list_a_peupler.add("ALL");
         try {
-            JSONArray m_jArry = new JSONArray(loadJSONFromAsset("myjson.json"));
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(file));
             for (int i = 0; i < m_jArry.length(); i++) {
                 JSONObject jo_inside = m_jArry.getJSONObject(i);
                 list_a_peupler.add(jo_inside.getString(Champ));
