@@ -6,18 +6,30 @@ import java.io.IOException;
 
 public class RegisterDataSource {
 
-    public Result<RegistredUser> login(String username, String password) {
-if (username.equals("younesmrabti50@gmail.com")){
-    try {
-        // TODO: handle loggedInUser authentication
-        RegistredUser Userlog_in = new RegistredUser(
-                java.util.UUID.randomUUID().toString()+"",
-                username+"");
-        return new Result.Success<>(Userlog_in);
-    } catch (Exception e) {
-        return new Result.Error(new IOException("Error logging in", e));
-    }}
-return new Result.Error(new IOException("Error logging in"));
+    public Result<RegistredUser> RegisterUtilisateur(
+            String username,
+            String password,
+            String Nom,
+            String PreNom,
+            String NumTele,
+            String ImageBase64)
+    {
+        try
+        {
+            // TODO: handle loggedInUser authentication
+            RegistredUser UserRegister = new RegistredUser(
+                    java.util.UUID.randomUUID().toString()+"",
+                    username+"",
+                    password+"",
+                    Nom+"",
+                    PreNom+"",
+                    NumTele+"",
+                    ImageBase64+"");
+            return new Result.Success<>(UserRegister);
+        } catch (Exception e)
+        {
+            return new Result.Error(new IOException("Error logging in", e));
+        }
     }
 
     public void logout() {

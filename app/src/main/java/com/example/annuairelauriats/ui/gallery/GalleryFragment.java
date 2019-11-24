@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -25,25 +24,21 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class GalleryFragment extends Fragment{
-    public static ArrayList<Laureat> Laureats;ListView malist;
-    private Dialog myDialog,dialogFilter;
+    private ListView malist;
+    private Dialog dialogFilter;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         GalleryViewModel galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        myDialog = new Dialog(Objects.requireNonNull(getActivity()));
         dialogFilter=new Dialog(getActivity());
 
         final TextView textView = root.findViewById(R.id.text_gallery);
@@ -59,9 +54,6 @@ public class GalleryFragment extends Fragment{
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Laureat C ;
-                        C= Laureats.get(position);
-                        ShowPopup(1,1);
                     }
                 }
         );
@@ -75,12 +67,6 @@ public class GalleryFragment extends Fragment{
 
 
         return root;
-    }
-    private void ShowPopup(double lon,double lat) {
-        myDialog.setContentView(R.layout.laureat_show_position_pop_up);
-
-        myDialog.show();
-        myDialog.setOnDismissListener(new AppCompatDialogFragment());
     }
     private void ShowPopupfilter() {
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
@@ -114,21 +100,21 @@ public class GalleryFragment extends Fragment{
     }
     
     private void peupler_array_list(String filiere){
-        Laureats= new ArrayList<>();
+        ArrayList<Laureat> laureats = new ArrayList<>();
         try {
             JSONArray m_jArry = new JSONArray(loadJSONFromAsset("myjson.json"));
             for (int i = 0; i < m_jArry.length(); i++) {
                 JSONObject jo_inside = m_jArry.getJSONObject(i);
                 if (filiere.equals("ALL")){
 
-                    Laureats.add(
+                    laureats.add(
                             new Laureat(jo_inside.getString("image")+"",
                                     jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
                                     jo_inside.getString("organisme")+"", jo_inside.getString("email")+""));
                 }
                 else{
                     if (jo_inside.getString("filiere").equals(filiere)){
-                        Laureats.add(
+                        laureats.add(
                                 new Laureat(jo_inside.getString("image")+"",
                                         jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
                                         jo_inside.getString("organisme")+"", jo_inside.getString("email")+""));
@@ -136,7 +122,7 @@ public class GalleryFragment extends Fragment{
                 }
             }
 
-            LaureatAdapter adaptateur = new LaureatAdapter(getContext(), Laureats);
+            LaureatAdapter adaptateur = new LaureatAdapter(getContext(), laureats);
             malist.setAdapter(adaptateur);
         } catch (Exception e) {
             e.printStackTrace();

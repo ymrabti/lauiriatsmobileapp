@@ -1,6 +1,7 @@
 package com.example.annuairelauriats.ui.register;
 
 import android.util.Patterns;
+import android.widget.ImageView;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -28,24 +29,35 @@ public class RegisterViewModel extends ViewModel {
         return registerResult;
     }
 
-    public void register(String username, String password) {
+    public void register(String username, String password,String Nom,String PreNom,String NumTele,String ImageBase64) {
         // can be launched in a separate asynchronous job
-        Result<RegistredUser> result = registerRepository.Register(username, password);
+        Result<RegistredUser> result = registerRepository.Register(username, password,Nom,PreNom,NumTele,ImageBase64);
 
         if (result instanceof Result.Success) {
             RegistredUser data = ((Result.Success<RegistredUser>) result).getData();
-            registerResult.setValue(new RegisterResult(new RegisterUserView(data.getDisplayName())));
+            registerResult.setValue(new RegisterResult(new RegisterUserView(
+                    data.getDisplayName()+"",
+                    data.getPassWordUser()+"",
+                    data.getLaureatNon()+"",
+                    data.getLaureatPrenom()+"",
+                    data.getLaureatNumTel()+"",
+                    data.getLaureatImageBase64()+"")));
         } else {
             registerResult.setValue(new RegisterResult(R.string.login_failed));
         }
     }
 
-    public void loginDataChanged(String username, String password) {
+    public void loginDataChanged(String username, String password, String Nom, String Prenom, String numero_tel, String img_base64) {
         if (!isUserNameValid(username)) {
-            registerFormState.setValue(new RegisterFormState(R.string.invalid_username, null));
+            registerFormState.setValue(new RegisterFormState(R.string.invalid_username, null,null,null,null,null));
         } else if (!isPasswordValid(password)) {
-            registerFormState.setValue(new RegisterFormState(null, R.string.invalid_password));
-        } else {
+            registerFormState.setValue(new RegisterFormState(null, R.string.invalid_password, null,null,null,null));
+        }
+        else if (!isNomValid(Nom)) {
+            registerFormState.setValue(new RegisterFormState(null, null, R.string.invalid_Nom,null,null,null));
+        }
+
+        else {
             registerFormState.setValue(new RegisterFormState(true));
         }
     }
@@ -65,5 +77,16 @@ public class RegisterViewModel extends ViewModel {
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
+    }
+    // A placeholder password validation check
+    private boolean isNomValid(String Nom) {
+        if (Nom == null) {
+            return false;
+        }
+        if (Nom.contains("@")) {
+            return Patterns.EMAIL_ADDRESS.matcher(Nom).matches();
+        } else {
+            return !Nom.trim().isEmpty();
+        }
     }
 }

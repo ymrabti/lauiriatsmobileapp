@@ -38,11 +38,11 @@ public class RegisterRepository {
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    public Result<RegistredUser> Register(String username, String password) {
+    public Result<RegistredUser> Register(String username, String password,String Nom,String PreNom,String NumTele,String ImageBase64) {
         // handle login
-        Result<RegistredUser> result = dataSource.login(username, password);
+        Result<RegistredUser> result = dataSource.RegisterUtilisateur(username, password,Nom,PreNom,NumTele,ImageBase64);
         if (result instanceof Result.Success) {
-            setRegistredUser(((Result.Success<RegistredUser>) result).getData());
+            setRegistredUser(  ((Result.Success<RegistredUser>) result).getData() );
         }
         return result;
     }
