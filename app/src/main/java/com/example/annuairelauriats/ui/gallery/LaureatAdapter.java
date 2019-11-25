@@ -22,7 +22,7 @@ public class LaureatAdapter extends ArrayAdapter {
     private ArrayList<Laureat> listLaureats;
     private Context mContext;
 
-    LaureatAdapter(Context context, ArrayList<Laureat> listLaureat)
+    public LaureatAdapter(Context context, ArrayList<Laureat> listLaureat)
     {
         super(context ,0,listLaureat);this.listLaureats= listLaureat;this.mContext = context;
     }
@@ -52,7 +52,12 @@ public class LaureatAdapter extends ArrayAdapter {
         holder.nomlaureat.setText(LaureatCourant.getNameLaureat());
         holder.orgLaureat.setText(LaureatCourant.getOrganisation());
         holder.descLaureat.setText(LaureatCourant.getDescription());
-        holder.imageLaureat.setImageBitmap(base64toImage( LaureatCourant.getImage()));
+        if (LaureatCourant.getImage().isEmpty()){
+            holder.imageLaureat.setImageResource(R.drawable.avatar);
+        }
+        else{
+            holder.imageLaureat.setImageBitmap(base64toImage( LaureatCourant.getImage()));
+        }
 
         return convertView;
     }

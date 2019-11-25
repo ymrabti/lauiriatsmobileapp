@@ -54,7 +54,7 @@
     <string name="share_button"> </string>
     <string name="shareourapp">Partager App</string>
     <string name="content_profile">image_pdp</string>
-    <string name="connectez_vous">vous avez deja un coöpte? connectez vous</string>
+    <string name="connectez_vous">vous avez deja un compte? connectez vous</string>
     <string name="inscrivez_vous">ou bien inscrivez vous</string>
     <string name="send">send</string>
     <string name="response">response</string>
@@ -65,7 +65,7 @@
     <string name="avis">avis</string>
     <string name="nom_monu_org">organisation</string>
     <string name="prmpt_nom_laureat">Votre Nom</string>
-    <string name="prmpt_tel_laureat">06...</string>
+    <string name="prmpt_tel_laureat">06…</string>
     <string name="selectionner_image">SELECTIONNER IMAGE</string>
     <string name="selectionner_image_result">aucune image selectionnée</string>
     <string name="organisation">Organisation</string>
@@ -74,4 +74,6 @@
     <string name="text">description</string>
     <string name="personnaliser_votre_filtre">personnaliser votre filtre</string>
     <string name="save_filter">save</string>
+    <string name="nom_de_l_organisatiom">Nom de L\'Organisatiom</string>
+    <string name="enregistrez_vous_ic">Enregistrez Vous</string>
 </resources>

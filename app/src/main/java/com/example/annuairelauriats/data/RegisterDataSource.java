@@ -12,7 +12,11 @@ public class RegisterDataSource {
             String Nom,
             String PreNom,
             String NumTele,
-            String ImageBase64)
+            String ImageBase64,
+            String LaureatGender,
+            String LaureatPromotion,
+            String LaureatFiliere,
+            String LaureatOrg)
     {
         try
         {
@@ -24,7 +28,11 @@ public class RegisterDataSource {
                     Nom+"",
                     PreNom+"",
                     NumTele+"",
-                    ImageBase64+"");
+                    ImageBase64+"",
+                    LaureatGender+"",
+                    LaureatPromotion+"",
+                    LaureatFiliere+"",
+                    LaureatOrg+"");
             return new Result.Success<>(UserRegister);
         } catch (Exception e)
         {

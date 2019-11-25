@@ -29,9 +29,29 @@ public class RegisterViewModel extends ViewModel {
         return registerResult;
     }
 
-    public void register(String username, String password,String Nom,String PreNom,String NumTele,String ImageBase64) {
+    public void register(
+            String username,
+            String password,
+            String Nom,
+            String PreNom,
+            String NumTele,
+            String ImageBase64,
+            String gender,
+            String promotion,
+            String filiere,
+            String organisme) {
         // can be launched in a separate asynchronous job
-        Result<RegistredUser> result = registerRepository.Register(username, password,Nom,PreNom,NumTele,ImageBase64);
+        Result<RegistredUser> result = registerRepository.Register(
+                username,
+                password,
+                Nom,
+                PreNom,
+                NumTele,
+                ImageBase64,
+                gender,
+                promotion,
+                filiere,
+                organisme);
 
         if (result instanceof Result.Success) {
             RegistredUser data = ((Result.Success<RegistredUser>) result).getData();
@@ -41,20 +61,29 @@ public class RegisterViewModel extends ViewModel {
                     data.getLaureatNon()+"",
                     data.getLaureatPrenom()+"",
                     data.getLaureatNumTel()+"",
-                    data.getLaureatImageBase64()+"")));
+                    data.getLaureatImageBase64()+"",
+                    data.getLaureatGender()+"",
+                    data.getLaureatPromotion()+"",
+                    data.getLaureatFiliere()+"",
+                    data.getLaureatOrganisation()+"")));
         } else {
             registerResult.setValue(new RegisterResult(R.string.login_failed));
         }
     }
 
-    public void loginDataChanged(String username, String password, String Nom, String Prenom, String numero_tel, String img_base64) {
+    void loginDataChanged(String username, String password, String Nom, String Prenom, String numero_tel,
+                          String img_base64,
+                          String LaureatGender,
+                          String LaureatPromotion,
+                          String LaureatFiliere,
+                          String LaureatOrg) {
         if (!isUserNameValid(username)) {
-            registerFormState.setValue(new RegisterFormState(R.string.invalid_username, null,null,null,null,null));
+            registerFormState.setValue(new RegisterFormState(R.string.invalid_username, null,null,null,null,null,null,null,null,null));
         } else if (!isPasswordValid(password)) {
-            registerFormState.setValue(new RegisterFormState(null, R.string.invalid_password, null,null,null,null));
+            registerFormState.setValue(new RegisterFormState(null, R.string.invalid_password, null,null,null,null,null,null,null,null));
         }
         else if (!isNomValid(Nom)) {
-            registerFormState.setValue(new RegisterFormState(null, null, R.string.invalid_Nom,null,null,null));
+            registerFormState.setValue(new RegisterFormState(null, null, R.string.invalid_Nom,null,null,null,null,null,null,null));
         }
 
         else {
