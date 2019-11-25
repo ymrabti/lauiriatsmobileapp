@@ -32,6 +32,7 @@ import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.home.Classtest;
 import com.example.annuairelauriats.ui.login.LoginActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -105,13 +106,13 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     nouveau_org_nom.setVisibility(View.GONE);
                     organisation_secteur.setVisibility(View.GONE);
                     mapView.setVisibility(View.GONE);
-                    organisation.setVisibility(View.VISIBLE);Org_finale=organisation.getSelectedItem().toString();
+                    organisation.setVisibility(View.VISIBLE);
                 }
                 else if (radioButton.getText().toString().contains("pas reconnue")){
                     nouveau_org_nom.setVisibility(View.VISIBLE);
                     organisation_secteur.setVisibility(View.VISIBLE);
                     mapView.setVisibility(View.VISIBLE);
-                    organisation.setVisibility(View.GONE);Org_finale = nouveau_org_nom.getText().toString();
+                    organisation.setVisibility(View.GONE);
                 }
             }
         });
@@ -122,7 +123,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 if (registerFormState == null) {
                     return;
                 }
-                //registerButton.setEnabled(registerFormState.isDataValid());
+                registerButton.setEnabled(registerFormState.isDataValid());
                 if (registerFormState.getUsernameError() != null) {
                     usernameEditText.setError(getString(registerFormState.getUsernameError()));
                 }
@@ -153,6 +154,11 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
             @Override public void afterTextChanged(Editable s) {
+                if (nouveau_org_nom.getText().toString().isEmpty()){
+                    Org_finale=organisation.getSelectedItem().toString();
+                }
+                else {
+                    Org_finale = nouveau_org_nom.getText().toString();}
                 registerViewModel.loginDataChanged(
                         usernameEditText.getText().toString()+"", passwordEditText.getText().toString()+"",
                         nomEditText.getText().toString()+"", prenomEditText.getText().toString()+"",
@@ -163,7 +169,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         nomEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        /*passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -178,12 +184,17 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 }
                 return false;
             }
-        });
+        });*/
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
+                if (nouveau_org_nom.getText().toString().isEmpty()){
+                    Org_finale=organisation.getSelectedItem().toString();
+                }
+                else {
+                    Org_finale = nouveau_org_nom.getText().toString();}
                 registerViewModel.register(
                         usernameEditText.getText().toString()+"", passwordEditText.getText().toString()+"",
                         nomEditText.getText().toString()+"", prenomEditText.getText().toString()+"",
@@ -208,7 +219,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     model.getLaureatGender()+"",
                     model.getLaureatPromotion()+"",
                     model.getLaureatFiliere()+"",
-                    Org_finale+"");
+                    model.getLaureatOrganisation()+"");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -310,6 +321,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 MarkerOptions markerOptions = new MarkerOptions();
                 lat = latLng.latitude;lon = latLng.longitude;
                 markerOptions.position(latLng);
+                gmap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 gmap.addMarker(markerOptions);
             }
         });

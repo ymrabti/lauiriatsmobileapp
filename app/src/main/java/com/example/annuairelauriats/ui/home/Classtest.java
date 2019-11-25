@@ -143,8 +143,8 @@ public class Classtest  {
                     }
                 }
             }
-            Laureat laureat_vide = new Laureat("","","","");
-            laureats.add(laureat_vide);
+            //Laureat laureat_vide = new Laureat("","","","");
+            //laureats.add(laureat_vide);
             LaureatAdapter adaptateur = new LaureatAdapter(context, laureats);
             malist.setAdapter(adaptateur);
         } catch (Exception e) {

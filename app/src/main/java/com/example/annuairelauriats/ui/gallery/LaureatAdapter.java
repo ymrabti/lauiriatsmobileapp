@@ -32,6 +32,7 @@ public class LaureatAdapter extends ArrayAdapter {
         TextView descLaureat;
         ImageView imageLaureat;
     }
+    @SuppressLint("SetTextI18n")
     @Override
     @NonNull
     public View getView(final int position, View convertView, @NonNull ViewGroup parent)
@@ -49,16 +50,14 @@ public class LaureatAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         final Laureat LaureatCourant = listLaureats.get(position);
-        holder.nomlaureat.setText(LaureatCourant.getNameLaureat());
-        holder.orgLaureat.setText(LaureatCourant.getOrganisation());
-        holder.descLaureat.setText(LaureatCourant.getDescription());
-        if (LaureatCourant.getImage().isEmpty()){
-            holder.imageLaureat.setImageResource(R.drawable.avatar);
-        }
-        else{
-            holder.imageLaureat.setImageBitmap(base64toImage( LaureatCourant.getImage()));
-        }
-
+        if (LaureatCourant.getNameLaureat().isEmpty()){holder.nomlaureat.setText("Utilisateur Annuaire");}
+        else {holder.nomlaureat.setText(LaureatCourant.getNameLaureat());}
+        if (LaureatCourant.getOrganisation().isEmpty()){holder.orgLaureat.setText("Organisation");}
+        else{holder.orgLaureat.setText(LaureatCourant.getOrganisation());}
+        if (LaureatCourant.getDescription().isEmpty()){holder.descLaureat.setText("example@domaine.com");}
+        else{holder.descLaureat.setText(LaureatCourant.getDescription());}
+        if (LaureatCourant.getImage().isEmpty()){ holder.imageLaureat.setImageResource(R.drawable.avatar); }
+        else{ holder.imageLaureat.setImageBitmap(base64toImage( LaureatCourant.getImage())); }
         return convertView;
     }
     @SuppressLint("StaticFieldLeak")
