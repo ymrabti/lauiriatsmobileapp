@@ -1,7 +1,6 @@
 package com.example.annuairelauriats.ui.register;
 
 import android.util.Patterns;
-import android.widget.ImageView;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,6 +10,9 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.data.RegisterRepository;
 import com.example.annuairelauriats.data.Result;
 import com.example.annuairelauriats.data.model.RegistredUser;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RegisterViewModel extends ViewModel {
     private MutableLiveData<RegisterFormState> registerFormState = new MutableLiveData<>();
@@ -93,14 +95,17 @@ public class RegisterViewModel extends ViewModel {
 
     // A placeholder username validation check
     private boolean isUserNameValid(String username) {
-        if (username == null) {
-            return false;
-        }
-        if (username.contains("@")) {
-            return Patterns.EMAIL_ADDRESS.matcher(username).matches();
-        } else {
-            return !username.trim().isEmpty();
-        }
+        String expression = "([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9._-]+)$";
+            String regExpn = "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+                            +"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                            +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                            +"([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                            +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
+                            +"([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
+            Pattern pattern = Pattern.compile(expression,Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(username);
+        //return matcher.matches();
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
     }
 
     // A placeholder password validation check
