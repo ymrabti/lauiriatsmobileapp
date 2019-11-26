@@ -5,6 +5,7 @@ public class Laureat {
     private String nom;
     private String organisation;
     private String description;
+    private boolean status;
     public Laureat(String image ,String name , String org,String desc){
         this.imgbase64= image;this.nom=name;this.organisation=org;this.description=desc;
     }

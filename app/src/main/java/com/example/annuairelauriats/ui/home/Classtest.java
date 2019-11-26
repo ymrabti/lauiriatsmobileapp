@@ -13,17 +13,23 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 public class Classtest  {
+    private static int id_connected,id_selected;
     public static int getLastID(Context context) throws Exception {
         JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,"myjson.json"));
         int pa =0;
@@ -33,18 +39,27 @@ public class Classtest  {
         }
         return pa;
     }
+    public static JSONObject getJsonObjectById(Context context,int id) throws Exception {
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,"myjson.json"));
+        JSONObject jsonObject=new JSONObject();
+        for (int i = 0; i < m_jArry.length(); i++) {
+            JSONObject jo_inside = m_jArry.getJSONObject(i);
+            if(jo_inside.getInt("id")==id){jsonObject=jo_inside;}
+        }
+        return jsonObject;
+    }
     public static void read_json_array(Context context,JSONObject jsonObject){
         try {
             JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,"myjson.json"));
             m_jArry.put(jsonObject);
-            write_file_data(context,m_jArry.toString(),"myjson.json");
+            write_file_data(context,m_jArry.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public static void write_file_data(Context context,String textToWrite,String filename) {
+    private static void write_file_data(Context context,String textToWrite) {
         try {
-            File myExternalFile = new File(context.getExternalFilesDir("Annuaire"), filename);
+            File myExternalFile = new File(context.getExternalFilesDir("Annuaire"), "myjson.json");
             FileOutputStream fos = new FileOutputStream(myExternalFile);
             fos.write(textToWrite.getBytes());
             fos.close();
@@ -180,5 +195,79 @@ public class Classtest  {
             e.printStackTrace();
         }
         return list_a_peupler;
+    }
+    public static void setUserStatus(Context context,boolean status,int id){
+        try {
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,"myjson.json"));
+            JSONObject user_actuelle = m_jArry.getJSONObject(id);
+            user_actuelle.put("id",status);
+            m_jArry.remove(id);m_jArry.put(user_actuelle);
+            write_file_data(context,m_jArry.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static int getId_connected() { return id_connected; }
+    public static void setId_connected(int id_connected) { Classtest.id_connected = id_connected; }
+
+    public static int getId_selected() { return id_selected; }
+    public static void setId_selected(int id_selected) { Classtest.id_selected = id_selected; }
+    /*private void read_json(){
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAsset());
+            JSONArray m_jArry = obj.getJSONArray("formules");
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
+    /*
+
+    public void connecting_rest(final String url) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpget = new HttpGet(url);
+                HttpResponse response;
+                try {
+                    response = httpClient.execute(httpget);
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        InputStream instream = entity.getContent();
+                        String result= convertStreamToString(instream);
+                        instream.close();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+*/
+    private static String convertStreamToString(InputStream is) {
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
     }
 }
