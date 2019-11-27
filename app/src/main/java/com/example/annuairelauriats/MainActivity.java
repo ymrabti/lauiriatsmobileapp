@@ -1,6 +1,7 @@
 package com.example.annuairelauriats;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,7 +25,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
-
+public static Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +37,13 @@ public class MainActivity extends AppCompatActivity {
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send,
-        R.id.nav_proposnous,R.id.nav_stndrds,R.id.nav_aide,R.id.nav_signaler)
+                R.id.nav_proposnous,R.id.nav_stndrds,R.id.nav_aide,R.id.nav_signaler)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        NavigationView share = findViewById(R.id.nav_share);
+        NavigationUI.setupWithNavController(navigationView, navController);context=this;
+        //NavigationView share = findViewById(R.id.nav_share);
         //share.setEnabled(false);
         /*share.setOnClickListener(
                 new View.OnClickListener() {
@@ -58,25 +59,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    public static Context getContext() {
+        return context;
     }
 
-    public void launchGoogleChrome(View view) {
-        String packageName = "com.android.chrome";
-        Intent launchApp = getPackageManager().getLaunchIntentForPackage(packageName);
-        Toast.makeText(view.getContext(),"Ouverture de Google Chrome ...",Toast.LENGTH_SHORT).show();
-        startActivity(launchApp);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 
 

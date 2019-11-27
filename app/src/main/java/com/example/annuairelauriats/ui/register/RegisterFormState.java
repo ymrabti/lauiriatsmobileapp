@@ -18,7 +18,7 @@ public class RegisterFormState {
     private Integer orgError;
     private boolean isDataValid;
 
-    public RegisterFormState(
+    RegisterFormState(
             @Nullable Integer usernameError,
             @Nullable Integer passwordError,
             @Nullable Integer nomError,
@@ -66,23 +66,18 @@ public class RegisterFormState {
     public Integer getPreNomError() { return PreNomError; }
     public Integer getNumeroTelError() { return NumeroTelError; }
     public Integer getImageError() { return ImageError; }
-
     public Integer getGenderError() {
         return genderError;
     }
-
     public Integer getPromoError() {
         return promoError;
     }
-
     public Integer getFiliereError() {
         return filiereError;
     }
-
     public Integer getOrgError() {
         return orgError;
     }
-
     boolean isDataValid() {
         return isDataValid;
     }
