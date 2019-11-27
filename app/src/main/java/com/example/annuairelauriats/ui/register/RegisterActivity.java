@@ -89,6 +89,10 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         final Spinner organisation = findViewById(R.id.snipper_select_org);
         final EditText nouveau_org_nom = findViewById(R.id.snipper_ecrire_nom_org);
         final Spinner organisation_secteur = findViewById(R.id.snipper_select_secteur_org);
+        final EditText date_debut_chez_org = findViewById(R.id.date_pick_with_org);
+        final EditText intitule_fonction_avec_org = findViewById(R.id.intitule_fonction_with_org);
+        final ImageView pick_date_debut_pop_up = findViewById(R.id.pick_date_button);
+        final EditText description_laureat = findViewById(R.id.description_laureat);
         final Button registerButton = findViewById(R.id.register);
         final ProgressBar loadingProgressBar = findViewById(R.id.registering);
         final TextView go_to_login = findViewById(R.id.go_to_login);
@@ -98,10 +102,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         Classtest.spinner_list_adapt(getApplicationContext(), organisation, "org", "organismes.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation_secteur, "secteur", "secteurs.json", 0);
         //String org_secteur_selected = organisation_secteur.getSelectedItem().toString();
-
-        TextView rev = findViewById(R.id.enregitrer_vous);
-        Date currentTime = Calendar.getInstance().getTime();
-        rev.append("\n Date now :"+currentTime);
 
         imageView.setImageResource(R.drawable.avatar);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +116,16 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(i);
+            }
+        });
+        pick_date_debut_pop_up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar rightNow = Calendar.getInstance();
+                int year = rightNow.get(Calendar.YEAR);
+                int month = rightNow.get(Calendar.MONTH);
+                int jour = rightNow.get(Calendar.DAY_OF_MONTH);
+                date_debut_chez_org.setText(year+"-"+month+"-"+jour);
             }
         });
 
@@ -134,6 +144,9 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     mapView.setVisibility(View.VISIBLE);
                     organisation.setVisibility(View.GONE);
                 }
+                date_debut_chez_org.setVisibility(View.VISIBLE);
+                intitule_fonction_avec_org.setVisibility(View.VISIBLE);
+                pick_date_debut_pop_up.setVisibility(View.VISIBLE);
             }
         });
 

@@ -73,7 +73,10 @@
     <string name="close">fermer</string>
     <string name="text">description</string>
     <string name="personnaliser_votre_filtre">personnaliser votre filtre</string>
-    <string name="save_filter">save</string>
+    <string name="save_filter">chercher</string>
     <string name="nom_de_l_organisatiom">Nom de L\'Organisatiom</string>
     <string name="enregistrez_vous_ic">Enregistrez Vous</string>
+    <string name="intitule_sur_votre_fonction">intitule sur votre fonction</string>
+    <string name="petit_description_sur_vous">petit description sur vous</string>
+    <string name="date_hint">date</string>
 </resources>

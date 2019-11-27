@@ -114,13 +114,6 @@ public class RegisterViewModel extends ViewModel {
     }
     // A placeholder password validation check
     private boolean isNomValid(String Nom) {
-        if (Nom == null) {
-            return false;
-        }
-        if (Nom.contains("@")) {
-            return Patterns.EMAIL_ADDRESS.matcher(Nom).matches();
-        } else {
-            return !Nom.trim().isEmpty();
-        }
+        return !Nom.isEmpty();
     }
 }

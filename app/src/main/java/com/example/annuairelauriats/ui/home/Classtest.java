@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -114,60 +115,75 @@ public class Classtest  {
         Classtest.spinner_list_adapt(context,findbypromotion,"promotion","promotions.json",1);
         Classtest.spinner_list_adapt(context,findbyprovince,"province","provinces.json",1);
         dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(context,
-                                "filiere : "+findbyfiliere.getSelectedItem()
-                                        +"\npromotion : "+findbypromotion.getSelectedItem()
-                                        +"\nprovince "+ findbyprovince.getSelectedItem(),
-                                Toast.LENGTH_LONG).show();
-                        if (mark==1){
-                            peupler_array_list(context,findbyfiliere.getSelectedItem().toString(),listView);
-                        }
-                        else
-                        {
-                            show_laureats_on_map(context,findbyfiliere.getSelectedItem().toString(),googleMap);
-                        }
-                        dialogFilter.dismiss();
-                    }
+        new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context,
+                        "filiere : "+findbyfiliere.getSelectedItem()
+                                +"\npromotion : "+findbypromotion.getSelectedItem()
+                                +"\nprovince "+ findbyprovince.getSelectedItem(),
+                        Toast.LENGTH_LONG).show();
+                if (mark==1){
+                    peupler_array_list(context,
+                            findbyfiliere.getSelectedItem().toString(),
+                            findbypromotion.getSelectedItem().toString(),
+                            findbyprovince.getSelectedItem().toString(),listView);
                 }
+                else
+                {
+                    show_laureats_on_map(context,findbyfiliere.getSelectedItem().toString()+"",
+                            findbypromotion.getSelectedItem().toString()+"",
+                            findbyprovince.getSelectedItem().toString()+""
+                            ,googleMap);
+                }
+                dialogFilter.dismiss();
+            }
+        }
         );
         dialogFilter.setCancelable(false);
         dialogFilter.show();
     }
-    public static void peupler_array_list(Context context, String filiere, ListView malist){
+    private static JSONArray checkField(String cle,String valeur,JSONArray m_jArry){
+        JSONArray array_checked = new JSONArray();
+        if (!valeur.equals("ALL")){
+            for (int i = 0; i < m_jArry.length(); i++) {
+                try {
+                    JSONObject jo_inside = m_jArry.getJSONObject(i);
+                    if (jo_inside.getString(cle).equals(valeur)){
+                        array_checked.put(jo_inside);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else{
+            array_checked = m_jArry;
+        }
+        return array_checked;
+    }
+    public static void peupler_array_list(Context context, String filiere,String promotion,String province, ListView malist){
         ArrayList<Laureat> laureats = new ArrayList<>();
         try {
             JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,"myjson.json"));
-            for (int i = 0; i < m_jArry.length(); i++) {
-                JSONObject jo_inside = m_jArry.getJSONObject(i);
-                if (filiere.equals("ALL")){
-
-                    laureats.add(
-                            new Laureat(jo_inside.getString("image")+"",
-                                    jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
-                                    jo_inside.getString("organisme")+"", jo_inside.getString("email")+""));
-                }
-                else{
-                    if (jo_inside.getString("filiere").equals(filiere)){
-                        laureats.add(
-                                new Laureat(jo_inside.getString("image")+"",
-                                        jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
-                                        jo_inside.getString("organisme")+"", jo_inside.getString("email")+""));
-                    }
-                }
+            JSONArray filiere_checked = checkField("filiere",filiere,m_jArry);
+            JSONArray promotion_filiere_checked = checkField("promotion",promotion,filiere_checked);
+            //JSONArray province_checked = checkField("province",province,promotion_checked);
+            for (int i = 0; i < promotion_filiere_checked.length(); i++) {
+                JSONObject jo_inside = promotion_filiere_checked.getJSONObject(i);
+                laureats.add(
+                        new Laureat(jo_inside.getString("image")+"",
+                                jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
+                                jo_inside.getString("organisme")+"", jo_inside.getString("email")+""));
             }
-            //Laureat laureat_vide = new Laureat("","","","");
-            //laureats.add(laureat_vide);
             LaureatAdapter adaptateur = new LaureatAdapter(context, laureats);
             malist.setAdapter(adaptateur);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public static void show_laureats_on_map(Context context,String filiere, GoogleMap gmap){
-        List<LatLng> latLngs= peupler_list_latslongs(context,filiere);
+    public static void show_laureats_on_map(Context context,String filiere,String promotion,String province, GoogleMap gmap){
+        List<LatLng> latLngs= peupler_list_latslongs(context,filiere,promotion,province);
         gmap.clear();
         for(int i=0;i<latLngs.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
@@ -176,20 +192,15 @@ public class Classtest  {
             gmap.addMarker(markerOptions);
         }
     }
-    private static List<LatLng> peupler_list_latslongs(Context context,String filiere){
+    private static List<LatLng> peupler_list_latslongs(Context context,String filiere,String promotion,String province){
         List<LatLng> list_a_peupler = new ArrayList<>();
         try {
             JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,"myjson.json"));
-            for (int i = 0; i < m_jArry.length(); i++) {
-                JSONObject jo_inside = m_jArry.getJSONObject(i);
-                if (filiere.equals("ALL")){
-                    list_a_peupler.add(new LatLng(jo_inside.getDouble("latitude"),jo_inside.getDouble("longitude")));
-                }
-                else{
-                    if (jo_inside.getString("filiere").equals(filiere)){
-                        list_a_peupler.add(new LatLng(jo_inside.getDouble("latitude"),jo_inside.getDouble("longitude")));
-                    }
-                }
+            JSONArray filiere_checked = checkField("filiere",filiere,m_jArry);
+            JSONArray filiere_promotion_checked = checkField("promotion",promotion,filiere_checked);
+            for (int i = 0; i < filiere_promotion_checked.length(); i++) {
+                JSONObject jo_inside = filiere_promotion_checked.getJSONObject(i);
+                list_a_peupler.add(new LatLng(jo_inside.getDouble("latitude"),jo_inside.getDouble("longitude")));
             }
         } catch (Exception e) {
             e.printStackTrace();
