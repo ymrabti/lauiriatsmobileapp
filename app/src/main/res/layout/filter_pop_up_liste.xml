@@ -21,6 +21,33 @@
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         />
+    <TextView
+        android:id="@+id/filiere_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/filierefiliere"
+        android:layout_marginStart="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_filiere"
+        app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_filiere"/>
+    <TextView
+        android:id="@+id/province_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/provinceprovince"
+        android:layout_marginStart="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_province"
+        app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_province"/>
+    <TextView
+        android:id="@+id/promotion_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/promotionpromotion"
+        android:layout_marginStart="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_promotion"
+        app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_promotion"/>
     <Spinner
         android:id="@+id/snipper_filtre_laureat_province"
         android:layout_width="0dp"
@@ -29,8 +56,7 @@
         android:layout_marginTop="19dp"
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:maxHeight="200dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/province_text_view"
         app:layout_constraintTop_toBottomOf="@id/text_filter_pop_up"/>
     <Spinner
         android:id="@+id/snipper_filtre_laureat_filiere"
@@ -41,7 +67,7 @@
         android:layout_marginTop="19dp"
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/filiere_text_view"
         app:layout_constraintTop_toBottomOf="@id/snipper_filtre_laureat_province"/>
     <Spinner
         android:id="@+id/snipper_filtre_laureat_promotion"
@@ -52,15 +78,26 @@
         android:maxHeight="200dp"
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/promotion_text_view"
         app:layout_constraintTop_toBottomOf="@id/snipper_filtre_laureat_filiere"/>
     <Button
         android:id="@+id/button_save_filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/save_filter"
-        android:layout_marginEnd="50dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/loop"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/snipper_filtre_laureat_promotion"/>
+    <Button
+        android:id="@+id/button_dismiss_filter"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/dismiss"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintTop_toBottomOf="@+id/snipper_filtre_laureat_promotion"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

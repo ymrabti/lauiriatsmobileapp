@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +26,7 @@ import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -30,6 +34,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.annuairelauriats.MainActivity;
@@ -49,14 +54,12 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
-
+import android.app.Dialog;
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private RegisterViewModel registerViewModel;
-    ImageView imageView;
+    ImageView imageView;private int year,month,day;
     TextView base64TextView;
     private String Org_finale;
     private static final int PICK_IMAGE = 100;
@@ -92,7 +95,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         final EditText date_debut_chez_org = findViewById(R.id.date_pick_with_org);
         final EditText intitule_fonction_avec_org = findViewById(R.id.intitule_fonction_with_org);
         final ImageView pick_date_debut_pop_up = findViewById(R.id.pick_date_button);
-        final EditText description_laureat = findViewById(R.id.description_laureat);
+        //final EditText description_laureat = findViewById(R.id.description_laureat);
         final Button registerButton = findViewById(R.id.register);
         final ProgressBar loadingProgressBar = findViewById(R.id.registering);
         final TextView go_to_login = findViewById(R.id.go_to_login);
@@ -118,14 +121,30 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 startActivity(i);
             }
         });
+
+
+
         pick_date_debut_pop_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar rightNow = Calendar.getInstance();
-                int year = rightNow.get(Calendar.YEAR);
-                int month = rightNow.get(Calendar.MONTH);
-                int jour = rightNow.get(Calendar.DAY_OF_MONTH);
-                date_debut_chez_org.setText(year+"-"+month+"-"+jour);
+                Dialog dialog=new DatePickerDialog(RegisterActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year_selected, int month_selected, int dayOfMonth) {
+                        year = year_selected;
+                        month = month_selected;
+                        day = dayOfMonth;
+                        date_debut_chez_org.setText(year+"-"+(month+1)+"-"+day);
+                    }
+                },year,month,day);
+                dialog.show();
+/*                Dialog dialog = new TimePickerDialog(RegisterActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        year = hourOfDay;
+                        month = minute;
+                        date_debut_chez_org.setText(year+" : "+month);
+                    }
+                },year,month,true);dialog.show();*/
             }
         });
 
@@ -149,6 +168,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 pick_date_debut_pop_up.setVisibility(View.VISIBLE);
             }
         });
+
+
 
         registerViewModel.getREgisterFormState().observe(this, new Observer<RegisterFormState>() {
             @Override
@@ -205,9 +226,9 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                         Org_finale + "");
             }
         };
+        nomEditText.addTextChangedListener(afterTextChangedListener);
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        nomEditText.addTextChangedListener(afterTextChangedListener);
         /*passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
@@ -369,3 +390,36 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         gmap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 }
+//
+//public class MyAndroidAppActivity extends AppCompatActivity {
+//
+//    private EditText tvDisplayDate;
+//    private DatePicker dpResult;
+//    private int year;
+//    private int month;
+//    private int day;
+//    static final int DATE_DIALOG_ID = 999;
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_register);
+//        ImageView btnChangeDate = findViewById(R.id.pick_date_button);btnChangeDate.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Dialog dialog = new DatePickerDialog(getApplicationContext(), datePickerListener, year, month, day);
+//                dialog.show();
+//            }
+//        });
+//    }
+//    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
+//        public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+//            year = selectedYear;
+//            month = selectedMonth;
+//            day = selectedDay;
+//            tvDisplayDate.setText(new StringBuilder().append(month + 1)
+//                    .append("-").append(day).append("-").append(year)
+//                    .append(" "));
+//            dpResult.init(year, month, day, null);
+//        }
+//    };
+//}
