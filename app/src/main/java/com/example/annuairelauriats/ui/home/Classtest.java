@@ -114,6 +114,12 @@ public class Classtest  {
         Classtest.spinner_list_adapt(context,findbyfiliere,"filiere","filieres.json",1);
         Classtest.spinner_list_adapt(context,findbypromotion,"promotion","promotions.json",1);
         Classtest.spinner_list_adapt(context,findbyprovince,"province","provinces.json",1);
+        dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogFilter.dismiss();
+            }
+        });
         dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
         new View.OnClickListener() {
             @Override
@@ -220,7 +226,6 @@ public class Classtest  {
     }
     public static int getId_connected() { return id_connected; }
     public static void setId_connected(int id_connected) { Classtest.id_connected = id_connected; }
-
     public static int getId_selected() { return id_selected; }
     public static void setId_selected(int id_selected) { Classtest.id_selected = id_selected; }
     /*private void read_json(){

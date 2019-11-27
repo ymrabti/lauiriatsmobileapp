@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -13,15 +14,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.home.Classtest;
 
 public class ToolsFragment extends Fragment {
-
-    private ToolsViewModel toolsViewModel;
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        toolsViewModel =
-                ViewModelProviders.of(this).get(ToolsViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ToolsViewModel toolsViewModel = ViewModelProviders.of(this).get(ToolsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_tools, container, false);
         final TextView textView = root.findViewById(R.id.text_tools);
         toolsViewModel.getText().observe(this, new Observer<String>() {
@@ -30,6 +27,8 @@ public class ToolsFragment extends Fragment {
                 textView.setText(s);
             }
         });
+        ListView laureats_to_set_status = root.findViewById(R.id.list_laureat_set_status);
+        Classtest.peupler_array_list(getActivity(),"ALL","ALL","ALL", laureats_to_set_status);
         return root;
     }
 }

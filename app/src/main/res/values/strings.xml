@@ -79,4 +79,8 @@
     <string name="intitule_sur_votre_fonction">intitule sur votre fonction</string>
     <string name="petit_description_sur_vous">petit description sur vous</string>
     <string name="date_hint">date</string>
+    <string name="filierefiliere">Filiere</string>
+    <string name="provinceprovince">Province</string>
+    <string name="promotionpromotion">Promotion</string>
+    <string name="accepter_ou_les_organisations_suivantes">Accepter ou les Organisations suivantes</string>
 </resources>
