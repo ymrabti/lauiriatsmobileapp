@@ -31,8 +31,8 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Email n\'est pas valide</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="invalid_Nom">Nom doit etre non null</string>
+    <string name="invalid_password">Mot de passe doit contenir 6 carateres minimum</string>
+    <string name="invalid_Nom">champs doit etre non null</string>
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -83,4 +83,6 @@
     <string name="provinceprovince">Province</string>
     <string name="promotionpromotion">Promotion</string>
     <string name="accepter_ou_les_organisations_suivantes">Accepter ou les Organisations suivantes</string>
+    <string name="prmpt_prenom_laureat">Votre Prenom</string>
+    <string name="invalid_Tel">numero de telephone non valid</string>
 </resources>

@@ -29,7 +29,7 @@ public class GalleryFragment extends Fragment{
             }
         });
         malist = root.findViewById(R.id.list_laureat);
-        Classtest.peupler_array_list(getActivity(),"ALL","ALL","ALL",malist);
+        Classtest.peupler_array_list(getActivity(),1,"TOUT","TOUT",malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override

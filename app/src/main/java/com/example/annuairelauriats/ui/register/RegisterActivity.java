@@ -2,28 +2,21 @@ package com.example.annuairelauriats.ui.register;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -34,9 +27,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
-
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.home.Classtest;
@@ -48,12 +39,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Calendar;
+
 import android.app.Dialog;
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
@@ -61,8 +50,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
     private RegisterViewModel registerViewModel;
     ImageView imageView;private int year,month,day;
     TextView base64TextView;
-    private String Org_finale;
-    private static final int PICK_IMAGE = 100;
     private double lat, lon;
 
     @SuppressLint("SetTextI18n")
@@ -78,40 +65,38 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         mapView = findViewById(R.id.map_put_org);
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
-        final EditText nomEditText = findViewById(R.id.register_nom_laureat);
-        final EditText prenomEditText = findViewById(R.id.register_prenom_laureat);
-        final Spinner gender = findViewById(R.id.snipper_gender_laureat);
-        final EditText NumTeleEditText = findViewById(R.id.register_telephone_laureat);
-        final EditText usernameEditText = findViewById(R.id.usernamename);
-        final Spinner promotion = findViewById(R.id.snipper_promotion_laureat);
-        final Spinner filiere = findViewById(R.id.snipper_filiere_laureat);
-        base64TextView = findViewById(R.id.register_image_base_64_laureat);
-        imageView = findViewById(R.id.selected_file_image8laureat);
-        final EditText passwordEditText = findViewById(R.id.passwordword);
-        RadioGroup radioOrgGroup = findViewById(R.id.radio_organisation);
-        final Spinner organisation = findViewById(R.id.snipper_select_org);
-        final EditText nouveau_org_nom = findViewById(R.id.snipper_ecrire_nom_org);
-        final Spinner organisation_secteur = findViewById(R.id.snipper_select_secteur_org);
-        final EditText date_debut_chez_org = findViewById(R.id.date_pick_with_org);
-        final EditText intitule_fonction_avec_org = findViewById(R.id.intitule_fonction_with_org);
-        final ImageView pick_date_debut_pop_up = findViewById(R.id.pick_date_button);
-        //final EditText description_laureat = findViewById(R.id.description_laureat);
+        final EditText nomEditText = findViewById(R.id.register_nom_laureat);  // Laureat                               1       1
+        final EditText prenomEditText = findViewById(R.id.register_prenom_laureat);  // Laureat                         2       2
+        final Spinner gender = findViewById(R.id.snipper_gender_laureat);  // Laureat                                   3       3
+        final EditText NumTeleEditText = findViewById(R.id.register_telephone_laureat);  // Laureat                     4       4
+        final EditText usernameEditText = findViewById(R.id.usernamename);  // Laureat                                  5       5
+        final Spinner promotion = findViewById(R.id.snipper_promotion_laureat);  // Laureat                             6       6
+        final Spinner filiere = findViewById(R.id.snipper_filiere_laureat);  // filier get position put to  Laureat     7       7
+        base64TextView = findViewById(R.id.register_image_base_64_laureat);  // system                                          8
+        imageView = findViewById(R.id.selected_file_image8laureat);   // system
+        final EditText passwordEditText = findViewById(R.id.passwordword);  // Laureat                                  8       9
+        RadioGroup radioOrgGroup = findViewById(R.id.radio_organisation);  // system
+        final Spinner organisation =  findViewById(R.id.snipper_select_org);  // org get id put to Laureat_Org                  10
+        final EditText nouveau_org_nom = findViewById(R.id.snipper_ecrire_nom_org);  // system                                  11
+        final Spinner organisation_secteur = findViewById(R.id.snipper_select_secteur_org);  // system                          12
+        final EditText date_debut_chez_org = findViewById(R.id.date_pick_with_org);  // Laureat_Org                             13
+        final ImageView pick_date_debut_pop_up = findViewById(R.id.pick_date_button);  // system
+        final EditText intitule_fonction_avec_org = findViewById(R.id.intitule_fonction_with_org);  // Laureat_Org              14
+        final EditText description_laureat = findViewById(R.id.description_laureat);  // Laureat_Org                    9       15
         final Button registerButton = findViewById(R.id.register);
         final ProgressBar loadingProgressBar = findViewById(R.id.registering);
         final TextView go_to_login = findViewById(R.id.go_to_login);
         Classtest.spinner_list_adapt(getApplicationContext(), gender, "gender", "genders.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), promotion, "promotion", "promotions.json", 0);
-        Classtest.spinner_list_adapt(getApplicationContext(), filiere, "filiere", "filieres.json", 0);
+        Classtest.spinner_list_adapt(getApplicationContext(), filiere, "Nom", "filieres.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation, "org", "organismes.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation_secteur, "secteur", "secteurs.json", 0);
-        //String org_secteur_selected = organisation_secteur.getSelectedItem().toString();
 
         imageView.setImageResource(R.drawable.avatar);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 OpenGallery();
-
             }
         });
         go_to_login.setOnClickListener(new View.OnClickListener() {
@@ -178,14 +163,20 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     return;
                 }
                 registerButton.setEnabled(registerFormState.isDataValid());
+                if (registerFormState.getNomError() != null) {
+                    nomEditText.setError(getString(registerFormState.getNomError()));
+                }
+                if (registerFormState.getPreNomError() != null) {
+                    prenomEditText.setError(getString(registerFormState.getPreNomError()));
+                }
+                if (registerFormState.getNumeroTelError() != null) {
+                    NumTeleEditText.setError(getString(registerFormState.getNumeroTelError()));
+                }
                 if (registerFormState.getUsernameError() != null) {
                     usernameEditText.setError(getString(registerFormState.getUsernameError()));
                 }
                 if (registerFormState.getPasswordError() != null) {
                     passwordEditText.setError(getString(registerFormState.getPasswordError()));
-                }
-                if (registerFormState.getNomError() != null) {
-                    nomEditText.setError(getString(registerFormState.getNomError()));
                 }
             }
         });
@@ -212,18 +203,22 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
             @Override public void afterTextChanged(Editable s) {
-                if (nouveau_org_nom.getText().toString().isEmpty()) {
-                    Org_finale = organisation.getSelectedItem().toString();
-                } else {
-                    Org_finale = nouveau_org_nom.getText().toString();
-                }
                 registerViewModel.loginDataChanged(
-                        usernameEditText.getText().toString() + "", passwordEditText.getText().toString() + "",
-                        nomEditText.getText().toString() + "", prenomEditText.getText().toString() + "",
-                        NumTeleEditText.getText().toString() + "",
-                        base64TextView.getText().toString() + "", gender.getSelectedItem().toString() + "",
-                        promotion.getSelectedItem().toString() + "", filiere.getSelectedItem().toString() + "",
-                        Org_finale + "");
+                        nomEditText.getText().toString() +"",
+                        prenomEditText.getText().toString()+"" ,
+                        NumTeleEditText.getText().toString()+"" ,
+                        usernameEditText.getText().toString()+"" ,
+                        passwordEditText.getText().toString()+"" ,
+                        base64TextView.getText().toString() +"",
+                        gender.getSelectedItem().toString()+"" ,
+                        promotion.getSelectedItem().toString()+"",
+                        filiere.getSelectedItemId()+1 ,
+                        organisation.getSelectedItemId()+1 ,
+                        nouveau_org_nom.getText().toString()+"",
+                        organisation_secteur.getSelectedItem().toString()+"",
+                        intitule_fonction_avec_org.getText().toString()+"",
+                        date_debut_chez_org.getText().toString()+"",
+                        description_laureat.getText().toString()+"");
             }
         };
         nomEditText.addTextChangedListener(afterTextChangedListener);
@@ -240,7 +235,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                             NumTeleEditText.getText().toString()+"",
                             base64TextView.getText().toString()+"", gender.getSelectedItem().toString()+"",
                             promotion.getSelectedItem().toString()+"",filiere.getSelectedItem().toString()+"",
-                            Org_finale+"");
+                            "");
                 }
                 return false;
             }
@@ -250,55 +245,65 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                if (nouveau_org_nom.getText().toString().isEmpty()) {
-                    Org_finale = organisation.getSelectedItem().toString();
-                } else {
-                    Org_finale = nouveau_org_nom.getText().toString();
-                }
                 registerViewModel.register(
-                        usernameEditText.getText().toString() + "", passwordEditText.getText().toString() + "",
-                        nomEditText.getText().toString() + "", prenomEditText.getText().toString() + "",
-                        NumTeleEditText.getText().toString() + "",
-                        base64TextView.getText().toString() + "", gender.getSelectedItem().toString() + "",
-                        promotion.getSelectedItem().toString() + "", filiere.getSelectedItem().toString() + "",
-                        Org_finale + "");
+                        usernameEditText.getText().toString()+"" ,
+                        passwordEditText.getText().toString()+"" ,
+                        nomEditText.getText().toString() +"",
+                        prenomEditText.getText().toString()+"" ,
+                        NumTeleEditText.getText().toString()+"" ,
+                        base64TextView.getText().toString() +"",
+                        gender.getSelectedItem().toString()+"" ,
+                        promotion.getSelectedItem().toString()+"",
+                        filiere.getSelectedItemId()+1 ,
+                        organisation.getSelectedItemId()+1 ,
+                        nouveau_org_nom.getText().toString()+"",
+                        organisation_secteur.getSelectedItem().toString()+"",
+                        intitule_fonction_avec_org.getText().toString()+"",
+                        date_debut_chez_org.getText().toString()+"",
+                        description_laureat.getText().toString()+"");
             }
         });
     }
-
-
-
     private void updateUiWithUser(RegisterUserView model) {
-        // TODO : initiate successful logged in experience
         try {
-            new_Laureat_Register(
-                    model.getDisplayName()+"",
-                    model.getPassWordUser()+"",
-                    model.getLaureatNom()+"",
-                    model.getLaureatPrenom()+"",
-                    model.getLaureatNumTel()+"",
-                    model.getLaureatImageBase64()+"",
-                    model.getLaureatGender()+"",
-                    model.getLaureatPromotion()+"",
-                    model.getLaureatFiliere()+"",
-                    model.getLaureatOrganisation()+"");
+            Calendar rightNow = Calendar.getInstance();
+            int seconde = rightNow.get(Calendar.SECOND);int minute = rightNow.get(Calendar.MINUTE);int heur = rightNow.get(Calendar.HOUR_OF_DAY);
+            int jour = rightNow.get(Calendar.DAY_OF_MONTH);int mois = rightNow.get(Calendar.MONTH)+1;int annee = rightNow.get(Calendar.YEAR);
+            String dateNow = annee+"-"+mois+"-"+jour+" "+heur+":"+minute+":"+seconde;
+            int id_laureat_actuelle = Classtest.getLastID(this,Classtest.laureats);
+            Classtest.new_Laureat_Register(
+                    this,id_laureat_actuelle,
+                    model.getLaureatNom()+"", model.getLaureatPrenom() +"", model.getLaureatGender()+"",
+                    model.getLaureatPromotion()+"", model.getLaureatFiliere(), model.getEmailUser()+"",
+                    model.getPassWordUser()+"", model.getLaureatNumTel()+"", dateNow+"",
+                    model.getDescription()+"");
+            if (!model.getLaureatImageBase64().isEmpty()){
+                Classtest.setNewImgLaureat(this,model.getLaureatImageBase64(),id_laureat_actuelle);}
+            if(!model.getNomOrgEdited().isEmpty()){
+                Classtest.new_org_attente_admin(this,model.getNomOrgEdited(),id_laureat_actuelle,lat,lon,model.getSecteurOrgEdited());
+            }
+            else{
+                Classtest.new_org_laureat(this,model.getOrg_selected(),id_laureat_actuelle,
+                        model.getDate_debut_travail_chez_org(),model.getInitulePost());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         Intent i = new Intent(getApplicationContext(), MainActivity.class);startActivity(i);
     }
-
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
         //Intent i = new Intent(getApplicationContext(), SettingsActivity.class);startActivity(i);
     }
-    private void OpenGallery(){
+    //////////////////////////////////  ACTION IMAGE   /////////////////////////////////////////
+
+    public void OpenGallery(){
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(gallery,PICK_IMAGE);
+        this.startActivityForResult(gallery,100);
     }
-    @Override protected void onActivityResult(int requestCode,int resultCode,Intent data){
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
-        if(resultCode==RESULT_OK && requestCode==PICK_IMAGE){
+        if(resultCode==RESULT_OK && requestCode==100){
             final Uri imageUriii = data.getData();
             try {
                 final InputStream imageStream;
@@ -306,48 +311,12 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 imageStream = getContentResolver().openInputStream(imageUriii);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 imageView.setImageBitmap(selectedImage);
-                String base64 = encodeImage(selectedImage);
+                String base64 = Classtest.encodeImage(selectedImage);
                 base64TextView.setText(base64);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
-    }
-    private String encodeImage(Bitmap bm) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
-        byte[] b = baos.toByteArray();
-        return Base64.encodeToString(b, Base64.DEFAULT);
-    }
-
-//////////////////////////////////////   JSON FILES    /////////////////////////////////////////////////
-    private void new_Laureat_Register(
-            String email,
-            String password,
-            String nom,
-            String prenom,
-            String tel,
-            String base64,
-            String gender,
-            String promotion,
-            String filiere,
-            String organisation) throws Exception {
-        JSONObject new_Laureat = new JSONObject();
-        int id_laureat_actuelle = Classtest.getLastID(this);
-        new_Laureat.put("id",id_laureat_actuelle);
-        new_Laureat.put("nom",nom);
-        new_Laureat.put("prenom",prenom);
-        new_Laureat.put("email",email);
-        new_Laureat.put("password",password);
-        new_Laureat.put("telephone",tel);
-        new_Laureat.put("image",base64);
-        new_Laureat.put("organisme", organisation);
-        new_Laureat.put("latitude",lat);
-        new_Laureat.put("longitude",lon);
-        new_Laureat.put("genre",gender);
-        new_Laureat.put("filiere",filiere);
-        new_Laureat.put("promotion",promotion);
-        Classtest.read_json_array(this,new_Laureat);
     }
     //////////////////////////////////  MAP   /////////////////////////////////////////
     @Override public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -390,36 +359,3 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         gmap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 }
-//
-//public class MyAndroidAppActivity extends AppCompatActivity {
-//
-//    private EditText tvDisplayDate;
-//    private DatePicker dpResult;
-//    private int year;
-//    private int month;
-//    private int day;
-//    static final int DATE_DIALOG_ID = 999;
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_register);
-//        ImageView btnChangeDate = findViewById(R.id.pick_date_button);btnChangeDate.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Dialog dialog = new DatePickerDialog(getApplicationContext(), datePickerListener, year, month, day);
-//                dialog.show();
-//            }
-//        });
-//    }
-//    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
-//        public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
-//            year = selectedYear;
-//            month = selectedMonth;
-//            day = selectedDay;
-//            tvDisplayDate.setText(new StringBuilder().append(month + 1)
-//                    .append("-").append(day).append("-").append(year)
-//                    .append(" "));
-//            dpResult.init(year, month, day, null);
-//        }
-//    };
-//}

@@ -33,22 +33,18 @@ public class RegisterRepository {
     }
 
     public Result<RegistredUser> Register(
-            String username,
-            String password,
-            String Nom,
-            String PreNom,
-            String NumTele,
-            String ImageBase64,
-            String LaureatGender,
-            String LaureatPromotion,
-            String LaureatFiliere,
-            String LaureatOrg) {
+
+            String emailUser, String Password, String LaureatNom, String LaureatPrenom, String LaureatNumTel,
+            String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
+            long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
+            String date_debut_travail_chez_org_,String description) {
         // handle login
-        Result<RegistredUser> result = dataSource.RegisterUtilisateur(username, password,Nom,PreNom,NumTele,ImageBase64,
-                LaureatGender,
-                LaureatPromotion,
-                LaureatFiliere,
-                LaureatOrg);
+        Result<RegistredUser> result = dataSource.RegisterUtilisateur(
+                emailUser, Password, LaureatNom, LaureatPrenom, LaureatNumTel,
+                LaureatImageBase64, LaureatGender, LaureatPromotion, LaureatFiliere,
+                org_selected, nomOrgEdited, secteurOrgEdited,initulePost,
+                date_debut_travail_chez_org_,description
+        );
         if (result instanceof Result.Success) {
             setRegistredUser(  ((Result.Success<RegistredUser>) result).getData() );
         }

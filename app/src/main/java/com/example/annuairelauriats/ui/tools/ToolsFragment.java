@@ -28,7 +28,7 @@ public class ToolsFragment extends Fragment {
             }
         });
         ListView laureats_to_set_status = root.findViewById(R.id.list_laureat_set_status);
-        Classtest.peupler_array_list(getActivity(),"ALL","ALL","ALL", laureats_to_set_status);
+        Classtest.peupler_array_list(getActivity(),1,"ALL","ALL", laureats_to_set_status);
         return root;
     }
 }

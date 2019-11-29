@@ -3,56 +3,61 @@ package com.example.annuairelauriats.ui.register;
 import androidx.annotation.Nullable;
 
 public class RegisterFormState {
-    @Nullable
-    private Integer usernameError;
-    @Nullable
-    private Integer passwordError;
-    @Nullable
-    private Integer NomError;
+    @Nullable private Integer NomError;
     private Integer PreNomError;
     private Integer NumeroTelError;
+    @Nullable private Integer usernameError;
     private Integer ImageError;
-    private Integer genderError;
-    private Integer promoError;
-    private Integer filiereError;
-    private Integer orgError;
+    @Nullable private Integer passwordError;
+    private Integer radioError;
+    private Integer nv_org_nom_Error;
+    private Integer pickError;
+    private Integer dateError;
+    private Integer intituleError;
+    private Integer descError;
     private boolean isDataValid;
 
     RegisterFormState(
-            @Nullable Integer usernameError,
-            @Nullable Integer passwordError,
             @Nullable Integer nomError,
             Integer preNomError,
             Integer numeroTelError,
+            @Nullable Integer emailError,
             Integer imageError,
-            Integer genderError,
-            Integer promoError,
-            Integer filiereError,
-            Integer orgError) {
-        this.usernameError = usernameError;
-        this.passwordError = passwordError;
+            @Nullable Integer passwordError,
+            Integer radioError,
+            Integer nv_org_nom_Error,
+            Integer pickError,
+            Integer dateError,
+            Integer intituleErrorError,
+            Integer descError) {
         this.NomError = nomError;
         this.PreNomError = preNomError;
         this.NumeroTelError = numeroTelError;
+        this.usernameError = emailError;
         this.ImageError = imageError;
-        this.genderError=genderError;
-        this.promoError=promoError;
-        this.filiereError=filiereError;
-        this.orgError=orgError;
+        this.passwordError = passwordError;
+        this.radioError=radioError;
+        this.nv_org_nom_Error=nv_org_nom_Error;
+        this.pickError=pickError;
+        this.dateError=dateError;
+        this.intituleError=intituleErrorError;
+        this.descError=descError;
         this.isDataValid = false;
     }
 
     RegisterFormState(boolean isDataValid) {
-        this.usernameError = null;
-        this.passwordError = null;
         this.NomError = null;
         this.PreNomError = null;
         this.NumeroTelError = null;
+        this.usernameError = null;
         this.ImageError = null;
-        this.genderError=null;
-        this.promoError=null;
-        this.filiereError=null;
-        this.orgError=null;
+        this.passwordError = null;
+        this.radioError=null;
+        this.nv_org_nom_Error=null;
+        this.pickError=null;
+        this.dateError=null;
+        this.intituleError=null;
+        this.descError=null;
         this.isDataValid = isDataValid;
     }
 
@@ -63,21 +68,34 @@ public class RegisterFormState {
         return passwordError;
     }
     @Nullable Integer getNomError(){return NomError;}
-    public Integer getPreNomError() { return PreNomError; }
-    public Integer getNumeroTelError() { return NumeroTelError; }
-    public Integer getImageError() { return ImageError; }
-    public Integer getGenderError() {
-        return genderError;
+    Integer getPreNomError() { return PreNomError; }
+    Integer getNumeroTelError() { return NumeroTelError; }
+    Integer getImageError() { return ImageError; }
+
+    Integer getDateError() {
+        return dateError;
     }
-    public Integer getPromoError() {
-        return promoError;
+
+    Integer getNv_org_nom_Error() {
+        return nv_org_nom_Error;
     }
-    public Integer getFiliereError() {
-        return filiereError;
+
+    Integer getDescError() {
+        return descError;
     }
-    public Integer getOrgError() {
-        return orgError;
+
+    Integer getRadioError() {
+        return radioError;
     }
+
+    Integer getIntituleError() {
+        return intituleError;
+    }
+
+    Integer getPickError() {
+        return pickError;
+    }
+
     boolean isDataValid() {
         return isDataValid;
     }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 
 import java.util.ArrayList;
@@ -51,16 +49,12 @@ public class LaureatAdapter extends ArrayAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        final Laureat LaureatCourant = listLaureats.get(position);Context context = MainActivity.getContext();
-        if (LaureatCourant.getNameLaureat().isEmpty()){holder.nomlaureat.setText("Utilisateur Annuaire");}
-        else {holder.nomlaureat.setText(LaureatCourant.getNameLaureat());}
-        if (LaureatCourant.getOrganisation().isEmpty()){holder.orgLaureat.setText("Organisation");}
-        else{holder.orgLaureat.setText(LaureatCourant.getOrganisation());}
-        if (LaureatCourant.getDescription().isEmpty()){holder.descLaureat.setText("example@domaine.com");}
-        else{holder.descLaureat.setText(LaureatCourant.getDescription());
-        holder.descLaureat.setTextColor(context.getResources().getColor(R.color.rouge));}
-        if (LaureatCourant.getImage().isEmpty()){ holder.imageLaureat.setImageResource(R.drawable.avatar); }
-        else{ holder.imageLaureat.setImageBitmap(base64toImage( LaureatCourant.getImage())); }
+        final Laureat LaureatCourant = listLaureats.get(position);
+        holder.nomlaureat.setText(LaureatCourant.getNameLaureat());
+        holder.orgLaureat.setText(LaureatCourant.getOrganisation());
+        holder.descLaureat.setText(LaureatCourant.getDescription());
+        holder.imageLaureat.setImageResource(R.drawable.avatar);
+        //holder.imageLaureat.setImageBitmap(base64toImage(LaureatCourant.getImage()));
         return convertView;
     }
     @SuppressLint("StaticFieldLeak")

@@ -1,47 +1,41 @@
 package com.example.annuairelauriats.ui.register;
 
 class RegisterUserView {
-    private String displayName;
-    private String PassWordUser;
-    private String LaureatNon;
+    private String LaureatNom;
     private String LaureatPrenom;
-    private String LaureatNumTel;
-    private String LaureatImageBase64;
     private String LaureatGender;
+    private String LaureatNumTel;
+    private String EmailUser;
     private String LaureatPromotion;
-    private String LaureatFiliere;
-    private String LaureatOrganisation;
+    private long LaureatFiliere;
+    private String LaureatImageBase64;
+    private long Org_selected;
+    private String NomOrgEdited;
+    private String secteurOrgEdited;
+    private String InitulePost;
+    private String date_debut_travail_chez_org;
+    private String Description;
+    private String PassWordUser;
 
     RegisterUserView(
-            String displayName,
-            String Password,
-            String LaureatNon,
-            String LaureatPrenom,
-            String LaureatNumTel,
-            String LaureatImageBase64,
-            String LaureatGender,
-            String LaureatPromotion,
-            String LaureatFiliere,
-            String LaureatOrg) {
-        this.displayName = displayName;
-        this.PassWordUser=Password;
-        this.LaureatNon=LaureatNon;
-        this.LaureatPrenom=LaureatPrenom;
-        this.LaureatNumTel=LaureatNumTel;
-        this.LaureatImageBase64=LaureatImageBase64;
-        this.LaureatGender=LaureatGender;
-        this.LaureatPromotion=LaureatPromotion;
-        this.LaureatFiliere=LaureatFiliere;
-        this.LaureatOrganisation=LaureatOrg;
+            String emailUser, String Password, String LaureatNom, String LaureatPrenom, String LaureatNumTel,
+            String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
+            long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
+            String date_debut_travail_chez_org_,String description) {
+        this.EmailUser = emailUser;this.PassWordUser=Password;this.LaureatNom=LaureatNom;
+        this.LaureatPrenom=LaureatPrenom;this.LaureatNumTel=LaureatNumTel;this.LaureatImageBase64=LaureatImageBase64;
+        this.LaureatGender=LaureatGender;this.LaureatPromotion=LaureatPromotion;this.LaureatFiliere=LaureatFiliere;
+        this.Org_selected=org_selected;this.NomOrgEdited=nomOrgEdited;this.secteurOrgEdited=secteurOrgEdited;
+        this.InitulePost=initulePost;this.date_debut_travail_chez_org=date_debut_travail_chez_org_;this.Description=description;
     }
 
-    String getDisplayName() {
-        return displayName;
+    String getEmailUser() {
+        return EmailUser;
     }
     String getPassWordUser() {
         return PassWordUser;
     }
-    String getLaureatNom() { return LaureatNon; }
+    String getLaureatNom() { return LaureatNom; }
     String getLaureatPrenom() {
         return LaureatPrenom;
     }
@@ -53,6 +47,11 @@ class RegisterUserView {
     }
     String getLaureatGender() { return LaureatGender; }
     String getLaureatPromotion() { return LaureatPromotion; }
-    String getLaureatFiliere() { return LaureatFiliere; }
-    String getLaureatOrganisation() { return LaureatOrganisation; }
+    long getLaureatFiliere() { return LaureatFiliere; }
+    long getOrg_selected() { return Org_selected; }
+    String getDescription() { return Description; }
+    String getDate_debut_travail_chez_org() { return date_debut_travail_chez_org; }
+    String getInitulePost() { return InitulePost; }
+    String getNomOrgEdited() { return NomOrgEdited; }
+    String getSecteurOrgEdited() { return secteurOrgEdited; }
 }
