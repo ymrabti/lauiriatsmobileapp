@@ -129,6 +129,38 @@ public class Classtest  extends AppCompatActivity {
         return json;
     }         //LIRE CONTENUE D UN FICHIER
 
+    public static String loadJSONfromCACHE(Context context){
+        String json;
+        try {
+            File myExternalFile = new File(context.getExternalCacheDir(), "filter.json");
+            FileInputStream fis = new FileInputStream(myExternalFile);
+            DataInputStream in = new DataInputStream(fis);
+            int size = in.available();
+            byte[] buffer = new byte[size];
+            in.read(buffer);
+            in.close();
+            json = new String(buffer, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    public static void write_file_cache(Context context,long organisme,String province,long filiere,String promotion) throws JSONException {
+        try {
+            JSONObject jsonObject= new JSONObject();
+            jsonObject.put("organisme",organisme);jsonObject.put("province",province);
+            jsonObject.put("filiere",filiere);jsonObject.put("promotion",promotion);
+            File myExternalFile = new File(context.getExternalCacheDir(), "filter.json");
+            FileOutputStream fos = new FileOutputStream(myExternalFile);
+            fos.write(jsonObject.toString().getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
         final Dialog dialogFilter = new Dialog(context);
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
@@ -148,16 +180,19 @@ public class Classtest  extends AppCompatActivity {
         new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,
-                        "filiere : "+findbyfiliere.getSelectedItem()
-                                +"\npromotion : "+findbypromotion.getSelectedItem()
-                                +"\nprovince "+ findbyprovince.getSelectedItem(),
-                        Toast.LENGTH_LONG).show();
                 if (mark==1){
                     peupler_array_list(context,
                             findbyfiliere.getSelectedItemId(),
                             findbypromotion.getSelectedItem().toString(),
                             findbyprovince.getSelectedItem().toString(),listView);
+                    try {
+                        write_file_cache(context,0,
+                                findbyprovince.getSelectedItem().toString(),
+                                findbyfiliere.getSelectedItemId(),findbypromotion.getSelectedItem().toString()
+                                );
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
                 else
                 {

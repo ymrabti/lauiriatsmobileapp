@@ -15,6 +15,10 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.home.Classtest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class GalleryFragment extends Fragment{
     private ListView malist;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -28,7 +32,14 @@ public class GalleryFragment extends Fragment{
             }
         });
         malist = root.findViewById(R.id.list_laureat);
-        Classtest.peupler_array_list(getActivity(),0,"TOUT","TOUT",malist);
+        int filiere=0;String promo="TOUT";
+        try {
+            JSONObject filter = new JSONObject(Classtest.loadJSONfromCACHE(getActivity()));
+            filiere=filter.getInt("filiere");promo=filter.getString("promotion");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Classtest.peupler_array_list(getActivity(),filiere,promo,"TOUT",malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) { }}

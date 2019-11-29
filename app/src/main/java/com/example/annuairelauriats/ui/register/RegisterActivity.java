@@ -264,7 +264,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
-        Button gotomain = findViewById(R.id.allerAmainactivity);
+        TextView gotomain = findViewById(R.id.enregitrer_vous);
         gotomain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
