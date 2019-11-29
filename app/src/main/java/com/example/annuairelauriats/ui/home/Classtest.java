@@ -300,7 +300,7 @@ public class Classtest  extends AppCompatActivity {
         nouveau_image.put("id",laureat);
         nouveau_image.put("current",true);
         nouveau_image.put("laureat",laureat);
-        nouveau_image.put("imageimage",image);
+        nouveau_image.put("image",image);
         /*JSONObject old_image = getJsonObjectBycle("laureat",laureat,m_jArry);
         int id_old_image = old_image.getInt("id");old_image.put("current",false);
         m_jArry.remove(id_old_image);m_jArry.put(old_image);*/
