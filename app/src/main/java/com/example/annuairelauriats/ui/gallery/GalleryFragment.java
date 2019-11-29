@@ -20,7 +20,6 @@ public class GalleryFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         GalleryViewModel galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-
         final TextView textView = root.findViewById(R.id.text_gallery);
         galleryViewModel.getText().observe(this, new Observer<String>() {
             @Override
@@ -32,10 +31,7 @@ public class GalleryFragment extends Fragment{
         Classtest.peupler_array_list(getActivity(),1,"TOUT","TOUT",malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    }
-                }
+                    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) { }}
         );
         FloatingActionButton filter_fab = root.findViewById(R.id.fab_filter_laureat);
         filter_fab.setOnClickListener(new View.OnClickListener() {
