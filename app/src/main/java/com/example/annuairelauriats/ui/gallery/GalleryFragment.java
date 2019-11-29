@@ -28,7 +28,7 @@ public class GalleryFragment extends Fragment{
             }
         });
         malist = root.findViewById(R.id.list_laureat);
-        Classtest.peupler_array_list(getActivity(),1,"TOUT","TOUT",malist);
+        Classtest.peupler_array_list(getActivity(),0,"TOUT","TOUT",malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) { }}

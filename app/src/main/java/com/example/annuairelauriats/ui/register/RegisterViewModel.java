@@ -67,7 +67,7 @@ public class RegisterViewModel extends ViewModel {
             String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
             long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
             String date_debut_travail_chez_org_,String description) {
-        if (isNomValid(LaureatNom)) {
+        if (!isNomValid(LaureatNom)) {
             registerFormState.setValue(new RegisterFormState(
                     R.string.invalid_Nom,
                     null, null,null,
@@ -75,7 +75,7 @@ public class RegisterViewModel extends ViewModel {
                     null,null,null,null));
 
         }
-        else if (isNomValid(LaureatPrenom)) {
+        else if (!isNomValid(LaureatPrenom)) {
             registerFormState.setValue(new RegisterFormState(
                     null,
                     R.string.invalid_Nom, null,null,
@@ -83,7 +83,7 @@ public class RegisterViewModel extends ViewModel {
                     null,null,null,null));
 
         }
-        else if (isNumtelValid(LaureatNumTel)) {
+        else if (!isNumtelValid(LaureatNumTel)) {
             registerFormState.setValue(new RegisterFormState(
                     null,
                     null, R.string.invalid_Tel,null,
@@ -131,7 +131,7 @@ public class RegisterViewModel extends ViewModel {
     }
     // A placeholder password validation check
     private boolean isNomValid(String Nom) {
-        return Nom == null || Nom.trim().length() <= 3;
+        return Nom != null && Nom.trim().length() > 3;
     }
     private boolean isNumtelValid(String date){
         return Patterns.PHONE.matcher(date).matches();

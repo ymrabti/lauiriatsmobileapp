@@ -50,6 +50,7 @@ public class Classtest  extends AppCompatActivity {
         }
         return pa;
     }
+
     public static JSONObject getJsonObjectBycle(Context context,String cle,int id,String filename) throws Exception {
         JSONArray m_jArray = new JSONArray(loadJSONFromAsset(context,filename)) ;
         JSONObject jsonObject=new JSONObject();
@@ -59,6 +60,7 @@ public class Classtest  extends AppCompatActivity {
         }
         return jsonObject;
     }
+
     public static void read_json_array(Context context,JSONObject jsonObject,String filename){
         try {
             JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
@@ -153,7 +155,7 @@ public class Classtest  extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
                 if (mark==1){
                     peupler_array_list(context,
-                            findbyfiliere.getSelectedItemId()+1,
+                            findbyfiliere.getSelectedItemId(),
                             findbypromotion.getSelectedItem().toString(),
                             findbyprovince.getSelectedItem().toString(),listView);
                 }
@@ -194,11 +196,11 @@ public class Classtest  extends AppCompatActivity {
 
     private static JSONArray checkFieldInteger(String cle,long valeur,JSONArray m_jArry){
         JSONArray array_checked = new JSONArray();
-        if (valeur!=1){
+        if (valeur!=0){
             try {
                 for (int i = 0; i < m_jArry.length(); i++) {
                     JSONObject jo_inside = m_jArry.getJSONObject(i);
-                    if (jo_inside.getInt(cle)==valeur-1){
+                    if (jo_inside.getInt(cle)==valeur){
                         array_checked.put(jo_inside);
                     }
                 }
@@ -217,14 +219,15 @@ public class Classtest  extends AppCompatActivity {
         ArrayList<Laureat> laureats_list = new ArrayList<>();
         try {
             JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,laureats));
+            JSONArray images= new JSONArray(loadJSONFromAsset(context,images_file)) ;
             JSONArray filiere_checked = checkFieldInteger("filiere",filiere,m_jArry);
             JSONArray promotion_filiere_checked = checkField("promotion",promotion,filiere_checked);
             //JSONArray province_checked = checkField("province",province,promotion_checked);
             for (int i = 0; i < promotion_filiere_checked.length(); i++) {
                 JSONObject jo_inside = promotion_filiere_checked.getJSONObject(i);
-                //JSONObject image=getJsonObjectBycle(context,"laureat",jo_inside.getInt("id"),images_file);
+                JSONObject image= getJsonObjectBycle(context,"laureat",jo_inside.getInt("id"),images_file);
                 laureats_list.add(
-                        new Laureat(jo_inside.getString("id")+"",
+                        new Laureat(image.getString("image")+"",
                                 jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
                                 jo_inside.getString("email")+"", jo_inside.getString("description")+""));
             }
@@ -236,7 +239,8 @@ public class Classtest  extends AppCompatActivity {
     }   //AFIICHE LA LIST APRES LE FILTRE
 
     public static void show_laureats_on_map(Context context,String filiere,String promotion,String province, GoogleMap gmap){
-        List<LatLng> latLngs= peupler_list_latslongs(context,filiere,promotion,province);
+        List<LatLng> latLngs= peupler_list_latslongs(context,filiere,promotion,province,organismes);
+        List<LatLng> latLngListe = peupler_list_latslongs(context,filiere,promotion,province,org_en_attente);
         gmap.clear();
         for(int i=0;i<latLngs.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
@@ -244,16 +248,22 @@ public class Classtest  extends AppCompatActivity {
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
             gmap.addMarker(markerOptions);
         }
+        for(int i=0;i<latLngListe.size();i++){
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLngListe.get(i));
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            gmap.addMarker(markerOptions);
+        }
     }//AFFICHER LIST DES LATLON SUR LA CARTE
 
-    private static List<LatLng> peupler_list_latslongs(Context context,String filiere,String promotion,String province){
+    private static List<LatLng> peupler_list_latslongs(Context context,String filiere,String promotion,String province,String filename){
         List<LatLng> list_a_peupler = new ArrayList<>();
         try {
-            JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,organismes));
-            JSONArray filiere_checked = checkField("filiere",filiere,m_jArry);
-            JSONArray filiere_promotion_checked = checkField("promotion",promotion,filiere_checked);
-            for (int i = 0; i < filiere_promotion_checked.length(); i++) {
-                JSONObject jo_inside = filiere_promotion_checked.getJSONObject(i);
+            JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,filename));
+            //JSONArray filiere_checked = checkField("filiere",filiere,m_jArry);
+            //JSONArray filiere_promotion_checked = checkField("promotion",promotion,filiere_checked);
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
                 list_a_peupler.add(new LatLng(jo_inside.getDouble("latitude"),jo_inside.getDouble("longitude")));
             }
         } catch (Exception e) {
@@ -261,7 +271,6 @@ public class Classtest  extends AppCompatActivity {
         }
         return list_a_peupler;
     }   //RETOURNE UNE LISTE DE LATLON
-
 
     public static void new_Laureat_Register(
             Context context,int id, String nom, String prenom, String gender, String promotion, long filiere, String email,
@@ -280,13 +289,15 @@ public class Classtest  extends AppCompatActivity {
         new_Laureat.put("date_insc", dateNow);
         new_Laureat.put("description",description);
         new_Laureat.put("actif",true);
-        read_json_array(context,new_Laureat,laureats);
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,laureats));
+        m_jArry.put(new_Laureat);
+        write_file_data(context,m_jArry.toString(),laureats);
     }
 
     public static void setNewImgLaureat(Context context,String image,int laureat) throws Exception{
         JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,images_file));
         JSONObject nouveau_image = new JSONObject();
-        nouveau_image.put("id",getLastID(context,images_file));
+        nouveau_image.put("id",laureat);
         nouveau_image.put("current",true);
         nouveau_image.put("laureat",laureat);
         nouveau_image.put("imageimage",image);
@@ -320,7 +331,6 @@ public class Classtest  extends AppCompatActivity {
         nouveau_org.put("intitule_fonction",fonction);
         m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_laureat);
     }
-
 
     public static void changefieldvalue(Context context,boolean newvalue,String cle,int id){
         try {

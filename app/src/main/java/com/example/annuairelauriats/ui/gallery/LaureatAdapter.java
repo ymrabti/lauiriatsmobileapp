@@ -50,11 +50,34 @@ public class LaureatAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         final Laureat LaureatCourant = listLaureats.get(position);
-        holder.nomlaureat.setText(LaureatCourant.getNameLaureat());
-        holder.orgLaureat.setText(LaureatCourant.getOrganisation());
-        holder.descLaureat.setText(LaureatCourant.getDescription());
-        holder.imageLaureat.setImageResource(R.drawable.avatar);
-        //holder.imageLaureat.setImageBitmap(base64toImage(LaureatCourant.getImage()));
+        if (!LaureatCourant.getNameLaureat().isEmpty()){
+            holder.nomlaureat.setText(LaureatCourant.getNameLaureat());
+        }
+        else{
+            holder.nomlaureat.setText("utilisateur app");
+        }
+        if (!LaureatCourant.getOrganisation().isEmpty()){
+            holder.orgLaureat.setText(LaureatCourant.getOrganisation());
+        }
+        else{
+            holder.orgLaureat.setText("organisation");
+        }
+        if (!LaureatCourant.getDescription().isEmpty()){
+            holder.descLaureat.setText(LaureatCourant.getDescription());
+        }
+        else{
+            holder.descLaureat.setText("description");
+        }
+        if (!LaureatCourant.getImage().isEmpty()){
+            holder.imageLaureat.setImageBitmap(base64toImage(LaureatCourant.getImage()));
+        }
+        else{
+            holder.imageLaureat.setImageResource(R.drawable.avatar);
+        }
+
+
+        //holder.imageLaureat.setImageResource(R.drawable.avatar);
+
         return convertView;
     }
     @SuppressLint("StaticFieldLeak")

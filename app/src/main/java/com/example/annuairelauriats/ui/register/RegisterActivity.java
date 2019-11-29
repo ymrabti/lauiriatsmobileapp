@@ -263,6 +263,15 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                         description_laureat.getText().toString()+"");
             }
         });
+
+        Button gotomain = findViewById(R.id.allerAmainactivity);
+        gotomain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent main = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(main);
+            }
+        });
     }
     private void updateUiWithUser(RegisterUserView model) {
         try {
