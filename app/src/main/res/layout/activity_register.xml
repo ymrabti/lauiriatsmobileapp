@@ -60,8 +60,33 @@
             android:layout_marginTop="9dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/gender_text_view_register"
             app:layout_constraintTop_toBottomOf="@id/register_prenom_laureat"/>
+        <TextView
+            android:id="@+id/gender_text_view_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sellect_gender"
+            android:layout_marginStart="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/snipper_gender_laureat"
+            app:layout_constraintBottom_toBottomOf="@id/snipper_gender_laureat"/>
+
+        <EditText
+            android:id="@+id/snipper_gender_laureat_error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="24dp"
+            android:visibility="gone"
+            android:selectAllOnFocus="true"
+            android:hint="@string/prmpt_nom_laureat"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/snipper_gender_laureat" />
+
+
         <EditText
             android:id="@+id/register_telephone_laureat"
             android:layout_width="0dp"
@@ -74,32 +99,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/snipper_gender_laureat" />
-        <EditText
-            android:id="@+id/usernamename"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="9dp"
-            android:layout_marginEnd="24dp"
-
-            android:hint="@string/prompt_email"
-            android:inputType="textEmailAddress"
-            android:selectAllOnFocus="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/register_telephone_laureat" />
-
-        <Spinner
-            android:id="@+id/snipper_promotion_laureat"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="19dp"
-            android:layout_marginEnd="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/usernamename"/>
-
         <Spinner
             android:id="@+id/snipper_filiere_laureat"
             android:layout_width="0dp"
@@ -108,14 +107,54 @@
             android:layout_marginTop="19dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/filiere_text_view_register"
+            app:layout_constraintTop_toBottomOf="@id/register_telephone_laureat"/>
+
+        <TextView
+            android:id="@+id/filiere_text_view_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_filiere"
+            android:layout_marginStart="24dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/snipper_promotion_laureat"/>
+            app:layout_constraintTop_toTopOf="@id/snipper_filiere_laureat"
+            app:layout_constraintBottom_toBottomOf="@id/snipper_filiere_laureat"/>
+        <Spinner
+            android:id="@+id/snipper_promotion_laureat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/promotion_text_view_register"
+            app:layout_constraintTop_toBottomOf="@id/snipper_filiere_laureat"/>
+        <TextView
+            android:id="@+id/promotion_text_view_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_promotion"
+            android:layout_marginStart="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/snipper_promotion_laureat"
+            app:layout_constraintBottom_toBottomOf="@id/snipper_promotion_laureat"/>
+
+
         <TextView
             android:id="@+id/register_image_base_64_laureat"
             android:layout_width="match_parent"
             android:layout_height="5dp"
             android:visibility="invisible"
-            app:layout_constraintTop_toBottomOf="@id/snipper_filiere_laureat"/>
+            app:layout_constraintTop_toBottomOf="@id/snipper_promotion_laureat"/>
+        <TextView
+            android:id="@+id/register_image_base_64_show_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:text="@string/selectionner_votre_photo"
+            app:layout_constraintTop_toBottomOf="@id/snipper_promotion_laureat"/>
 
         <ImageView
             android:id="@+id/selected_file_image8laureat"
@@ -126,7 +165,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.125"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/snipper_filiere_laureat" />
+            app:layout_constraintTop_toBottomOf="@id/register_image_base_64_show_hint" />
+        <EditText
+            android:id="@+id/usernamename"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="24dp"
+            android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress"
+            android:selectAllOnFocus="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/selected_file_image8laureat" />
 
         <EditText
             android:id="@+id/passwordword"
@@ -143,7 +195,7 @@
             android:selectAllOnFocus="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/selected_file_image8laureat" />
+            app:layout_constraintTop_toBottomOf="@+id/usernamename" />
         <RadioGroup
             android:id="@+id/radio_organisation"
             android:layout_width="match_parent"
@@ -158,6 +210,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/organisation"/>
+            <TextView
+                android:id="@+id/org_text_view_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_Organisation"
+                android:layout_marginStart="24dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/snipper_select_org"
+                app:layout_constraintBottom_toBottomOf="@id/snipper_select_org"/>
             <Spinner
                 android:id="@+id/snipper_select_org"
                 android:layout_width="match_parent"
@@ -166,6 +228,7 @@
                 android:layout_marginTop="1dp"
                 android:visibility="gone"
                 android:layout_marginEnd="24dp"/>
+
 
             <RadioButton
                 android:id="@+id/radio_organisation_non_existe"
@@ -182,6 +245,16 @@
                 android:layout_marginTop="1dp"
                 android:layout_marginEnd="24dp"
                 android:visibility="gone" />
+            <TextView
+                android:id="@+id/secteur_org_text_view_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_secteur"
+                android:layout_marginStart="24dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/snipper_select_secteur_org"
+                app:layout_constraintBottom_toBottomOf="@id/snipper_select_secteur_org"/>
             <Spinner
                 android:id="@+id/snipper_select_secteur_org"
                 android:layout_width="match_parent"

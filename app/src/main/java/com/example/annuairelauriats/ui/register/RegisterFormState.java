@@ -5,6 +5,11 @@ import androidx.annotation.Nullable;
 public class RegisterFormState {
     @Nullable private Integer NomError;
     private Integer PreNomError;
+    private Integer genderError;
+    private Integer filiereError;
+    private Integer promotionError;
+    private Integer orgError;
+    private Integer secteurError;
     private Integer NumeroTelError;
     @Nullable private Integer usernameError;
     private Integer ImageError;
@@ -29,7 +34,12 @@ public class RegisterFormState {
             Integer pickError,
             Integer dateError,
             Integer intituleErrorError,
-            Integer descError) {
+            Integer descError,
+            Integer genderError,
+            Integer filiereError,
+            Integer promotionError,
+            Integer orgError,
+            Integer secteurError) {
         this.NomError = nomError;
         this.PreNomError = preNomError;
         this.NumeroTelError = numeroTelError;
@@ -42,6 +52,11 @@ public class RegisterFormState {
         this.dateError=dateError;
         this.intituleError=intituleErrorError;
         this.descError=descError;
+        this.genderError=genderError;
+        this.filiereError=filiereError;
+        this.promotionError=promotionError;
+        this.orgError=orgError;
+        this.secteurError=secteurError;
         this.isDataValid = false;
     }
 
@@ -58,6 +73,11 @@ public class RegisterFormState {
         this.dateError=null;
         this.intituleError=null;
         this.descError=null;
+        this.genderError=null;
+        this.filiereError=null;
+        this.promotionError=null;
+        this.orgError=null;
+        this.secteurError=null;
         this.isDataValid = isDataValid;
     }
 
@@ -94,6 +114,26 @@ public class RegisterFormState {
 
     Integer getPickError() {
         return pickError;
+    }
+
+    public Integer getOrgError() {
+        return orgError;
+    }
+
+    public Integer getFiliereError() {
+        return filiereError;
+    }
+
+    public Integer getGenderError() {
+        return genderError;
+    }
+
+    public Integer getPromotionError() {
+        return promotionError;
+    }
+
+    public Integer getSecteurError() {
+        return secteurError;
     }
 
     boolean isDataValid() {

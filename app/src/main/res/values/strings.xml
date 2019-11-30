@@ -80,10 +80,21 @@
     <string name="petit_description_sur_vous">petit description sur vous</string>
     <string name="date_hint">AAAA-MM-JJ</string>
     <string name="filierefiliere">Filiere</string>
+    <string name="invalid_date">date non valide</string>
     <string name="provinceprovince">Province</string>
     <string name="promotionpromotion">Promotion</string>
     <string name="accepter_ou_les_organisations_suivantes">Accepter ou les Organisations suivantes</string>
     <string name="prmpt_prenom_laureat">Votre Prenom</string>
     <string name="invalid_Tel">numero de telephone non valid</string>
     <string name="mainmainmainmain">main</string>
+    <string name="sellect_gender">sexe</string>
+    <string name="select_filiere">Filiere</string>
+    <string name="select_promotion">promotion</string>
+    <string name="select_Organisation">Organisme</string>
+    <string name="select_secteur">secteur</string>
+    <string name="invalid_gender">selectionner votre genre</string>
+    <string name="invalid_filier">selectionner filiere</string>
+    <string name="invalid_promotion">SELECTIONNER promotion</string>
+    <string name="invalid_image">selectionner une image</string>
+    <string name="selectionner_votre_photo">Selectionner votre photo</string>
 </resources>

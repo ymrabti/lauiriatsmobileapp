@@ -72,7 +72,7 @@ public class LaureatAdapter extends ArrayAdapter {
             holder.imageLaureat.setImageBitmap(base64toImage(LaureatCourant.getImage()));
         }
         else{
-            holder.imageLaureat.setImageResource(R.drawable.avatar);
+            holder.imageLaureat.setImageResource(R.drawable.ing);
         }
 
 

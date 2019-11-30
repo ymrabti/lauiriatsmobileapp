@@ -51,6 +51,11 @@
 
             <requestFocus />
         </TextView>
+        <Spinner
+            android:id="@+id/spinner_test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/result_http_client"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

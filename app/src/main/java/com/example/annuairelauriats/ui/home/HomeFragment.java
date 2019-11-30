@@ -1,24 +1,20 @@
 package com.example.annuairelauriats.ui.home;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.ui.aide.HelpFragment;
-import com.example.annuairelauriats.ui.send.SendFragment;
-import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
 
-import java.util.Objects;
+import java.util.ArrayList;
 
 public class HomeFragment extends Fragment  {
     private TextView result_http_client;
@@ -33,15 +29,9 @@ public class HomeFragment extends Fragment  {
             @Override
             public void onClick(View v) {
                 try {
-                    String string = "\n\n"+getActivity().getCacheDir()+
-                            "\n\n"+getActivity().getFilesDir()+
-                            "\n\n"+getActivity().getDatabasePath("database")+
-                            "\n\n"+getActivity().getDataDir()+
-                            "\n\n"+getActivity().getDir("dirc", Context.MODE_PRIVATE)+
-                            "\n\n"+getActivity().getNoBackupFilesDir()+
-                            "\n\n"+getActivity().getObbDir()
-                            ;
-                    result_http_client.setText(string);
+                    String date = "2009-10-10";
+                    int i = Integer.parseInt(date.substring(0,4).trim())+2000;
+                    result_http_client.append("INT : "+i+"\n\n");
                     /*String string = "{\n" +
                             "\"organisme\":1,\"province\":djnfjj,\"filiere\":3,\"promotion\":\"2020\"\n" +
                             "}";
@@ -65,9 +55,29 @@ public class HomeFragment extends Fragment  {
                     trans.commit();*/
                 } catch (Exception e) {
                     e.printStackTrace();
-                    result_http_client.setText(e.toString()/*+ Classtest.getJsonObjectById(getActivity(),"myjson.json",1).toString()*/);
+                    result_http_client.append(e.toString()/*+ Classtest.getJsonObjectById(getActivity(),"myjson.json",1).toString()*/);
                 }
             }
+        });
+        Spinner spinner=root.findViewById(R.id.spinner_test);
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("couleur");arrayList.add("couleur");arrayList.add("couleur");arrayList.add("couleur");
+        arrayList.add("couleur");arrayList.add("couleur");arrayList.add("couleur");arrayList.add("couleur");
+        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_spinner_item,arrayList);
+        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(list_adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                Toast.makeText(getContext(),"selected : "+id+"\nposition"+position,Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
         });
         return root;
     }

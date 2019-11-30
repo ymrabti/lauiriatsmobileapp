@@ -34,13 +34,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Classtest  extends AppCompatActivity {
     private static int id_connected,id_selected;
-    public static String laureats="laureats.json",
-            organismes="organismes.json",org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
-            folder = "Annuaire",images_file="images.json";
+    public static String
+            laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
+            provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
+            org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
+            folder = "Annuaire",images_file="images.json",filiers="filieres.json",promotions="promotions.json";
     public static int getLastID(Context context,String filename) throws Exception {
         JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
         int pa =0;
@@ -51,7 +54,7 @@ public class Classtest  extends AppCompatActivity {
         return pa;
     }
 
-    public static JSONObject getJsonObjectBycle(Context context,String cle,int id,String filename) throws Exception {
+    public static JSONObject getJsonObjectBycle(Context context,String cle,long id,String filename) throws Exception {
         JSONArray m_jArray = new JSONArray(loadJSONFromAsset(context,filename)) ;
         JSONObject jsonObject=new JSONObject();
         for (int i = 0; i < m_jArray.length(); i++) {
@@ -99,6 +102,7 @@ public class Classtest  extends AppCompatActivity {
     private static List<String> peupler_list(Context context,String Champ,String file,int mark){
         List<String> list_a_peupler = new ArrayList<>();
         if (mark==1){list_a_peupler.add("TOUT");}
+        else{list_a_peupler.add("SELECTIONNER");}
         try {
             JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,file));
             for (int i = 0; i < m_jArry.length(); i++) {
@@ -110,6 +114,21 @@ public class Classtest  extends AppCompatActivity {
         }
         return list_a_peupler;
     }   //RETOURNE UNE LIST PEUPLE PRET POUR DROP DOWN
+
+    public static void promotion_peuplement(Context context,long id,Spinner spinner) throws Exception {
+        ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
+        Calendar rightNow = Calendar.getInstance();
+        if (id!=0){
+            JSONObject Filiere_Selected = getJsonObjectBycle(context,"id",id,filiers);
+            final int premier_promotion= Integer.parseInt(Filiere_Selected.getString("Date_Creation").substring(0,4).trim());
+            for (int i=premier_promotion;i<=rightNow.get(Calendar.YEAR);i++){
+                promos_filier.add(i+"");
+            }
+        }
+        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
+        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(list_adapter);
+    }
 
     private static String loadJSONFromAsset(Context context,String fichier) {
         String json;
@@ -132,7 +151,7 @@ public class Classtest  extends AppCompatActivity {
     public static String loadJSONfromCACHE(Context context){
         String json;
         try {
-            File myExternalFile = new File(context.getExternalCacheDir(), "filter.json");
+            File myExternalFile = new File(context.getExternalCacheDir(), filter);
             FileInputStream fis = new FileInputStream(myExternalFile);
             DataInputStream in = new DataInputStream(fis);
             int size = in.available();
@@ -152,7 +171,7 @@ public class Classtest  extends AppCompatActivity {
             JSONObject jsonObject= new JSONObject();
             jsonObject.put("organisme",organisme);jsonObject.put("province",province);
             jsonObject.put("filiere",filiere);jsonObject.put("promotion",promotion);
-            File myExternalFile = new File(context.getExternalCacheDir(), "filter.json");
+            File myExternalFile = new File(context.getExternalCacheDir(), filter);
             FileOutputStream fos = new FileOutputStream(myExternalFile);
             fos.write(jsonObject.toString().getBytes());
             fos.close();
@@ -167,9 +186,9 @@ public class Classtest  extends AppCompatActivity {
         final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
         final Spinner findbypromotion = dialogFilter.findViewById(R.id.snipper_filtre_laureat_promotion);
         final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
-        Classtest.spinner_list_adapt(context,findbyfiliere,"Nom","filieres.json",1);
-        Classtest.spinner_list_adapt(context,findbypromotion,"promotion","promotions.json",1);
-        Classtest.spinner_list_adapt(context,findbyprovince,"province","provinces.json",1);
+        Classtest.spinner_list_adapt(context,findbyfiliere,"Nom",filiers,1);
+        Classtest.spinner_list_adapt(context,findbypromotion,"promotion",promotions,1);
+        Classtest.spinner_list_adapt(context,findbyprovince,"province",provinces,1);
         dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,7 +234,7 @@ public class Classtest  extends AppCompatActivity {
             for (int i = 0; i < m_jArry.length(); i++) {
                 try {
                     JSONObject jo_inside = m_jArry.getJSONObject(i);
-                    if (jo_inside.getString(cle).equals(valeur)){
+                    if (jo_inside.getString(cle).equals(valeur) ){
                         array_checked.put(jo_inside);
                     }
                 } catch (JSONException e) {
@@ -254,7 +273,6 @@ public class Classtest  extends AppCompatActivity {
         ArrayList<Laureat> laureats_list = new ArrayList<>();
         try {
             JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,laureats));
-            JSONArray images= new JSONArray(loadJSONFromAsset(context,images_file)) ;
             JSONArray filiere_checked = checkFieldInteger("filiere",filiere,m_jArry);
             JSONArray promotion_filiere_checked = checkField("promotion",promotion,filiere_checked);
             //JSONArray province_checked = checkField("province",province,promotion_checked);
@@ -315,7 +333,8 @@ public class Classtest  extends AppCompatActivity {
         new_Laureat.put("nom",nom);
         new_Laureat.put("prenom",prenom);
         new_Laureat.put("genre",gender);
-        new_Laureat.put("promotion",promotion);
+        if (promotion.equals("SELECTIONNER")){new_Laureat.put("promotion","2020");}
+        else{new_Laureat.put("promotion",promotion);}
         new_Laureat.put("filiere",filiere);
         new_Laureat.put("email",email);
         new_Laureat.put("password",password);

@@ -1,5 +1,6 @@
 package com.example.annuairelauriats.ui.register;
 
+import android.annotation.SuppressLint;
 import android.util.Patterns;
 
 import androidx.lifecycle.LiveData;
@@ -11,6 +12,8 @@ import com.example.annuairelauriats.data.RegisterRepository;
 import com.example.annuairelauriats.data.Result;
 import com.example.annuairelauriats.data.model.RegistredUser;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +75,7 @@ public class RegisterViewModel extends ViewModel {
                     R.string.invalid_Nom,
                     null, null,null,
                     null,null,null,null,
+                    null,null,null,null,null,
                     null,null,null,null));
 
         }
@@ -80,22 +84,57 @@ public class RegisterViewModel extends ViewModel {
                     null,
                     R.string.invalid_Nom, null,null,
                     null,null,null,null,
+                    null,null,null,null,null,
                     null,null,null,null));
 
+        }
+        else if (!isGenderValid(LaureatGender)) {
+            registerFormState.setValue(new RegisterFormState(
+                    null,
+                    null, null,null,
+                    null,null,null,null,
+                    null,null,null,null,R.string.invalid_gender,
+                    null,null,null,null));
         }
         else if (!isNumtelValid(LaureatNumTel)) {
             registerFormState.setValue(new RegisterFormState(
                     null,
                     null, R.string.invalid_Tel,null,
                     null,null,null,null,
+                    null,null,null,null,null,
                     null,null,null,null));
 
+        }
+        else if (!isSelectDropDownValid(LaureatFiliere)) {
+            registerFormState.setValue(new RegisterFormState(
+                    null,
+                    null, null,null,
+                    null,null,null,null,
+                    null,null,null,null,null,
+                    R.string.invalid_filier,null,null,null));
+        }
+        else if (!isSelectDropDownValid(LaureatPromotion)) {
+            registerFormState.setValue(new RegisterFormState(
+                    null,
+                    null, null,null,
+                    null,null,null,null,
+                    null,null,null,null,null,
+                    null,R.string.invalid_promotion,null,null));
+        }
+        else if (LaureatImageBase64.isEmpty()) {
+            registerFormState.setValue(new RegisterFormState(
+                    null,
+                    null, null,null,
+                    R.string.invalid_image,null,null,null,
+                    null,null,null,null,null,
+                    null,null,null,null));
         }
         else if (!isEmailValid(emailUser)) {
             registerFormState.setValue(new RegisterFormState(
                     null,
                     null, null,R.string.invalid_username,
                     null,null,null,null,
+                    null,null,null,null,null,
                     null,null,null,null));
         }
         else if (!isPasswordValid(Password)) {
@@ -103,6 +142,15 @@ public class RegisterViewModel extends ViewModel {
                     null,
                     null, null,null,
                     null,R.string.invalid_password,null,null,
+                    null,null,null,null,null,
+                    null,null,null,null));
+        }
+        else if (!isLegalDate(date_debut_travail_chez_org_)) {
+            registerFormState.setValue(new RegisterFormState(
+                    null,
+                    null, null,null,
+                    null,null,null,null,
+                    null,R.string.invalid_date,null,null,null,
                     null,null,null,null));
         }
         else {
@@ -124,6 +172,10 @@ public class RegisterViewModel extends ViewModel {
         //return matcher.matches();
         return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
     }
+    boolean isLegalDate(String s) {
+        Matcher m = Pattern.compile("^[0-9]{4}-(((0[13578]|(10|12))-(0[1-9]|[1-2][0-9]|3[0-1]))|(02-(0[1-9]|[1-2][0-9]))|((0[469]|11)-(0[1-9]|[1-2][0-9]|30)))$", Pattern.CASE_INSENSITIVE).matcher(s);
+        return true;
+    }
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
@@ -133,7 +185,20 @@ public class RegisterViewModel extends ViewModel {
     private boolean isNomValid(String Nom) {
         return Nom != null && Nom.trim().length() > 3;
     }
-    private boolean isNumtelValid(String date){
-        return Patterns.PHONE.matcher(date).matches();
+    private boolean isNumtelValid(String tel){
+        Matcher m = Pattern.compile("\\d{5,16}$", Pattern.CASE_INSENSITIVE).matcher(tel);
+        return m.matches();
     }
+
+    private boolean isGenderValid(String gender){
+        return (gender.equals("M")||gender.equals("F"));
+    }
+
+    private boolean isSelectDropDownValid(long selcected_id){
+        return selcected_id!=0;
+    }
+    private boolean isSelectDropDownValid(String selcected){
+        return !selcected.equals("SELECTIONNER");
+    }
+
 }

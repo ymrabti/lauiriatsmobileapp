@@ -9,6 +9,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -87,12 +89,16 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         final ProgressBar loadingProgressBar = findViewById(R.id.registering);
         final TextView go_to_login = findViewById(R.id.go_to_login);
         Classtest.spinner_list_adapt(getApplicationContext(), gender, "gender", "genders.json", 0);
-        Classtest.spinner_list_adapt(getApplicationContext(), promotion, "promotion", "promotions.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), filiere, "Nom", "filieres.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation, "org", "organismes.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation_secteur, "secteur", "secteurs.json", 0);
 
-        imageView.setImageResource(R.drawable.avatar);
+        final TextView org_select = findViewById(R.id.org_text_view_register);
+        final TextView secteur_select = findViewById(R.id.secteur_org_text_view_register);
+        final TextView imageerror = findViewById(R.id.register_image_base_64_show_hint);
+
+
+        imageView.setImageResource(R.drawable.ing);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,6 +114,23 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         });
 
 
+        filiere.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                try {
+                    Classtest.promotion_peuplement(RegisterActivity.this,id,promotion);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
 
         pick_date_debut_pop_up.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,11 +165,15 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     organisation_secteur.setVisibility(View.GONE);
                     mapView.setVisibility(View.GONE);
                     organisation.setVisibility(View.VISIBLE);
+                    org_select.setVisibility(View.VISIBLE);
+                    secteur_select.setVisibility(View.GONE);
                 } else if (radioButton.getText().toString().contains("pas reconnue")) {
                     nouveau_org_nom.setVisibility(View.VISIBLE);
                     organisation_secteur.setVisibility(View.VISIBLE);
                     mapView.setVisibility(View.VISIBLE);
                     organisation.setVisibility(View.GONE);
+                    org_select.setVisibility(View.GONE);
+                    secteur_select.setVisibility(View.VISIBLE);
                 }
                 date_debut_chez_org.setVisibility(View.VISIBLE);
                 intitule_fonction_avec_org.setVisibility(View.VISIBLE);
@@ -178,6 +205,30 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 if (registerFormState.getPasswordError() != null) {
                     passwordEditText.setError(getString(registerFormState.getPasswordError()));
                 }
+                if (registerFormState.getDateError() != null) {
+                    date_debut_chez_org.setError(getString(registerFormState.getDateError()));
+                }
+                if (registerFormState.getGenderError() != null) {
+                    TextView errorText = (TextView)gender.getSelectedView();
+                    errorText.setError(getString(registerFormState.getGenderError()));
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getGenderError()));//changes the selected item text to this
+                }
+                if (registerFormState.getFiliereError() != null) {
+                    TextView errorText = (TextView)filiere.getSelectedView();
+                    errorText.setError(getString(registerFormState.getFiliereError()));
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getFiliereError()));//changes the selected item text to this
+                }
+                if (registerFormState.getPromotionError() != null) {
+                    TextView errorText = (TextView)promotion.getSelectedView();
+                    errorText.setError("");
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getPromotionError()));//changes the selected item text to this
+                }
+                if (registerFormState.getImageError() != null) {
+                    imageerror.setError(getString(registerFormState.getImageError()));
+                }
             }
         });
 
@@ -198,9 +249,9 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 finish();
             }
         });
-
         TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
             @Override public void afterTextChanged(Editable s) {
                 registerViewModel.loginDataChanged(
@@ -212,8 +263,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                         base64TextView.getText().toString() +"",
                         gender.getSelectedItem().toString()+"" ,
                         promotion.getSelectedItem().toString()+"",
-                        filiere.getSelectedItemId()+1 ,
-                        organisation.getSelectedItemId()+1 ,
+                        filiere.getSelectedItemId(),
+                        organisation.getSelectedItemId() ,
                         nouveau_org_nom.getText().toString()+"",
                         organisation_secteur.getSelectedItem().toString()+"",
                         intitule_fonction_avec_org.getText().toString()+"",
@@ -222,8 +273,21 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             }
         };
         nomEditText.addTextChangedListener(afterTextChangedListener);
+        prenomEditText.addTextChangedListener(afterTextChangedListener);
+        /*gender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(RegisterActivity.this,"+"+gender.getSelectedItemId(),Toast.LENGTH_LONG).show();
+            }
+        });*/
+        NumTeleEditText.addTextChangedListener(afterTextChangedListener);
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
+        nouveau_org_nom.addTextChangedListener(afterTextChangedListener);
+        base64TextView.addTextChangedListener(afterTextChangedListener);
+        date_debut_chez_org.addTextChangedListener(afterTextChangedListener);
+        intitule_fonction_avec_org.addTextChangedListener(afterTextChangedListener);
+        description_laureat.addTextChangedListener(afterTextChangedListener);
         /*passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
@@ -254,8 +318,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                         base64TextView.getText().toString() +"",
                         gender.getSelectedItem().toString()+"" ,
                         promotion.getSelectedItem().toString()+"",
-                        filiere.getSelectedItemId()+1 ,
-                        organisation.getSelectedItemId()+1 ,
+                        filiere.getSelectedItemId() ,
+                        organisation.getSelectedItemId() ,
                         nouveau_org_nom.getText().toString()+"",
                         organisation_secteur.getSelectedItem().toString()+"",
                         intitule_fonction_avec_org.getText().toString()+"",
@@ -286,8 +350,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     model.getLaureatPromotion()+"", model.getLaureatFiliere(), model.getEmailUser()+"",
                     model.getPassWordUser()+"", model.getLaureatNumTel()+"", dateNow+"",
                     model.getDescription()+"");
-            if (!model.getLaureatImageBase64().isEmpty()){
-                Classtest.setNewImgLaureat(this,model.getLaureatImageBase64(),id_laureat_actuelle);}
+            Classtest.setNewImgLaureat(this,model.getLaureatImageBase64(),id_laureat_actuelle);
             if(!model.getNomOrgEdited().isEmpty()){
                 Classtest.new_org_attente_admin(this,model.getNomOrgEdited(),id_laureat_actuelle,lat,lon,model.getSecteurOrgEdited());
             }
