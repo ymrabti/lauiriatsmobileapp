@@ -1,8 +1,5 @@
 package com.example.annuairelauriats.ui.register;
 
-import android.annotation.SuppressLint;
-import android.util.Patterns;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,8 +9,6 @@ import com.example.annuairelauriats.data.RegisterRepository;
 import com.example.annuairelauriats.data.Result;
 import com.example.annuairelauriats.data.model.RegistredUser;
 
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -1,7 +1,9 @@
 package com.example.annuairelauriats.ui.home;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -41,12 +43,22 @@ import java.util.List;
 import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_list;
 
 public class Classtest  extends AppCompatActivity {
-    private static int id_connected,id_selected;
+    public static int id_connected,id_selected;
     public static String
             laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
             provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
             folder = "Annuaire",images_file="images.json",filiers="filieres.json",promotions="promotions.json";
+
+
+    @SuppressLint("StaticFieldLeak")
+    public static Bitmap base64toImage(final String imageString){
+        Bitmap new_bitmap;
+        byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
+        new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        return new_bitmap;
+    }
+
     public static int getLastID(Context context,String filename) throws Exception {
         JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
         int pa =0;
@@ -258,7 +270,7 @@ public class Classtest  extends AppCompatActivity {
                 JSONObject jo_inside = promotion_filiere_checked.getJSONObject(i);
                 JSONObject image= getJsonObjectBycle(context,"laureat",jo_inside.getInt("id"),images_file);
                 laureats_list.add(
-                        new Laureat(image.getString("image")+"",
+                        new Laureat(jo_inside.getInt("id"),image.getString("image")+"",
                                 jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
                                 jo_inside.getString("email")+"", jo_inside.getString("description")+""));
             }

@@ -18,6 +18,8 @@ import com.example.annuairelauriats.R;
 
 import java.util.ArrayList;
 
+import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
+
 public class LaureatAdapter extends ArrayAdapter {
     private ArrayList<Laureat> listLaureats;
     private Context mContext;
@@ -79,12 +81,5 @@ public class LaureatAdapter extends ArrayAdapter {
         //holder.imageLaureat.setImageResource(R.drawable.avatar);
 
         return convertView;
-    }
-    @SuppressLint("StaticFieldLeak")
-    private Bitmap base64toImage(final String imageString){
-        Bitmap new_bitmap;
-        byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
-        new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-        return new_bitmap;
     }
 }
