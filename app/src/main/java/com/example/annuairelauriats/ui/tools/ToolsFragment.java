@@ -28,25 +28,16 @@ import static com.example.annuairelauriats.ui.home.Classtest.organismes;
 
 public class ToolsFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
-    private GoogleMap gmap;
+    private LatLng latLng;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-    /**/@Override public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
-        if (mapViewBundle == null) {
-            mapViewBundle = new Bundle();
-            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
-        }
-        mapView.onSaveInstanceState(mapViewBundle);
-    }
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_tools, container, false);
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
-        mapView.onCreate(mapViewBundle);
         mapView = root.findViewById(R.id.map_visit) ;
+        mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
 
         CircleImageView pdp_visit = root.findViewById(R.id.pdp_visit);
@@ -69,11 +60,7 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
             promotion.setText(laurat_visitee.getString("promotion"));
             filiere.setText(filier.getString("Nom"));
             organisation.setText(org.getString("org"));
-            LatLng latLng = new LatLng(org.getDouble("latitude"), -org.getDouble("longitude"));
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            gmap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            gmap.addMarker(markerOptions);
+            latLng = new LatLng(org.getDouble("latitude"),org.getDouble("longitude"));
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -81,16 +68,35 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
         return root;
     }
 
+    @Override public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+        mapView.onSaveInstanceState(mapViewBundle);
+    }
+    @Override public void onResume() { super.onResume();mapView.onResume(); }
+    @Override public void onStart() { super.onStart();mapView.onStart(); }
+    @Override public void onStop() { super.onStop();mapView.onStop(); }
+    @Override public void onPause() { mapView.onPause();super.onPause(); }
+    @Override public void onDestroy() { mapView.onDestroy();super.onDestroy(); }
+    @Override public void onLowMemory() { super.onLowMemory();mapView.onLowMemory(); }
     @Override public void onMapReady(GoogleMap googleMap) {
-        gmap = googleMap;
-        gmap.setMinZoomPreference(1);
-        gmap.setIndoorEnabled(true);
-        UiSettings uiSettings = gmap.getUiSettings();
+        googleMap.setMinZoomPreference(1);
+        googleMap.setIndoorEnabled(true);
+        UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setIndoorLevelPickerEnabled(true);
         uiSettings.setMyLocationButtonEnabled(true);
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-        gmap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.setPadding(1, 1, 1, 1);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+        googleMap.addMarker(markerOptions);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 }

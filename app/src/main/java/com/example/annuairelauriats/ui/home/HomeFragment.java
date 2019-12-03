@@ -1,148 +1,67 @@
 package com.example.annuairelauriats.ui.home;
-import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.provider.OpenableColumns;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.VideoView;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.example.annuairelauriats.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Objects;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
 
-import static android.app.Activity.RESULT_OK;
-
-public class HomeFragment extends Fragment  {
-    private TextView result_http_client;private VideoView videoView;//private EditText url;
-    private ImageView imageView;
+public class HomeFragment extends Fragment  implements OnMapReadyCallback {
+    private MapView mapView;
+    private LatLng latLng;
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        //url = root.findViewById(R.id.editText1);
-        videoView = root.findViewById(R.id.videoView);
-        result_http_client=root.findViewById(R.id.result_http_client);
-        imageView = root.findViewById(R.id.ImageView01);
-        //url.setText("http://videocdn.bodybuilding.com/video/mp4/62000/62792m.mp4");
-        //url.setText("https://docs.google.com/file/d/1QQUAGvruSoUGfcUO4_SjUc2VuQq34n4i/preview");
-        videoView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (videoView.isPlaying()){videoView.pause(); }
-                else{videoView.start();}
-            }
-        });
-        imageView.setImageResource( R.drawable.ing);
-        Button but_connect = root.findViewById(R.id.buttonSend);
-        but_connect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    OpenGallery();
-                    /*Bitmap icon = ((BitmapDrawable) imageView.getDrawable() ).getBitmap();
-                    int height = icon.getHeight(),width = icon.getWidth();
-                    result_http_client.setText(height+" * "+width);
-                    ImageView img= getActivity().findViewById(R.id.ImageView99);
-                    img.setImageBitmap(icon);
-                    videoView.setVideoPath(url.getText().toString());
-                    videoView.start();*/
-                    /*OpenCamera();
-                    show_popup();
-                    String date = "2009-10-10";
-                    int i = Integer.parseInt(date.substring(0,4).trim())+2000;
-                    result_http_client.append("INT : "+i+"\n\n");
-                    String string = "{\n" +
-                            "\"organisme\":1,\"province\":djnfjj,\"filiere\":3,\"promotion\":\"2020\"\n" +
-                            "}";
-                    Classtest.write_file_cache(getContext(),string);
-                    result_http_client.setText(Classtest.loadJSONfromCACHE(getContext()));
-                    assert getFragmentManager() != null;
-                    Fragment fragment = new HelpFragment();
-                    FragmentManager fm = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                    fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                    MainActivity.navigationView.setCheckedItem(R.id.nav_slideshow);
-
-                    FragmentTransaction trans = getFragmentManager().beginTransaction();
-                    trans.replace(R.id.nav_host_fragment, new SlideshowFragment());
-                    //MainActivity.navigationView.getCheckedItem();
-                    result_http_client.setText(MainActivity.navigationView.getCheckedItem().getGroupId()+""
-                    */
-                    /*+ Classtest.getJsonObjectById(getActivity(),"myjson.json",1).toString()
-
-                 */
-                    /*);
-                    trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    trans.addToBackStack(null);
-                    trans.commit();*/
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    result_http_client.append(e.toString());
-                }
-            }
-        });
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+        mapView = root.findViewById(R.id.map_laureat_profile_sssss) ;
+        mapView.onCreate(mapViewBundle);
+        mapView.getMapAsync(this);
+        latLng = new LatLng(22,16);
         return root;
     }
 
-    public void OpenGallery(){
-        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        this.startActivityForResult(gallery,100);
+    @Override public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+        mapView.onSaveInstanceState(mapViewBundle);
     }
-
-    @Override public void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
-        if(resultCode==RESULT_OK && requestCode==100){
-            final Uri imageUriii = data.getData();
-            assert imageUriii != null;
-            String uriString = imageUriii.toString();
-            File myFile = new File(uriString);
-            String path = myFile.getAbsolutePath();
-            String displayName = null;
-            if (uriString.startsWith("content://")) {
-                try (
-                        Cursor cursor = getActivity().getContentResolver().query(imageUriii,
-                                null, null,
-                                null, null)) {
-                    if (cursor != null && cursor.moveToFirst())
-                    {
-                        displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                        result_http_client.setText(displayName);
-                    }
-                }
-            }
-            else if (uriString.startsWith("file://"))
-            {
-                displayName = myFile.getName();
-                result_http_client.setText(displayName);
-            }
-            try {
-                final InputStream imageStream;
-                imageStream = getActivity().getContentResolver().openInputStream(imageUriii);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                imageView.setImageBitmap(selectedImage);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            imageView.setImageResource(R.drawable.errorimage);
-            result_http_client.setText("please select img\n");
-        }
+    @Override public void onResume() { super.onResume();mapView.onResume(); }
+    @Override public void onStart() { super.onStart();mapView.onStart(); }
+    @Override public void onStop() { super.onStop();mapView.onStop(); }
+    @Override public void onPause() { mapView.onPause();super.onPause(); }
+    @Override public void onDestroy() { mapView.onDestroy();super.onDestroy(); }
+    @Override public void onLowMemory() { super.onLowMemory();mapView.onLowMemory(); }
+    @Override public void onMapReady(GoogleMap googleMap) {
+        googleMap.setMinZoomPreference(1);
+        googleMap.setIndoorEnabled(true);
+        UiSettings uiSettings = googleMap.getUiSettings();
+        uiSettings.setIndoorLevelPickerEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(true);
+        uiSettings.setMapToolbarEnabled(true);
+        uiSettings.setCompassEnabled(true);
+        uiSettings.setZoomControlsEnabled(true);
+        googleMap.setPadding(1, 1, 1, 1);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+        googleMap.addMarker(markerOptions);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
 }
