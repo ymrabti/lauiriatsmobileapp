@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -44,6 +46,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Objects;
 
 import android.app.Dialog;
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -95,14 +98,13 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
 
         final TextView org_select = findViewById(R.id.org_text_view_register);
         final TextView secteur_select = findViewById(R.id.secteur_org_text_view_register);
-        final TextView imageerror = findViewById(R.id.register_image_base_64_show_hint);
 
 
-        imageView.setImageResource(R.drawable.ing);
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                OpenGallery();
+                show_popup();
             }
         });
         go_to_login.setOnClickListener(new View.OnClickListener() {
@@ -160,14 +162,17 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = findViewById(checkedId);
-                if (radioButton.getText().toString().contains("Organisation")) {
+                if (radioButton.getText().toString().contains("Organisation"))
+                {
                     nouveau_org_nom.setVisibility(View.GONE);
                     organisation_secteur.setVisibility(View.GONE);
                     mapView.setVisibility(View.GONE);
                     organisation.setVisibility(View.VISIBLE);
                     org_select.setVisibility(View.VISIBLE);
                     secteur_select.setVisibility(View.GONE);
-                } else if (radioButton.getText().toString().contains("pas reconnue")) {
+                }
+                else if (radioButton.getText().toString().contains("pas reconnue"))
+                {
                     nouveau_org_nom.setVisibility(View.VISIBLE);
                     organisation_secteur.setVisibility(View.VISIBLE);
                     mapView.setVisibility(View.VISIBLE);
@@ -227,7 +232,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     errorText.setText(getString(registerFormState.getPromotionError()));//changes the selected item text to this
                 }
                 if (registerFormState.getImageError() != null) {
-                    imageerror.setError(getString(registerFormState.getImageError()));
+                    imageView.setImageResource(R.drawable.errorimage);
                 }
             }
         });
@@ -250,8 +255,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
         TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
             @Override public void afterTextChanged(Editable s) {
                 registerViewModel.loginDataChanged(
@@ -274,12 +278,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         };
         nomEditText.addTextChangedListener(afterTextChangedListener);
         prenomEditText.addTextChangedListener(afterTextChangedListener);
-        /*gender.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Toast.makeText(RegisterActivity.this,"+"+gender.getSelectedItemId(),Toast.LENGTH_LONG).show();
-            }
-        });*/
         NumTeleEditText.addTextChangedListener(afterTextChangedListener);
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
@@ -309,13 +307,14 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
+                Bitmap icon = ((BitmapDrawable) imageView.getDrawable() ).getBitmap();
                 registerViewModel.register(
                         usernameEditText.getText().toString()+"" ,
                         passwordEditText.getText().toString()+"" ,
                         nomEditText.getText().toString() +"",
                         prenomEditText.getText().toString()+"" ,
                         NumTeleEditText.getText().toString()+"" ,
-                        base64TextView.getText().toString() +"",
+                        Classtest.encodeImage(icon) +"",
                         gender.getSelectedItem().toString()+"" ,
                         promotion.getSelectedItem().toString()+"",
                         filiere.getSelectedItemId() ,
@@ -328,8 +327,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
-        TextView gotomain = findViewById(R.id.enregitrer_vous);
-        gotomain.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.enregitrer_vous).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent main = new Intent(getApplicationContext(),MainActivity.class);
@@ -373,6 +371,28 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         this.startActivityForResult(gallery,100);
     }
+    private void OpenCamera(){
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, 1337);
+    }
+    private void show_popup(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.take_image);
+        dialog.findViewById(R.id.pick_from_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenCamera();dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.pick_from_gallery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenGallery();dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
         if(resultCode==RESULT_OK && requestCode==100){
@@ -383,11 +403,21 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 imageStream = getContentResolver().openInputStream(imageUriii);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 imageView.setImageBitmap(selectedImage);
-                String base64 = Classtest.encodeImage(selectedImage);
-                base64TextView.setText(base64);
+                //String base64 = Classtest.encodeImage(selectedImage);
+                base64TextView.setText("selected from gallery\n");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        }
+        else if(resultCode==RESULT_OK && requestCode==1337){
+            Bitmap image = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
+            imageView.setImageBitmap(image);
+            //String base64 = Classtest.encodeImage(image);
+            base64TextView.setText("selected from camera\n");
+        }
+        else {
+            imageView.setImageResource(R.drawable.errorimage);
+            base64TextView.setText("");
         }
     }
     //////////////////////////////////  MAP   /////////////////////////////////////////

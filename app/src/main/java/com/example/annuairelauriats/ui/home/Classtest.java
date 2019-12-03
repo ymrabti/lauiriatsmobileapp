@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.gallery.Laureat;
 import com.example.annuairelauriats.ui.gallery.LaureatAdapter;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,6 +37,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_list;
 
 public class Classtest  extends AppCompatActivity {
     private static int id_connected,id_selected;
@@ -130,7 +133,7 @@ public class Classtest  extends AppCompatActivity {
         spinner.setAdapter(list_adapter);
     }
 
-    private static String loadJSONFromAsset(Context context,String fichier) {
+    public static String loadJSONFromAsset(Context context,String fichier) {
         String json;
         try {
             File myExternalFile = new File(context.getExternalFilesDir(folder), fichier);
@@ -148,36 +151,11 @@ public class Classtest  extends AppCompatActivity {
         return json;
     }         //LIRE CONTENUE D UN FICHIER
 
-    public static String loadJSONfromCACHE(Context context){
-        String json;
-        try {
-            File myExternalFile = new File(context.getExternalCacheDir(), filter);
-            FileInputStream fis = new FileInputStream(myExternalFile);
-            DataInputStream in = new DataInputStream(fis);
-            int size = in.available();
-            byte[] buffer = new byte[size];
-            in.read(buffer);
-            in.close();
-            json = new String(buffer, StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }
-
-    public static void write_file_cache(Context context,long organisme,String province,long filiere,String promotion) throws JSONException {
-        try {
-            JSONObject jsonObject= new JSONObject();
-            jsonObject.put("organisme",organisme);jsonObject.put("province",province);
-            jsonObject.put("filiere",filiere);jsonObject.put("promotion",promotion);
-            File myExternalFile = new File(context.getExternalCacheDir(), filter);
-            FileOutputStream fos = new FileOutputStream(myExternalFile);
-            fos.write(jsonObject.toString().getBytes());
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void write_file_cache(Context context,long organisme,String province,long filiere,String promotion) throws Exception {
+        JSONObject jsonObject= new JSONObject();
+        jsonObject.put("organisme",organisme);jsonObject.put("province",province);
+        jsonObject.put("filiere",filiere);jsonObject.put("promotion",promotion);
+        write_file_data(context,jsonObject.toString(),filter);
     }
 
     public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
@@ -209,7 +187,7 @@ public class Classtest  extends AppCompatActivity {
                                 findbyprovince.getSelectedItem().toString(),
                                 findbyfiliere.getSelectedItemId(),findbypromotion.getSelectedItem().toString()
                                 );
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -270,7 +248,7 @@ public class Classtest  extends AppCompatActivity {
     }           //RETOUNE ARRAYJSON APRES VERIFICATION CLE VALEUR
 
     public static void peupler_array_list(Context context, long filiere,String promotion,String province, ListView malist){
-        ArrayList<Laureat> laureats_list = new ArrayList<>();
+        laureats_list = new ArrayList<>();
         try {
             JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,laureats));
             JSONArray filiere_checked = checkFieldInteger("filiere",filiere,m_jArry);

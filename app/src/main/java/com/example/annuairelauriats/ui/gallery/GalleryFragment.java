@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,8 +21,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class GalleryFragment extends Fragment{
-    private ListView malist;
+    private ListView malist;public static ArrayList<Laureat> laureats_list;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         GalleryViewModel galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
@@ -34,7 +38,7 @@ public class GalleryFragment extends Fragment{
         malist = root.findViewById(R.id.list_laureat);
         int filiere=0;String promo="TOUT";
         try {
-            JSONObject filter = new JSONObject(Classtest.loadJSONfromCACHE(getActivity()));
+            JSONObject filter = new JSONObject(Classtest.loadJSONFromAsset(getActivity(),Classtest.filter));
             filiere=filter.getInt("filiere");promo=filter.getString("promotion");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -42,7 +46,10 @@ public class GalleryFragment extends Fragment{
         Classtest.peupler_array_list(getActivity(),filiere,promo,"TOUT",malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
-                    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) { }}
+                    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Laureat laureat = laureats_list.get(position);
+                        Toast.makeText(getActivity(),"nom complet : "+laureat.getNameLaureat(),Toast.LENGTH_LONG).show();
+                    }}
         );
         FloatingActionButton filter_fab = root.findViewById(R.id.fab_filter_laureat);
         filter_fab.setOnClickListener(new View.OnClickListener() {
