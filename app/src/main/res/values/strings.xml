@@ -97,4 +97,5 @@
     <string name="invalid_promotion">SELECTIONNER promotion</string>
     <string name="invalid_image">selectionner une image</string>
     <string name="selectionner_votre_photo">Selectionner votre photo</string>
+    <string name="secteur_secteur_word">Secteur</string>
 </resources>

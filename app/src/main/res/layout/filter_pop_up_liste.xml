@@ -21,6 +21,57 @@
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+
+
+
+
+    <TextView
+        android:id="@+id/organisation_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/organisation"
+        android:layout_marginStart="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_organisation"
+        app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_organisation"/>
+    <Spinner
+        android:id="@+id/snipper_filtre_laureat_organisation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:gravity="end"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/organisation_text_view"
+        app:layout_constraintTop_toBottomOf="@id/text_filter_pop_up"/>
+
+
+
+    <TextView
+        android:id="@+id/secteur_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/secteur_secteur_word"
+        android:layout_marginStart="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_secteur"
+        app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_secteur"/>
+    <Spinner
+        android:id="@+id/snipper_filtre_laureat_secteur"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/secteur_text_view"
+        app:layout_constraintTop_toBottomOf="@id/organisation_text_view"/>
+
+
+
     <TextView
         android:id="@+id/filiere_text_view"
         android:layout_width="wrap_content"
@@ -30,15 +81,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_filiere"
         app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_filiere"/>
-    <TextView
-        android:id="@+id/province_text_view"
-        android:layout_width="wrap_content"
+    <Spinner
+        android:id="@+id/snipper_filtre_laureat_filiere"
+        android:layout_width="0dp"
+        android:maxHeight="200dp"
         android:layout_height="wrap_content"
-        android:text="@string/provinceprovince"
+        android:gravity="end"
         android:layout_marginStart="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_province"
-        app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_province"/>
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/filiere_text_view"
+        app:layout_constraintTop_toBottomOf="@id/secteur_text_view"/>
+
+
+
     <TextView
         android:id="@+id/promotion_text_view"
         android:layout_width="wrap_content"
@@ -49,30 +106,10 @@
         app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_promotion"
         app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_promotion"/>
     <Spinner
-        android:id="@+id/snipper_filtre_laureat_province"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/province_text_view"
-        app:layout_constraintTop_toBottomOf="@id/text_filter_pop_up"/>
-    <Spinner
-        android:id="@+id/snipper_filtre_laureat_filiere"
-        android:layout_width="0dp"
-        android:maxHeight="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/filiere_text_view"
-        app:layout_constraintTop_toBottomOf="@id/snipper_filtre_laureat_province"/>
-    <Spinner
         android:id="@+id/snipper_filtre_laureat_promotion"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="end"
         android:layout_marginStart="24dp"
         android:layout_marginTop="19dp"
         android:maxHeight="200dp"
@@ -80,6 +117,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/promotion_text_view"
         app:layout_constraintTop_toBottomOf="@id/snipper_filtre_laureat_filiere"/>
+
+
+
+    <TextView
+        android:id="@+id/province_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/provinceprovince"
+        android:layout_marginStart="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/snipper_filtre_laureat_province"
+        app:layout_constraintBottom_toBottomOf="@id/snipper_filtre_laureat_province"/>
+    <Spinner
+        android:id="@+id/snipper_filtre_laureat_province"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/province_text_view"
+        app:layout_constraintTop_toBottomOf="@id/promotion_text_view"/>
+
+
     <Button
         android:id="@+id/button_save_filter"
         android:layout_width="72dp"
@@ -88,7 +150,7 @@
         android:layout_marginTop="36dp"
         android:background="@drawable/loop"
         android:layout_marginEnd="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/snipper_filtre_laureat_promotion"/>
+        app:layout_constraintTop_toBottomOf="@+id/snipper_filtre_laureat_province"/>
     <Button
         android:id="@+id/button_dismiss_filter"
         android:layout_width="72dp"
@@ -98,6 +160,6 @@
         android:background="@drawable/dismiss"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/snipper_filtre_laureat_promotion"/>
+        app:layout_constraintTop_toBottomOf="@+id/snipper_filtre_laureat_province"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

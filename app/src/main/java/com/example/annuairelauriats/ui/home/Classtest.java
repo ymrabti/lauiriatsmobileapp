@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -43,8 +44,8 @@ import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_l
 public class Classtest  extends AppCompatActivity {
     public static int id_connected,id_selected;
     public static String
-            laureats="laureats.json",filter="filter.json"/*,genders ="genders.json",posts="posts.json"*/,
-            provinces="provinces.json",/*roles="roles.json",secteurs="secteurs.json",*/organismes="organismes.json",
+            laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
+            provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
             folder = "Annuaire",images_file="images.json",filiers="filieres.json",promotions="promotions.json";
 
@@ -161,10 +162,13 @@ public class Classtest  extends AppCompatActivity {
         return json;
     }         //LIRE CONTENUE D UN FICHIER
 
-    public static void write_file_cache(Context context,long organisme,String province,long filiere,String promotion) throws Exception {
+    public static void write_file_cache(Context context,
+                                        long organisme,String province,
+                                        long filiere,String promotion,String secteur) throws Exception {
         JSONObject jsonObject= new JSONObject();
         jsonObject.put("organisme",organisme);jsonObject.put("province",province);
         jsonObject.put("filiere",filiere);jsonObject.put("promotion",promotion);
+        jsonObject.put("secteur",secteur);
         write_file_data(context,jsonObject.toString(),filter);
     }
 
@@ -174,15 +178,27 @@ public class Classtest  extends AppCompatActivity {
         final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
         final Spinner findbypromotion = dialogFilter.findViewById(R.id.snipper_filtre_laureat_promotion);
         final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
+        final Spinner findbyorganisation = dialogFilter.findViewById(R.id.snipper_filtre_laureat_organisation);
+        final Spinner findbysecteur = dialogFilter.findViewById(R.id.snipper_filtre_laureat_secteur);
         Classtest.spinner_list_adapt(context,findbyfiliere,"Nom",filiers,1);
         Classtest.spinner_list_adapt(context,findbypromotion,"promotion",promotions,1);
         Classtest.spinner_list_adapt(context,findbyprovince,"province",provinces,1);
+        Classtest.spinner_list_adapt(context,findbysecteur,"secteur",secteurs,1);
+        Classtest.spinner_list_adapt(context,findbyorganisation,"org",organismes,1);
         dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                dialogFilter.dismiss();
-            }
-        });
+            public void onClick(View v) { dialogFilter.dismiss(); }});
+        findbyorganisation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (position!=0){findbysecteur.setEnabled(false);}
+            else {findbysecteur.setEnabled(true);} }
+            @Override public void onNothingSelected(AdapterView<?> parentView) {}});
+        findbysecteur.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (position!=0){findbyorganisation.setEnabled(false);}
+            else{findbyorganisation.setEnabled(true);}}
+            @Override public void onNothingSelected(AdapterView<?> parentView) {}});
+
         dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
         new View.OnClickListener() {
             @Override
@@ -191,15 +207,8 @@ public class Classtest  extends AppCompatActivity {
                     peupler_array_list(context,
                             findbyfiliere.getSelectedItemId(),
                             findbypromotion.getSelectedItem().toString(),
-                            findbyprovince.getSelectedItem().toString(),listView);
-                    try {
-                        write_file_cache(context,0,
-                                findbyprovince.getSelectedItem().toString(),
-                                findbyfiliere.getSelectedItemId(),findbypromotion.getSelectedItem().toString()
-                                );
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                            findbyprovince.getSelectedItem().toString(),
+                            findbyorganisation.getSelectedItemId(),findbysecteur.getSelectedItem().toString(),listView);
                 }
                 else
                 {
@@ -207,6 +216,14 @@ public class Classtest  extends AppCompatActivity {
                             findbypromotion.getSelectedItem().toString()+"",
                             findbyprovince.getSelectedItem().toString()+""
                             ,googleMap);
+                }
+                try {
+                    write_file_cache(context,findbyorganisation.getSelectedItemId(),
+                            findbyprovince.getSelectedItem().toString(),
+                            findbyfiliere.getSelectedItemId(),findbypromotion.getSelectedItem().toString()
+                            ,findbysecteur.getSelectedItem().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 dialogFilter.dismiss();
             }
@@ -257,13 +274,16 @@ public class Classtest  extends AppCompatActivity {
         return array_checked;
     }           //RETOUNE ARRAYJSON APRES VERIFICATION CLE VALEUR
 
-    public static void peupler_array_list(Context context, long filiere,String promotion,String province, ListView malist){
+    public static void peupler_array_list(Context context,
+                                          long filiere, String promotion,
+                                          String province, long organisation,
+                                          String secteur, ListView malist){
         laureats_list = new ArrayList<>();
         try {
-            JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,laureats));
+            /*JSONArray m_jArry = new JSONArray(Classtest.loadJSONFromAsset(context,laureats));
             JSONArray filiere_checked = checkFieldInteger("filiere",filiere,m_jArry);
             JSONArray promotion_filiere_checked = checkField("promotion",promotion,filiere_checked);
-            //JSONArray province_checked = checkField("province",province,promotion_checked);
+            JSONArray province_checked = checkField("province",province,promotion_filiere_checked);
             for (int i = 0; i < promotion_filiere_checked.length(); i++) {
                 JSONObject jo_inside = promotion_filiere_checked.getJSONObject(i);
                 JSONObject image= getJsonObjectBycle(context,"laureat",jo_inside.getInt("id"),images_file);
@@ -271,6 +291,68 @@ public class Classtest  extends AppCompatActivity {
                         new Laureat(jo_inside.getInt("id"),image.getString("image")+"",
                                 jo_inside.getString("nom")+" "+jo_inside.getString("prenom"),
                                 jo_inside.getString("email")+"", jo_inside.getString("description")+""));
+            }*/
+
+            JSONArray orgs = new JSONArray(Classtest.loadJSONFromAsset(context,organismes));
+            JSONArray orgs_laureats = new JSONArray(Classtest.loadJSONFromAsset(context,org_laureat));
+            JSONArray laureats_finaux = new JSONArray();
+            if (organisation==0) {
+                JSONArray secteur_checked = checkField("secteur",secteur,orgs);
+                for (int i = 0; i < secteur_checked.length(); i++){
+                    JSONObject jsonObject = secteur_checked.getJSONObject(i);
+                    long id_org = jsonObject.getInt("id");
+                    JSONArray jsonArray = checkFieldInteger("id_org",id_org,orgs_laureats);
+                    for (int j = 0; j < jsonArray.length();j++){
+                        JSONObject jsonObject1 = jsonArray.getJSONObject(j);
+                        long id_laureat = jsonObject1.getInt("id_laureat");
+                        JSONObject laureat_courant = getJsonObjectBycle(context,"id",id_laureat,laureats);
+                        laureats_finaux.put(laureat_courant);
+                    }
+                }
+            }
+            else if (secteur.equals("TOUT")){
+                JSONArray jsonArray = checkFieldInteger("id_org",organisation,orgs_laureats);
+                for (int j = 0; j < jsonArray.length();j++){
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(j);
+                    long id_laureat = jsonObject1.getInt("id_laureat");
+                    JSONObject laureat_courant = getJsonObjectBycle(context,"id",id_laureat,laureats);
+                    laureats_finaux.put(laureat_courant);
+                }
+            }
+            for (int i=0;i<laureats_finaux.length();i++){
+                JSONObject laureat_courant = laureats_finaux.getJSONObject(i);
+                long id_laureat = laureat_courant.getInt("id");
+                JSONObject image= getJsonObjectBycle(context,"laureat",id_laureat,images_file);
+                if (filiere!=0 && !promotion.equals("TOUT")){
+                    if (laureat_courant.getString("promotion").equals(promotion) && laureat_courant.getInt("filiere")==filiere){
+                        laureats_list.add(
+                                new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
+                                        laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
+                                        laureat_courant.getString("email")+"", laureat_courant.getString("description")+""));
+                    }
+                }
+                else if (filiere==0 && !promotion.equals("TOUT")){
+                    if (laureat_courant.getString("promotion").equals(promotion)){
+                        laureats_list.add(
+                                new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
+                                        laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
+                                        laureat_courant.getString("email")+"", laureat_courant.getString("description")+""));
+                    }
+                }
+                else if (filiere!=0){
+                    if (laureat_courant.getInt("filiere")==filiere){
+                        laureats_list.add(
+                                new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
+                                        laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
+                                        laureat_courant.getString("email")+"", laureat_courant.getString("description")+""));
+                    }
+                }
+                else {
+                    laureats_list.add(
+                            new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
+                                    laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
+                                    laureat_courant.getString("email")+"", laureat_courant.getString("description")+""));
+                }
             }
             LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
             malist.setAdapter(adaptateur);
@@ -391,12 +473,6 @@ public class Classtest  extends AppCompatActivity {
         }
     }                                               //CHANGER LA STATUS D UN LAUREAT
 
-    public static int getId_connected() { return id_connected; }
-
-    public static void setId_connected(int id_connected) { Classtest.id_connected = id_connected; }
-
-    public static int getId_selected() { return id_selected; }
-
     public static void read_json_array(Context context,JSONObject jsonObject,String filename){
         try {
             JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
@@ -407,7 +483,6 @@ public class Classtest  extends AppCompatActivity {
         }
     }
 
-    public static void setId_selected(int id_selected) { Classtest.id_selected = id_selected; }
     /*private void read_json(){
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());

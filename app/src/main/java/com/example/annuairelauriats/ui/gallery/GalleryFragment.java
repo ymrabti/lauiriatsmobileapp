@@ -44,16 +44,17 @@ public class GalleryFragment extends Fragment{
             }
         });
         malist = root.findViewById(R.id.list_laureat);
-        int filiere=0;String promo="TOUT";
+        int filiere=0,org=0;String promo="TOUT",secteur="TOUT";
         try {
             JSONObject filter_json = new JSONObject(
                     Objects.requireNonNull(loadJSONFromAsset(
                             Objects.requireNonNull(getActivity()), filter)));
             filiere=filter_json.getInt("filiere");promo=filter_json.getString("promotion");
+            org=filter_json.getInt("organisme");secteur=filter_json.getString("secteur");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        peupler_array_list(getActivity(),filiere,promo,"TOUT",malist);
+        peupler_array_list(getActivity(),filiere,promo,"TOUT",org,secteur,malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
