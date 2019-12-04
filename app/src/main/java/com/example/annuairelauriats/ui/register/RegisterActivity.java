@@ -48,6 +48,9 @@ import java.util.Calendar;
 import java.util.Objects;
 
 import android.app.Dialog;
+
+import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
+
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
@@ -116,22 +119,10 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
 
 
         filiere.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // your code here
-                try {
-                    Classtest.promotion_peuplement(RegisterActivity.this,id,promotion);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
-
-        });
+            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                try { Classtest.promotion_peuplement(RegisterActivity.this,id,promotion); }
+                catch (Exception e) { e.printStackTrace(); } }
+                @Override public void onNothingSelected(AdapterView<?> parentView) { }});
 
         pick_date_debut_pop_up.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,17 +136,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                         date_debut_chez_org.setText(year+"-"+(month+1)+"-"+day);
                     }
                 },year,month,day);
-                dialog.show();
-/*                Dialog dialog = new TimePickerDialog(RegisterActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        year = hourOfDay;
-                        month = minute;
-                        date_debut_chez_org.setText(year+" : "+month);
-                    }
-                },year,month,true);dialog.show();*/
-            }
-        });
+                dialog.show(); }});
 
         radioOrgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -343,6 +324,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             int jour = rightNow.get(Calendar.DAY_OF_MONTH);int mois = rightNow.get(Calendar.MONTH)+1;int annee = rightNow.get(Calendar.YEAR);
             String dateNow = annee+"-"+mois+"-"+jour+" "+heur+":"+minute+":"+seconde;
             int id_laureat_actuelle = Classtest.getLastID(this,Classtest.laureats);
+            id_connected = id_laureat_actuelle;
             Classtest.new_Laureat_Register(
                     this,id_laureat_actuelle,
                     model.getLaureatNom()+"", model.getLaureatPrenom() +"", model.getLaureatGender()+"",
@@ -351,7 +333,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     model.getDescription()+"");
             Classtest.setNewImgLaureat(this,model.getLaureatImageBase64(),id_laureat_actuelle);
             if(!model.getNomOrgEdited().isEmpty()){
-                Classtest.new_org_attente_admin(this,model.getNomOrgEdited(),id_laureat_actuelle,lat,lon,model.getSecteurOrgEdited());
+                Classtest.new_org_attente_admin(this,model.getNomOrgEdited(),id_laureat_actuelle,lat,lon,model.getSecteurOrgEdited(),
+                        model.getDate_debut_travail_chez_org()+"",model.getInitulePost()+"");
             }
             else{
                 Classtest.new_org_laureat(this,model.getOrg_selected(),id_laureat_actuelle,

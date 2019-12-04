@@ -14,6 +14,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.TextView;
+
+import org.json.JSONObject;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
+import static com.example.annuairelauriats.ui.home.Classtest.filiers;
+import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
+import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.images_file;
+import static com.example.annuairelauriats.ui.home.Classtest.laureats;
+import static com.example.annuairelauriats.ui.home.Classtest.org_laureat;
+import static com.example.annuairelauriats.ui.home.Classtest.organismes;
 
 public class HomeFragment extends Fragment  implements OnMapReadyCallback {
     private MapView mapView;
@@ -28,7 +42,33 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
         mapView = root.findViewById(R.id.map_laureat_profile_sssss) ;
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
-        latLng = new LatLng(22,16);
+
+        //latLng = new LatLng(34.687529,1.926189);
+        CircleImageView pdp_visit = root.findViewById(R.id.pdp_laureat_profile_sssss);
+        TextView NomPrenomUser = root.findViewById(R.id.nom_laureat_profile_sssss);
+        TextView email = root.findViewById(R.id.email_laureat_profile_sssss);
+        TextView tel = root.findViewById(R.id.tel_laureat_profile_sssss);
+        TextView promotion = root.findViewById(R.id.promotion_laureat_profile_sssss);
+        TextView filiere = root.findViewById(R.id.filiere_laureat_profile_sssss);
+        TextView organisation = root.findViewById(R.id.organisation_laureat_profile_sssss);
+        try {
+            JSONObject laurat_visitee = getJsonObjectBycle(getActivity(),"id",id_connected,laureats);
+            JSONObject image= getJsonObjectBycle(getActivity(),"laureat",id_connected,images_file);
+            JSONObject filier= getJsonObjectBycle(getActivity(),"id",laurat_visitee.getInt("filiere"),filiers);
+            JSONObject org_lau= getJsonObjectBycle(getActivity(),"id_laureat",id_connected,org_laureat);
+            JSONObject org= getJsonObjectBycle(getActivity(),"id",org_lau.getInt("id_org"),organismes);
+            pdp_visit.setImageBitmap(base64toImage(image.getString("image")));
+            NomPrenomUser.setText(laurat_visitee.getString("nom"));NomPrenomUser.append(" ");NomPrenomUser.append(laurat_visitee.getString("prenom"));
+            email.setText(laurat_visitee.getString("email"));
+            tel.setText(laurat_visitee.getString("telephone"));
+            promotion.setText(laurat_visitee.getString("promotion"));
+            filiere.setText(filier.getString("Nom"));
+            organisation.setText(org.getString("org"));
+            latLng = new LatLng(org.getDouble("latitude"),org.getDouble("longitude"));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         return root;
     }
 

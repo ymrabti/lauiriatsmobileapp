@@ -63,6 +63,6 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
         gmap.moveCamera(CameraUpdateFactory.newLatLng(ny));
-        Classtest.show_laureats_on_map(getActivity(),"TOUT","TOUT","TOUT",gmap);
+        Classtest.show_laureats_on_map(getActivity(),0,"TOUT","TOUT",0,"TOUT",gmap);
     }
 }
