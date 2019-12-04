@@ -9,12 +9,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.gallery.Laureat;
 import com.example.annuairelauriats.ui.gallery.LaureatAdapter;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,8 +43,8 @@ import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_l
 public class Classtest  extends AppCompatActivity {
     public static int id_connected,id_selected;
     public static String
-            laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
-            provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
+            laureats="laureats.json",filter="filter.json"/*,genders ="genders.json",posts="posts.json"*/,
+            provinces="provinces.json",/*roles="roles.json",secteurs="secteurs.json",*/organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
             folder = "Annuaire",images_file="images.json",filiers="filieres.json",promotions="promotions.json";
 
@@ -79,14 +77,14 @@ public class Classtest  extends AppCompatActivity {
         return jsonObject;
     }
 
-    public static void read_json_array(Context context,JSONObject jsonObject,String filename){
-        try {
-            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
-            m_jArry.put(jsonObject);
-            write_file_data(context,m_jArry.toString(),filename);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static JSONObject getJsonObjectBykey(Context context,String cle,String valeur,String filename) throws Exception {
+        JSONArray m_jArray = new JSONArray(loadJSONFromAsset(context,filename)) ;
+        JSONObject jsonObject=new JSONObject();
+        for (int i = 0; i < m_jArray.length(); i++) {
+            JSONObject jo_inside = m_jArray.getJSONObject(i);
+            if(jo_inside.getString(cle).equals(valeur)){jsonObject=jo_inside;}
         }
+        return jsonObject;
     }
 
     public static String encodeImage(Bitmap bm) {
@@ -376,6 +374,11 @@ public class Classtest  extends AppCompatActivity {
         m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_laureat);
     }
 
+    public static boolean is_login_valid(Context context,String email,String password)  throws Exception{
+        JSONObject jsonObject = getJsonObjectBykey(context,"email",email,laureats);
+        return !jsonObject.isNull("id") && jsonObject.getString("password").equals(password);
+    }
+
     public static void changefieldvalue(Context context,boolean newvalue,String cle,int id){
         try {
             JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,laureats));
@@ -393,6 +396,16 @@ public class Classtest  extends AppCompatActivity {
     public static void setId_connected(int id_connected) { Classtest.id_connected = id_connected; }
 
     public static int getId_selected() { return id_selected; }
+
+    public static void read_json_array(Context context,JSONObject jsonObject,String filename){
+        try {
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
+            m_jArry.put(jsonObject);
+            write_file_data(context,m_jArry.toString(),filename);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void setId_selected(int id_selected) { Classtest.id_selected = id_selected; }
     /*private void read_json(){

@@ -32,7 +32,6 @@
                 android:title="@string/menu_propos" />
             <item
                 android:id="@+id/nav_stndrds"
-                android:visible="false"
                 android:icon="@drawable/community"
                 android:title="@string/menu_standards" />
             <item

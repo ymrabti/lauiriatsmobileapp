@@ -14,7 +14,6 @@ public class RegisterDataSource {
     {
         try
         {
-            // TODO: handle loggedInUser authentication
             RegistredUser UserRegister = new RegistredUser(
                     java.util.UUID.randomUUID().toString()+"",
                     emailUser, Password, LaureatNom, LaureatPrenom, LaureatNumTel,

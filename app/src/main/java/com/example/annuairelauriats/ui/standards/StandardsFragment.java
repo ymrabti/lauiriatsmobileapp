@@ -2,6 +2,7 @@ package com.example.annuairelauriats.ui.standards;
 
 import androidx.fragment.app.Fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -27,14 +29,15 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static android.app.Activity.RESULT_OK;
+import static com.example.annuairelauriats.ui.home.Classtest.is_login_valid;
 
 public class StandardsFragment extends Fragment {
 
-    private TextView result_http_client;private VideoView videoView;//private EditText url;
-    private ImageView imageView;
+    private TextView result_http_client;private VideoView videoView;private EditText url;
+    private ImageView imageView;private EditText password;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.standardscommunute, container, false);
-        //url = root.findViewById(R.id.editText1);
+        url = root.findViewById(R.id.editText1);password=root.findViewById(R.id.pssssss);
         videoView = root.findViewById(R.id.videoView);
         result_http_client=root.findViewById(R.id.result_http_client);
         imageView = root.findViewById(R.id.ImageView01);
@@ -50,11 +53,15 @@ public class StandardsFragment extends Fragment {
         imageView.setImageResource( R.drawable.ing);
         Button but_connect = root.findViewById(R.id.buttonSend);
         but_connect.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 try {
-                    OpenGallery();
-                    /*Bitmap icon = ((BitmapDrawable) imageView.getDrawable() ).getBitmap();
+                    result_http_client.setText("exists : "+is_login_valid(getContext(),
+                            url.getText().toString()+"",
+                            password.getText().toString()+""));
+                    /*OpenGallery();
+                    Bitmap icon = ((BitmapDrawable) imageView.getDrawable() ).getBitmap();
                     int height = icon.getHeight(),width = icon.getWidth();
                     result_http_client.setText(height+" * "+width);
                     ImageView img= getActivity().findViewById(R.id.ImageView99);
