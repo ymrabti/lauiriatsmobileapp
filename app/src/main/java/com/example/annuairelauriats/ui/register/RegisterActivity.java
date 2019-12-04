@@ -194,6 +194,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     return;
                 }
                 registerButton.setEnabled(registerFormState.isDataValid());
+                if (registerFormState.isDataValid()){registerButton.setBackgroundResource(R.drawable.register);}
+                if (!registerFormState.isDataValid()){registerButton.setBackgroundResource(R.drawable.register_disabled);}
                 if (registerFormState.getNomError() != null) {
                     nomEditText.setError(getString(registerFormState.getNomError()));
                 }

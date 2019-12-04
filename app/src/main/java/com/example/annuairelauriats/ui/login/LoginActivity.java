@@ -57,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
                 loginButton.setEnabled(loginFormState.isDataValid());
+                if (loginFormState.isDataValid()){loginButton.setBackgroundResource(R.drawable.lo_gin);}
+                if (!loginFormState.isDataValid()){loginButton.setBackgroundResource(R.drawable.lo_gin_disabled);}
                 if (loginFormState.getUsernameError() != null) {
                     usernameEditText.setError(getString(loginFormState.getUsernameError()));
                 }
