@@ -57,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
     private RegisterViewModel registerViewModel;
     ImageView imageView;private int year,month,day;
     TextView base64TextView;
-    private double lat, lon;
+    private double lat, lon;long checked_radio;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -82,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         base64TextView = findViewById(R.id.register_image_base_64_laureat);  // system                                          8
         imageView = findViewById(R.id.selected_file_image8laureat);   // system
         final EditText passwordEditText = findViewById(R.id.passwordword);  // Laureat                                  8       9
-        RadioGroup radioOrgGroup = findViewById(R.id.radio_organisation);  // system
+        final RadioGroup radioOrgGroup = findViewById(R.id.radio_organisation);  // system
         final Spinner organisation =  findViewById(R.id.snipper_select_org);  // org get id put to Laureat_Org                  10
         final EditText nouveau_org_nom = findViewById(R.id.snipper_ecrire_nom_org);  // system                                  11
         final Spinner organisation_secteur = findViewById(R.id.snipper_select_secteur_org);  // system                          12
@@ -141,7 +141,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         radioOrgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton radioButton = findViewById(checkedId);
+                RadioButton radioButton = findViewById(checkedId);checked_radio=checkedId;
                 if (radioButton.getText().toString().contains("Organisation"))
                 {
                     nouveau_org_nom.setVisibility(View.GONE);
@@ -160,9 +160,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     org_select.setVisibility(View.GONE);
                     secteur_select.setVisibility(View.VISIBLE);
                 }
-                date_debut_chez_org.setVisibility(View.VISIBLE);
-                intitule_fonction_avec_org.setVisibility(View.VISIBLE);
-                pick_date_debut_pop_up.setVisibility(View.VISIBLE);
             }
         });
 
@@ -216,6 +213,27 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 if (registerFormState.getImageError() != null) {
                     imageView.setImageResource(R.drawable.errorimage);
                 }
+                if (registerFormState.getIntituleError() != null) {
+                    intitule_fonction_avec_org.setError(getString(registerFormState.getIntituleError()));
+                }
+                if (registerFormState.getDescError() != null) {
+                    description_laureat.setError(getString(registerFormState.getDescError()));
+                }
+                if (registerFormState.getOrgError() != null) {
+                    TextView errorText = (TextView)organisation.getSelectedView();
+                    errorText.setError("");
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getOrgError()));//changes the selected item text to this
+                }
+                if (registerFormState.getSecteurError() != null) {
+                    TextView errorText = (TextView)organisation_secteur.getSelectedView();
+                    errorText.setError("");
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getSecteurError()));//changes the selected item text to this
+                }
+                if (registerFormState.getNv_org_nom_Error() != null) {
+                    nouveau_org_nom.setError(getString(registerFormState.getNv_org_nom_Error()));
+                }
             }
         });
 
@@ -255,7 +273,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                         organisation_secteur.getSelectedItem().toString()+"",
                         intitule_fonction_avec_org.getText().toString()+"",
                         date_debut_chez_org.getText().toString()+"",
-                        description_laureat.getText().toString()+"");
+                        description_laureat.getText().toString()+"",
+                        checked_radio);
             }
         };
         nomEditText.addTextChangedListener(afterTextChangedListener);

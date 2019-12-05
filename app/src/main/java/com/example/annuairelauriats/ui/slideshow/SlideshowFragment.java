@@ -14,6 +14,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Objects;
+
+import static com.example.annuairelauriats.ui.home.Classtest.filter;
+import static com.example.annuairelauriats.ui.home.Classtest.loadJSONFromAsset;
+
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;
      private GoogleMap gmap;
@@ -63,6 +72,16 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
         gmap.moveCamera(CameraUpdateFactory.newLatLng(ny));
-        Classtest.show_laureats_on_map(getActivity(),0,"TOUT","TOUT",0,"TOUT",gmap);
+        int filiere=0,org=0;String promo="TOUT",secteur="TOUT";
+        try {
+            JSONObject filter_json = new JSONObject(
+                    Objects.requireNonNull(loadJSONFromAsset(
+                            Objects.requireNonNull(getActivity()), filter)));
+            filiere=filter_json.getInt("filiere");promo=filter_json.getString("promotion");
+            org=filter_json.getInt("organisme");secteur=filter_json.getString("secteur");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Classtest.show_laureats_on_map(getActivity(),filiere,promo,"TOUT",org,secteur,gmap);
     }
 }

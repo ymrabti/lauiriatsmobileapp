@@ -20,9 +20,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
 import static com.example.annuairelauriats.ui.home.Classtest.filiers;
 import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
+import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 import static com.example.annuairelauriats.ui.home.Classtest.images_file;
 import static com.example.annuairelauriats.ui.home.Classtest.laureats;
+import static com.example.annuairelauriats.ui.home.Classtest.org_en_attente;
 import static com.example.annuairelauriats.ui.home.Classtest.org_laureat;
 import static com.example.annuairelauriats.ui.home.Classtest.organismes;
 
@@ -51,16 +53,23 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
             JSONObject laurat_visitee = getJsonObjectBycle(getActivity(),"id",id_selected,laureats);
             JSONObject image= getJsonObjectBycle(getActivity(),"laureat",id_selected,images_file);
             JSONObject filier= getJsonObjectBycle(getActivity(),"id",laurat_visitee.getInt("filiere"),filiers);
-            JSONObject org_lau= getJsonObjectBycle(getActivity(),"id_laureat",id_selected,org_laureat);
-            JSONObject org= getJsonObjectBycle(getActivity(),"id",org_lau.getInt("id_org"),organismes);
             pdp_visit.setImageBitmap(base64toImage(image.getString("image")));
             NomPrenomUser.setText(laurat_visitee.getString("nom"));NomPrenomUser.append(" ");NomPrenomUser.append(laurat_visitee.getString("prenom"));
             email.setText(laurat_visitee.getString("email"));
             tel.setText(laurat_visitee.getString("telephone"));
             promotion.setText(laurat_visitee.getString("promotion"));
             filiere.setText(filier.getString("Nom"));
-            organisation.setText(org.getString("org"));
-            latLng = new LatLng(org.getDouble("latitude"),org.getDouble("longitude"));
+
+
+            JSONObject org_lau= getJsonObjectBycle(getActivity(),"id_laureat",id_connected,org_laureat);
+            JSONObject org_lau_attente= getJsonObjectBycle(getActivity(),"laureat",id_connected,org_en_attente);
+            if (!org_lau.isNull("id_org")){
+                JSONObject org= getJsonObjectBycle(getActivity(),"id",org_lau.getInt("id_org"),organismes);
+                organisation.setText(org.getString("org"));
+                latLng = new LatLng(org.getDouble("latitude"),org.getDouble("longitude"));}
+            else{
+                organisation.setText(org_lau_attente.getString("org"));
+                latLng = new LatLng(org_lau_attente.getDouble("latitude"),org_lau_attente.getDouble("longitude"));}
         }
         catch (Exception e) {
             e.printStackTrace();

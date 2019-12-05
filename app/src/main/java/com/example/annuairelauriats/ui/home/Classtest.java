@@ -44,13 +44,10 @@ import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_l
 
 public class Classtest  extends AppCompatActivity {
     public static int id_connected=1,id_selected;
-    public static String
-            laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
+    public static String laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
             provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
             folder = "Annuaire",images_file="images.json",filiers="filieres.json",promotions="promotions.json";
-
-
     @SuppressLint("StaticFieldLeak")
     public static Bitmap base64toImage(final String imageString){
         Bitmap new_bitmap;
@@ -58,7 +55,6 @@ public class Classtest  extends AppCompatActivity {
         new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         return new_bitmap;
     }
-
     public static int getLastID(Context context,String filename) throws Exception {
         JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
         int pa =0;
@@ -68,7 +64,6 @@ public class Classtest  extends AppCompatActivity {
         }
         return pa;
     }
-
     public static JSONObject getJsonObjectBycle(Context context,String cle,long id,String filename) throws Exception {
         JSONArray m_jArray = new JSONArray(loadJSONFromAsset(context,filename)) ;
         JSONObject jsonObject=new JSONObject();
@@ -78,7 +73,6 @@ public class Classtest  extends AppCompatActivity {
         }
         return jsonObject;
     }
-
     public static JSONObject getJsonObjectBykey(Context context,String cle,String valeur,String filename) throws Exception {
         JSONArray m_jArray = new JSONArray(loadJSONFromAsset(context,filename)) ;
         JSONObject jsonObject=new JSONObject();
@@ -88,14 +82,12 @@ public class Classtest  extends AppCompatActivity {
         }
         return jsonObject;
     }
-
     public static String encodeImage(Bitmap bm) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
         byte[] b = baos.toByteArray();
         return Base64.encodeToString(b, Base64.DEFAULT);
     }
-
     public static void write_file_data(Context context,String textToWrite,String filename) {
         try {
             File myExternalFile = new File(context.getExternalFilesDir(folder), filename);
@@ -106,14 +98,12 @@ public class Classtest  extends AppCompatActivity {
             e.printStackTrace();
         }
     }    //ECRIRE UN CONTENUE DANS UN FICHIER
-
     public static void spinner_list_adapt(Context context, Spinner spinner, String champ, String fichier,int mark){
         List<String> list_items = peupler_list(context,champ,fichier,mark);
         ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,list_items);
         list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(list_adapter);
     }  //ADAPTER UNE LIST A UN SPINNER
-
     private static List<String> peupler_list(Context context,String Champ,String file,int mark){
         List<String> list_a_peupler = new ArrayList<>();
         if (mark==1){list_a_peupler.add("TOUT");}
@@ -129,7 +119,6 @@ public class Classtest  extends AppCompatActivity {
         }
         return list_a_peupler;
     }   //RETOURNE UNE LIST PEUPLE PRET POUR DROP DOWN
-
     public static void promotion_peuplement(Context context,long id,Spinner spinner) throws Exception {
         ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
         Calendar rightNow = Calendar.getInstance();
@@ -144,7 +133,6 @@ public class Classtest  extends AppCompatActivity {
         list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(list_adapter);
     }
-
     public static String loadJSONFromAsset(Context context,String fichier) {
         String json;
         try {
@@ -162,17 +150,13 @@ public class Classtest  extends AppCompatActivity {
         }
         return json;
     }         //LIRE CONTENUE D UN FICHIER
-
-    public static void write_file_cache(Context context,
-                                        long organisme,String province,
-                                        long filiere,String promotion,String secteur) throws Exception {
+    public static void write_file_cache(Context context, long organisme,String province, long filiere,String promotion,String secteur) throws Exception {
         JSONObject jsonObject= new JSONObject();
         jsonObject.put("organisme",organisme);jsonObject.put("province",province);
         jsonObject.put("filiere",filiere);jsonObject.put("promotion",promotion);
         jsonObject.put("secteur",secteur);
         write_file_data(context,jsonObject.toString(),filter);
     }
-
     public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
         final Dialog dialogFilter = new Dialog(context);
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
@@ -234,7 +218,6 @@ public class Classtest  extends AppCompatActivity {
         dialogFilter.setCancelable(false);
         dialogFilter.show();
     }  //AFFICHE POPUP POUR UN FILTRE
-
     private static JSONArray checkField(String cle,String valeur,JSONArray m_jArry){
         JSONArray array_checked = new JSONArray();
         if (!valeur.equals("TOUT")){
@@ -254,7 +237,6 @@ public class Classtest  extends AppCompatActivity {
         }
         return array_checked;
     }
-
     private static JSONArray checkFieldInteger(String cle,long valeur,JSONArray m_jArry){
         JSONArray array_checked = new JSONArray();
         if (valeur!=0){
@@ -275,16 +257,11 @@ public class Classtest  extends AppCompatActivity {
         }
         return array_checked;
     }           //RETOUNE ARRAYJSON APRES VERIFICATION CLE VALEUR
-
-    public static void peupler_array_list(Context context,
-                                          long filiere, String promotion,
-                                          String province, long organisation,
-                                          String secteur, ListView malist){
+    public static void peupler_array_list(Context context, long filiere, String promotion, String province, long organisation, String secteur, ListView malist){
         laureats_list = new ArrayList<>();
         try {
             JSONArray orgs = new JSONArray(Classtest.loadJSONFromAsset(context,organismes));
             JSONArray orgs_laureats = new JSONArray(Classtest.loadJSONFromAsset(context,org_laureat));
-            JSONArray orgs_attentes = new JSONArray(Classtest.loadJSONFromAsset(context,org_en_attente));
             JSONArray laureats_finaux = new JSONArray();
             if (organisation==0) {
                 JSONArray secteur_checked = checkField("secteur",secteur,orgs);
@@ -299,6 +276,7 @@ public class Classtest  extends AppCompatActivity {
                         laureats_finaux.put(laureat_courant);
                     }
                 }
+                JSONArray orgs_attentes = new JSONArray(Classtest.loadJSONFromAsset(context,org_en_attente));
                 JSONArray attentes = checkField("secteur",secteur,orgs_attentes);
                 for (int i = 0; i < attentes.length(); i++){
                     JSONObject jsonObject = attentes.getJSONObject(i);
@@ -321,35 +299,26 @@ public class Classtest  extends AppCompatActivity {
                 long id_laureat = laureat_courant.getInt("id");
                 if (id_laureat!=id_connected){
                     JSONObject image= getJsonObjectBycle(context,"laureat",id_laureat,images_file);
+                    Laureat laureat_to_add = new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
+                            laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
+                            laureat_courant.getString("email")+"", laureat_courant.getString("description")+"");
                     if (filiere!=0 && !promotion.equals("TOUT")){
                         if (laureat_courant.getString("promotion").equals(promotion) && laureat_courant.getInt("filiere")==filiere){
-                            laureats_list.add(
-                                    new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
-                                            laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
-                                            laureat_courant.getString("email")+"", laureat_courant.getString("description")+""));
+                            laureats_list.add(laureat_to_add);
                         }
                     }
                     else if (filiere==0 && !promotion.equals("TOUT")){
                         if (laureat_courant.getString("promotion").equals(promotion)){
-                            laureats_list.add(
-                                    new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
-                                            laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
-                                            laureat_courant.getString("email")+"", laureat_courant.getString("description")+""));
+                            laureats_list.add(laureat_to_add);
                         }
                     }
                     else if (filiere!=0){
                         if (laureat_courant.getInt("filiere")==filiere){
-                            laureats_list.add(
-                                    new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
-                                            laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
-                                            laureat_courant.getString("email")+"", laureat_courant.getString("description")+""));
+                            laureats_list.add(laureat_to_add);
                         }
                     }
                     else {
-                        laureats_list.add(
-                                new Laureat(laureat_courant.getInt("id"),image.getString("image")+"",
-                                        laureat_courant.getString("nom")+" "+laureat_courant.getString("prenom"),
-                                        laureat_courant.getString("email")+"", laureat_courant.getString("description")+""));
+                        laureats_list.add(laureat_to_add);
                     }
                 }
             }
@@ -359,29 +328,26 @@ public class Classtest  extends AppCompatActivity {
             e.printStackTrace();
         }
     }   //AFIICHE LA LIST APRES LE FILTRE
-
-    public static void show_laureats_on_map(Context context,long filiere,
-                                            String promotion,String province,
-                                            long organisation,String secteurr, GoogleMap gmap){
-        List<LatLng> latLngs= peupler_list_latslongs(context,filiere,promotion,province,organisation,secteurr);
+    public static void show_laureats_on_map(Context context,long filiere, String promotion,String province, long organisation,String secteurr, GoogleMap gmap){
+        List<Orglatlonid> latLngsIds= peupler_list_latslongs(context,filiere,promotion,province,organisation,secteurr);
         gmap.clear();
-        for(int i=0;i<latLngs.size();i++){
+        for(int i=0;i<latLngsIds.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLngs.get(i));
+            markerOptions.position(latLngsIds.get(i).getLatLng());
+            markerOptions.title("org :  "+latLngsIds.get(i).getIden());
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
             gmap.addMarker(markerOptions);
         }
-        /*List<LatLng> latLngListe = peupler_list_latslongs(context,filiere,promotion,province,0,"TOUT");
+        List<LatLng> latLngListe = peupler_list_latslong(context,filiere,promotion,province,secteurr);
         for(int i=0;i<latLngListe.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLngListe.get(i));
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
             gmap.addMarker(markerOptions);
-        }*/
+        }
     }//AFFICHER LIST DES LATLON SUR LA CARTE
-
-    private static List<LatLng> peupler_list_latslongs(Context context,long filiere,
-                                                       String promotion,String province,long organisation,String secteur){
+    private static List<Orglatlonid> peupler_list_latslongs(Context context,long filiere, String promotion,String province,long organisation,String secteur){
+        List<Orglatlonid> list_orgsIds = new ArrayList<>();
         List<LatLng> list_a_peupler = new ArrayList<>();
         try {
             JSONArray laureats_finaux = new JSONArray(loadJSONFromAsset(context,laureats));
@@ -393,17 +359,91 @@ public class Classtest  extends AppCompatActivity {
                 JSONObject coordinates = getJsonObjectBycle(context,"id",organ,organismes);
                 LatLng latLngOrg = new LatLng(coordinates.getDouble("latitude"),
                         coordinates.getDouble("longitude"));
-
+                Orglatlonid orglatlonid = new Orglatlonid(latLngOrg,organ);
                 if (filiere!=0 && !promotion.equals("TOUT")){
                     if (laureat_courant.getString("promotion").equals(promotion) && laureat_courant.getInt("filiere")==filiere){
                         if (organisation==0 && !secteur.equals("TOUT")){
                             if (coordinates.getString("secteur").equals(secteur)){
-                                list_a_peupler.add(latLngOrg);}
+                                list_orgsIds.add(orglatlonid);}
                         }
                         else if ( organisation!=0 && secteur.equals("TOUT")){
                             if (organ==organisation){
-                                list_a_peupler.add(latLngOrg);
+                                list_orgsIds.add(orglatlonid);
                             }
+                        }
+                        else {
+                            list_orgsIds.add(orglatlonid);
+                        }
+                    }
+                }
+                else if (filiere==0 && !promotion.equals("TOUT")){
+                    if (laureat_courant.getString("promotion").equals(promotion) ){
+                        if (organisation==0 && !secteur.equals("TOUT")){
+                            if (coordinates.getString("secteur").equals(secteur)){
+                                list_orgsIds.add(orglatlonid);}
+                        }
+                        else if ( organisation!=0 && secteur.equals("TOUT")){
+                            if (organ==organisation){
+                                list_orgsIds.add(orglatlonid);
+                            }
+                        }
+                        else {
+                            list_orgsIds.add(orglatlonid);
+                        }
+                    }
+                }
+                else if (filiere!=0){
+                    if (laureat_courant.getInt("filiere")==filiere){
+                        if (organisation==0 && !secteur.equals("TOUT")){
+                            if (coordinates.getString("secteur").equals(secteur)){
+                                list_orgsIds.add(orglatlonid);}
+                        }
+                        else if ( organisation!=0 && secteur.equals("TOUT")){
+                            if (organ==organisation){
+                                list_orgsIds.add(orglatlonid);
+                            }
+                        }
+                        else {
+                            list_orgsIds.add(orglatlonid);
+                        }
+                    }
+                }
+                else {
+                    if (organisation==0 && !secteur.equals("TOUT")){
+                        if (coordinates.getString("secteur").equals(secteur)){
+                            list_orgsIds.add(orglatlonid);}
+                    }
+                    else if ( organisation!=0 && secteur.equals("TOUT")){
+                        if (organ==organisation){
+                            list_orgsIds.add(orglatlonid);
+                        }
+                    }
+                    else {
+                        list_orgsIds.add(orglatlonid);
+                    }
+                }
+            }
+
+        }
+        catch (Exception e){e.printStackTrace();}
+        return list_orgsIds;
+    }
+    private static List<LatLng> peupler_list_latslong(Context context,long filiere, String promotion,String province,String secteur){
+        List<LatLng> list_a_peupler = new ArrayList<>();
+        try {
+            JSONArray laureats_finaux = new JSONArray(loadJSONFromAsset(context,laureats));
+            for (int i=0;i<laureats_finaux.length();i++){
+                JSONObject laureat_courant = laureats_finaux.getJSONObject(i);
+                long id_laureat = laureat_courant.getInt("id");
+                JSONObject coordinates = getJsonObjectBycle(context,"laureat",id_laureat,org_laureat);
+                LatLng latLngOrg = new LatLng(coordinates.getDouble("latitude"),
+                        coordinates.getDouble("longitude"));
+
+                if (filiere!=0 && !promotion.equals("TOUT")){
+                    if (laureat_courant.getString("promotion").equals(promotion) && laureat_courant.getInt("filiere")==filiere){
+                        if ( !secteur.equals("TOUT")){
+                            if (coordinates.getString("secteur").equals(secteur)){
+                                list_a_peupler.add(latLngOrg);}
                         }
                         else {
                             list_a_peupler.add(latLngOrg);
@@ -412,14 +452,9 @@ public class Classtest  extends AppCompatActivity {
                 }
                 else if (filiere==0 && !promotion.equals("TOUT")){
                     if (laureat_courant.getString("promotion").equals(promotion) ){
-                        if (organisation==0 && !secteur.equals("TOUT")){
+                        if ( !secteur.equals("TOUT")){
                             if (coordinates.getString("secteur").equals(secteur)){
                                 list_a_peupler.add(latLngOrg);}
-                        }
-                        else if ( organisation!=0 && secteur.equals("TOUT")){
-                            if (organ==organisation){
-                                list_a_peupler.add(latLngOrg);
-                            }
                         }
                         else {
                             list_a_peupler.add(latLngOrg);
@@ -428,14 +463,9 @@ public class Classtest  extends AppCompatActivity {
                 }
                 else if (filiere!=0){
                     if (laureat_courant.getInt("filiere")==filiere){
-                        if (organisation==0 && !secteur.equals("TOUT")){
+                        if ( !secteur.equals("TOUT")){
                             if (coordinates.getString("secteur").equals(secteur)){
                                 list_a_peupler.add(latLngOrg);}
-                        }
-                        else if ( organisation!=0 && secteur.equals("TOUT")){
-                            if (organ==organisation){
-                                list_a_peupler.add(latLngOrg);
-                            }
                         }
                         else {
                             list_a_peupler.add(latLngOrg);
@@ -443,14 +473,9 @@ public class Classtest  extends AppCompatActivity {
                     }
                 }
                 else {
-                    if (organisation==0 && !secteur.equals("TOUT")){
+                    if ( !secteur.equals("TOUT")){
                         if (coordinates.getString("secteur").equals(secteur)){
                             list_a_peupler.add(latLngOrg);}
-                    }
-                    else if ( organisation!=0 && secteur.equals("TOUT")){
-                        if (organ==organisation){
-                            list_a_peupler.add(latLngOrg);
-                        }
                     }
                     else {
                         list_a_peupler.add(latLngOrg);
@@ -462,10 +487,7 @@ public class Classtest  extends AppCompatActivity {
         catch (Exception e){e.printStackTrace();}
         return list_a_peupler;
     }   //RETOURNE UNE LISTE DE LATLON
-
-    public static void new_Laureat_Register(
-            Context context,int id, String nom, String prenom, String gender, String promotion, long filiere, String email,
-            String password, String tel, String dateNow, String description) throws Exception {
+    public static void new_Laureat_Register(Context context,int id, String nom, String prenom, String gender, String promotion, long filiere, String email, String password, String tel, String dateNow, String description) throws Exception {
         JSONObject new_Laureat = new JSONObject();
         new_Laureat.put("id",id);
         new_Laureat.put("nom",nom);
@@ -485,7 +507,6 @@ public class Classtest  extends AppCompatActivity {
         m_jArry.put(new_Laureat);
         write_file_data(context,m_jArry.toString(),laureats);
     }
-
     public static void setNewImgLaureat(Context context,String image,int laureat) throws Exception{
         JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,images_file));
         JSONObject nouveau_image = new JSONObject();
@@ -499,11 +520,7 @@ public class Classtest  extends AppCompatActivity {
         m_jArry.put(nouveau_image);
         write_file_data(context,m_jArry.toString(),images_file);
     }
-
-    public static void new_org_attente_admin(Context context,
-                                             String nom,int laureat,
-                                             double lat,double lon,
-                                             String secteur,String datee,String intitule) throws Exception {
+    public static void new_org_attente_admin(Context context, String nom,int laureat, double lat,double lon, String secteur,String datee,String intitule) throws Exception {
         if (!nom.isEmpty()){
             JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_en_attente));
             JSONObject nouveau_org = new JSONObject();
@@ -517,7 +534,6 @@ public class Classtest  extends AppCompatActivity {
             nouveau_org.put("intitule",intitule);
             m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_en_attente);}
     }
-
     public static void new_org_laureat(Context context,long id_org_selected,int laureat,String date_debut,String fonction) throws Exception {
         JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_laureat));
         JSONObject nouveau_org = new JSONObject();
@@ -528,34 +544,10 @@ public class Classtest  extends AppCompatActivity {
         nouveau_org.put("intitule_fonction",fonction);
         m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_laureat);
     }
-
     public static boolean is_login_valid(Context context,String email,String password)  throws Exception{
         JSONObject jsonObject = getJsonObjectBykey(context,"email",email,laureats);
         return !jsonObject.isNull("id") && jsonObject.getString("password").equals(password);
     }
-
-    public static void changefieldvalue(Context context,boolean newvalue,String cle,int id){
-        try {
-            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,laureats));
-            JSONObject user_actuelle = m_jArry.getJSONObject(id);
-            user_actuelle.put("id",newvalue);
-            m_jArry.remove(id);m_jArry.put(user_actuelle);
-            write_file_data(context,m_jArry.toString(),laureats);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }                                               //CHANGER LA STATUS D UN LAUREAT
-
-    public static void read_json_array(Context context,JSONObject jsonObject,String filename){
-        try {
-            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
-            m_jArry.put(jsonObject);
-            write_file_data(context,m_jArry.toString(),filename);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /*private void read_json(){
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());

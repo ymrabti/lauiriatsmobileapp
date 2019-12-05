@@ -64,7 +64,7 @@ public class RegisterViewModel extends ViewModel {
             String LaureatNom,String LaureatPrenom,  String LaureatNumTel,String emailUser, String Password,
             String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
             long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
-            String date_debut_travail_chez_org_,String description) {
+            String date_debut_travail_chez_org_,String description,long radio) {
         if (!isNomValid(LaureatNom)) {
             registerFormState.setValue(new RegisterFormState(
                     R.string.invalid_Nom,
@@ -140,12 +140,53 @@ public class RegisterViewModel extends ViewModel {
                     null,null,null,null,null,
                     null,null,null,null));
         }
+        else if (radio==0 ) {
+            if (!isSelectDropDownValid(org_selected)){
+                registerFormState.setValue(new RegisterFormState(
+                        null,
+                        null, null,null,
+                        null,null,null,null,
+                        null,null,null,null,null,
+                        null,null,R.string.invalid_org,null));}
+        }
+        else if (radio==1 ) {
+            if (!isNomValid(nomOrgEdited)){
+                registerFormState.setValue(new RegisterFormState(
+                        null,
+                        null, null,null,
+                        null,null,null,R.string.invalid_Nom,
+                        null,null,null,null,null,
+                        null,null,null,null));}
+            else if (!isSelectDropDownValid(secteurOrgEdited)){
+                registerFormState.setValue(new RegisterFormState(
+                        null,
+                        null, null,null,
+                        null,null,null,null,
+                        null,null,null,null,null,
+                        null,null,null,R.string.invalid_secteur));}
+        }
         else if (!isLegalDate(date_debut_travail_chez_org_)) {
             registerFormState.setValue(new RegisterFormState(
                     null,
                     null, null,null,
                     null,null,null,null,
                     null,R.string.invalid_date,null,null,null,
+                    null,null,null,null));
+        }
+        else if (!isNomValid(initulePost)) {
+            registerFormState.setValue(new RegisterFormState(
+                    null,
+                    null, null,null,
+                    null,null,null,null,
+                    null,null,R.string.invalid_Nom,null,null,
+                    null,null,null,null));
+        }
+        else if (!isNomValid(description)) {
+            registerFormState.setValue(new RegisterFormState(
+                    null,
+                    null, null,null,
+                    null,null,null,null,
+                    null,null,null,R.string.invalid_Nom,null,
                     null,null,null,null));
         }
         else {
@@ -168,8 +209,8 @@ public class RegisterViewModel extends ViewModel {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
     }
     boolean isLegalDate(String s) {
-        Matcher m = Pattern.compile("^[0-9]{4}-(((0[13578]|(10|12))-(0[1-9]|[1-2][0-9]|3[0-1]))|(02-(0[1-9]|[1-2][0-9]))|((0[469]|11)-(0[1-9]|[1-2][0-9]|30)))$", Pattern.CASE_INSENSITIVE).matcher(s);
-        return true;
+        Matcher m = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}$", Pattern.CASE_INSENSITIVE).matcher(s);
+        return m.matches();
     }
 
     // A placeholder password validation check
@@ -194,6 +235,9 @@ public class RegisterViewModel extends ViewModel {
     }
     private boolean isSelectDropDownValid(String selcected){
         return !selcected.equals("SELECTIONNER");
+    }
+    private boolean is_radio_valid(long radio){
+        return radio==0||radio==1;
     }
 
 }
