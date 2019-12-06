@@ -1,62 +1,79 @@
 package com.example.annuairelauriats.ui.register;
 
+import android.content.Intent;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.data.RegisterRepository;
-import com.example.annuairelauriats.data.Result;
-import com.example.annuairelauriats.data.model.RegistredUser;
+import com.example.annuairelauriats.ui.home.Classtest;
+import com.example.annuairelauriats.ui.login.LoginActivity;
 
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static com.example.annuairelauriats.ui.home.Classtest.getLastID;
+import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.is_email_exist;
+import static com.example.annuairelauriats.ui.home.Classtest.new_Laureat_Register;
+import static com.example.annuairelauriats.ui.home.Classtest.new_org_attente_admin;
+import static com.example.annuairelauriats.ui.home.Classtest.setNewImgLaureat;
+import static com.example.annuairelauriats.ui.home.Classtest.setPref;
+import static com.example.annuairelauriats.ui.register.RegisterActivity.lat;
+import static com.example.annuairelauriats.ui.register.RegisterActivity.lon;
 
 public class RegisterViewModel extends ViewModel {
     private MutableLiveData<RegisterFormState> registerFormState = new MutableLiveData<>();
-    private MutableLiveData<RegisterResult> registerResult = new MutableLiveData<>();
-    private RegisterRepository registerRepository;
-
-    RegisterViewModel(RegisterRepository registerRepository) {
-        this.registerRepository = registerRepository;
-    }
-
     LiveData<RegisterFormState> getREgisterFormState() {
         return registerFormState;
     }
-
-    LiveData<RegisterResult> getRegistreResult() {
-        return registerResult;
-    }
-
     public void register(
             String emailUser, String Password, String LaureatNom, String LaureatPrenom, String LaureatNumTel,
             String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
             long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
             String date_debut_travail_chez_org_,String description) {
-        // can be launched in a separate asynchronous job
-        Result<RegistredUser> result = registerRepository.Register(
-                emailUser, Password, LaureatNom, LaureatPrenom, LaureatNumTel,
-                LaureatImageBase64, LaureatGender, LaureatPromotion, LaureatFiliere,
-        org_selected, nomOrgEdited, secteurOrgEdited,initulePost,
-                date_debut_travail_chez_org_,description);
+        try {
+            if (!is_email_exist(RegisterActivity.getContextext(),emailUser)){
+                Calendar rightNow = Calendar.getInstance();
+                int seconde = rightNow.get(Calendar.SECOND);int minute = rightNow.get(Calendar.MINUTE);
+                int heur = rightNow.get(Calendar.HOUR_OF_DAY);
+                int jour = rightNow.get(Calendar.DAY_OF_MONTH);int mois = rightNow.get(Calendar.MONTH)+1;
+                int annee = rightNow.get(Calendar.YEAR);
+                String dateNow = annee+"-"+mois+"-"+jour+" "+heur+":"+minute+":"+seconde;
+                int id_laureat_actuelle = getLastID(RegisterActivity.getContextext(),Classtest.laureats);
+                id_connected = id_laureat_actuelle;
+                new_Laureat_Register(
+                        RegisterActivity.getContextext(),id_laureat_actuelle,
+                        LaureatNom+"", LaureatPrenom +"", LaureatGender+"",
+                        LaureatPromotion+"", LaureatFiliere, emailUser+"",
+                        Password+"", LaureatNumTel+"", dateNow+"",
+                        description+"");
+                setNewImgLaureat(RegisterActivity.getContextext(),LaureatImageBase64,id_laureat_actuelle);
+                if(!nomOrgEdited.isEmpty()){
+                    new_org_attente_admin(RegisterActivity.getContextext(),nomOrgEdited+"",id_laureat_actuelle,
+                            lat,lon,secteurOrgEdited,
+                            date_debut_travail_chez_org_+"",initulePost+"");
+                }
+                else{
+                    Classtest.new_org_laureat(RegisterActivity.getContextext(),org_selected,id_laureat_actuelle,
+                            date_debut_travail_chez_org_,initulePost+"");
+                }
+                setPref(LoginActivity.getContexte(),id_connected);
+                RegisterActivity.getContextext().startActivity(new Intent(RegisterActivity.getContextext(), MainActivity.class));
 
-        if (result instanceof Result.Success) {
-            RegistredUser data = ((Result.Success<RegistredUser>) result).getData();
-            registerResult.setValue(new RegisterResult(new RegisterUserView(
-                    data.getEmailUser(),
-                    data.getPassWordUser(),
-                    data.getLaureatNom(),
-                    data.getLaureatPrenom(),
-                    data.getLaureatNumTel(),
-                    data.getLaureatImageBase64(),
-                    data.getLaureatGender(),
-                    data.getLaureatPromotion(),
-                    data.getLaureatFiliere(),
-                    data.getOrg_selected(),data.getNomOrgEdited(),
-                    data.getSecteurOrgEdited(),data.getInitulePost(),data.getDate_debut_travail_chez_org(),data.getDescription())));
-        } else {
-            registerResult.setValue(new RegisterResult(R.string.login_failed));
+            }
+            else{
+                registerFormState.setValue(new RegisterFormState(
+                        null,
+                        null, null,R.string.email_taken,
+                        null,null,null,null,
+                        null,null,null,null,null,
+                        null,null,null,null));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -213,11 +230,9 @@ public class RegisterViewModel extends ViewModel {
         return m.matches();
     }
 
-    // A placeholder password validation check
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
     }
-    // A placeholder password validation check
     private boolean isNomValid(String Nom) {
         return Nom != null && Nom.trim().length() > 3;
     }
@@ -235,9 +250,6 @@ public class RegisterViewModel extends ViewModel {
     }
     private boolean isSelectDropDownValid(String selcected){
         return !selcected.equals("SELECTIONNER");
-    }
-    private boolean is_radio_valid(long radio){
-        return radio==0||radio==1;
     }
 
 }

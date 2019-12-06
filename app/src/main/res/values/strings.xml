@@ -7,7 +7,7 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Parametres</string>
 
-    <string name="menu_home">Accueil</string>
+    <string name="menu_home">Profile</string>
     <string name="menu_gallery">Filter</string>
     <string name="menu_slideshow">Trouver sur la carte</string>
     <string name="menu_tools">Tools</string>
@@ -104,4 +104,5 @@
     <string name="invalid_secteur">choisir secteur</string>
     <string name="invalid_doesnotexist">email n\'existe pas</string>
     <string name="wrong_password">mot de passe erone</string>
+    <string name="email_taken">email deja pris !</string>
 </resources>

@@ -20,7 +20,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
 import static com.example.annuairelauriats.ui.home.Classtest.filiers;
 import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
-import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 import static com.example.annuairelauriats.ui.home.Classtest.images_file;
 import static com.example.annuairelauriats.ui.home.Classtest.laureats;
@@ -61,8 +60,8 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
             filiere.setText(filier.getString("Nom"));
 
 
-            JSONObject org_lau= getJsonObjectBycle(getActivity(),"id_laureat",id_connected,org_laureat);
-            JSONObject org_lau_attente= getJsonObjectBycle(getActivity(),"laureat",id_connected,org_en_attente);
+            JSONObject org_lau= getJsonObjectBycle(getActivity(),"id_laureat",id_selected,org_laureat);
+            JSONObject org_lau_attente= getJsonObjectBycle(getActivity(),"laureat",id_selected,org_en_attente);
             if (!org_lau.isNull("id_org")){
                 JSONObject org= getJsonObjectBycle(getActivity(),"id",org_lau.getInt("id_org"),organismes);
                 organisation.setText(org.getString("org"));
