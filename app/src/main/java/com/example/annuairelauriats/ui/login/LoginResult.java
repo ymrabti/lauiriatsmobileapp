@@ -2,25 +2,27 @@ package com.example.annuairelauriats.ui.login;
 
 import androidx.annotation.Nullable;
 
+import com.example.annuairelauriats.data.model.LoggedInUser;
+
 /**
  * Authentication result : success (user details) or error message.
  */
-class LoginResult {
+public class LoginResult {
     @Nullable
-    private LoggedInUserView success;
+    private LoggedInUser success;
     @Nullable
     private Integer error;
 
-    LoginResult(@Nullable Integer error) {
+    public LoginResult(@Nullable Integer error) {
         this.error = error;
     }
 
-    LoginResult(@Nullable LoggedInUserView success) {
+    public LoginResult(@Nullable LoggedInUser success) {
         this.success = success;
     }
 
     @Nullable
-    LoggedInUserView getSuccess() {
+    LoggedInUser getSuccess() {
         return success;
     }
 

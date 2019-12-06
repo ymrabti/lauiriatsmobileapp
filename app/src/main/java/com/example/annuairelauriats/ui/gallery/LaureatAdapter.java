@@ -18,6 +18,8 @@ import com.example.annuairelauriats.R;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
 
 public class LaureatAdapter extends ArrayAdapter {
@@ -32,7 +34,7 @@ public class LaureatAdapter extends ArrayAdapter {
         TextView nomlaureat;
         TextView orgLaureat;
         TextView descLaureat;
-        ImageView imageLaureat;
+        CircleImageView imageLaureat;
     }
     @SuppressLint("SetTextI18n")
     @Override
@@ -69,6 +71,7 @@ public class LaureatAdapter extends ArrayAdapter {
         }
         else{
             holder.descLaureat.setText("description");
+
         }
         if (!LaureatCourant.getImage().isEmpty()){
             holder.imageLaureat.setImageBitmap(base64toImage(LaureatCourant.getImage()));

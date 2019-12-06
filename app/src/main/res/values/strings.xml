@@ -2,7 +2,7 @@
     <string name="app_name">AnnuaireLauriats</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Prenom Nom</string>
+    <string name="nav_header_title">Annuaire Laureats</string>
     <string name="nav_header_subtitle">username</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Parametres</string>
@@ -102,4 +102,6 @@
     <string name="selectionner_organisation">selectionner organisation</string>
     <string name="invalid_org">selectionner organisation</string>
     <string name="invalid_secteur">choisir secteur</string>
+    <string name="invalid_doesnotexist">email n\'existe pas</string>
+    <string name="wrong_password">mot de passe erone</string>
 </resources>

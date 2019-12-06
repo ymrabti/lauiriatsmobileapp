@@ -23,7 +23,7 @@ public class RegisterDataSource {
             return new Result.Success<>(UserRegister);
         } catch (Exception e)
         {
-            return new Result.Error(new IOException("Error logging in", e));
+            return new Result.ErroOr(new IOException("Error logging in", e));
         }
     }
 

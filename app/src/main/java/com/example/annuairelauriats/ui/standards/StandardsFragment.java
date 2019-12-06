@@ -32,7 +32,6 @@ import static android.app.Activity.RESULT_OK;
 import static com.example.annuairelauriats.ui.home.Classtest.is_login_valid;
 
 public class StandardsFragment extends Fragment {
-
     private TextView result_http_client;private VideoView videoView;private EditText url;
     private ImageView imageView;private EditText password;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,9 +56,7 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    result_http_client.setText("exists : "+is_login_valid(getContext(),
-                            url.getText().toString()+"",
-                            password.getText().toString()+""));
+                    result_http_client.setText(java.util.UUID.randomUUID().toString());
                     /*OpenGallery();
                     Bitmap icon = ((BitmapDrawable) imageView.getDrawable() ).getBitmap();
                     int height = icon.getHeight(),width = icon.getWidth();

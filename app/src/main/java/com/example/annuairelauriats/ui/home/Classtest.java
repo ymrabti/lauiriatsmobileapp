@@ -15,11 +15,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.gallery.Laureat;
 import com.example.annuairelauriats.ui.gallery.LaureatAdapter;
+import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -190,18 +193,24 @@ public class Classtest  extends AppCompatActivity {
             public void onClick(View v) {
                 if (mark==1){
                     peupler_array_list(context,
-                            findbyfiliere.getSelectedItemId(),
-                            findbypromotion.getSelectedItem().toString(),
+                            findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString(),
                             findbyprovince.getSelectedItem().toString(),
                             findbyorganisation.getSelectedItemId(),findbysecteur.getSelectedItem().toString(),listView);
+                    GalleryFragment.org=findbyorganisation.getSelectedItemId();
+                    GalleryFragment.filiere=findbyfiliere.getSelectedItemId();
+                    GalleryFragment.promo=findbypromotion.getSelectedItem().toString();
+                    GalleryFragment.secteur=findbysecteur.getSelectedItem().toString();
                 }
                 else
                 {
-                    show_laureats_on_map(context,findbyfiliere.getSelectedItemId(),
-                            findbypromotion.getSelectedItem().toString()+"",
+                    show_laureats_on_map(context,findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString()+"",
                             findbyprovince.getSelectedItem().toString()+"",findbyorganisation.getSelectedItemId(),
                             findbysecteur.getSelectedItem().toString()+""
                             ,googleMap);
+                    SlideshowFragment.org=findbyorganisation.getSelectedItemId();
+                    SlideshowFragment.filiere=findbyfiliere.getSelectedItemId();
+                    SlideshowFragment.promo=findbypromotion.getSelectedItem().toString();
+                    SlideshowFragment.secteur=findbysecteur.getSelectedItem().toString();
                 }
                 try {
                     write_file_cache(context,findbyorganisation.getSelectedItemId(),
@@ -334,8 +343,9 @@ public class Classtest  extends AppCompatActivity {
         for(int i=0;i<latLngsIds.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLngsIds.get(i).getLatLng());
-            markerOptions.title("org :  "+latLngsIds.get(i).getIden());
+            markerOptions.title(""+latLngsIds.get(i).getIden());
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            //markerOptions.draggable(true);
             gmap.addMarker(markerOptions);
         }
         List<LatLng> latLngListe = peupler_list_latslong(context,filiere,promotion,province,secteurr);
@@ -348,7 +358,6 @@ public class Classtest  extends AppCompatActivity {
     }//AFFICHER LIST DES LATLON SUR LA CARTE
     private static List<Orglatlonid> peupler_list_latslongs(Context context,long filiere, String promotion,String province,long organisation,String secteur){
         List<Orglatlonid> list_orgsIds = new ArrayList<>();
-        List<LatLng> list_a_peupler = new ArrayList<>();
         try {
             JSONArray laureats_finaux = new JSONArray(loadJSONFromAsset(context,laureats));
             for (int i=0;i<laureats_finaux.length();i++){

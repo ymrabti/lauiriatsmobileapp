@@ -1,5 +1,6 @@
 package com.example.annuairelauriats.ui.gallery;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,14 +8,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.tools.ToolsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,35 +25,46 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
+import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
 import static com.example.annuairelauriats.ui.home.Classtest.loadJSONFromAsset;
+import static com.example.annuairelauriats.ui.home.Classtest.organismes;
 import static com.example.annuairelauriats.ui.home.Classtest.peupler_array_list;
 import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 import static com.example.annuairelauriats.ui.home.Classtest.filter;
 
 public class GalleryFragment extends Fragment{
     private ListView malist;public static ArrayList<Laureat> laureats_list;
+    public static long filiere=-1,org=-1;public static String promo="TOUTE",secteur="TOUTE";
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        GalleryViewModel galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
         final TextView textView = root.findViewById(R.id.text_gallery);
-        galleryViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+
         malist = root.findViewById(R.id.list_laureat);
-        int filiere=0,org=0;String promo="TOUT",secteur="TOUT";
-        try {
-            JSONObject filter_json = new JSONObject(
-                    Objects.requireNonNull(loadJSONFromAsset(
-                            Objects.requireNonNull(getActivity()), filter)));
-            filiere=filter_json.getInt("filiere");promo=filter_json.getString("promotion");
-            org=filter_json.getInt("organisme");secteur=filter_json.getString("secteur");
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (filiere==-1 && org==-1&& secteur.equals("TOUTE") && promo.equals(secteur) ){
+            try {
+                JSONObject filter_json = new JSONObject(
+                        Objects.requireNonNull(loadJSONFromAsset(
+                                Objects.requireNonNull(getActivity()), filter)));
+                filiere=filter_json.getInt("filiere");promo=filter_json.getString("promotion");
+                org=filter_json.getInt("organisme");secteur=filter_json.getString("secteur");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            peupler_array_list(getActivity(),filiere,promo,"TOUT",org,secteur,malist);
+            textView.setText("Liste des Laureats");
         }
-        peupler_array_list(getActivity(),filiere,promo,"TOUT",org,secteur,malist);
+        else{
+            try {
+                JSONObject coordinates = getJsonObjectBycle(getActivity(),"id",org,organismes);
+                textView.setText(coordinates.getString("org"));
+                textView.setTextSize(30);
+                peupler_array_list(getActivity(),filiere,promo,"TOUT",org,secteur,malist);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -77,6 +87,12 @@ public class GalleryFragment extends Fragment{
             }
         });
         return root;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        filiere=-1 ; org=-1; secteur="TOUTE"; promo="TOUTE";
     }
 
 }

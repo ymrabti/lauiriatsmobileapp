@@ -1,16 +1,13 @@
 package com.example.annuairelauriats.ui.login;
 
+
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 
 import com.example.annuairelauriats.data.LoginDataSource;
 import com.example.annuairelauriats.data.LoginRepository;
-
 /**
- * ViewModel provider factory to instantiate LoginViewModel.
- * Required given LoginViewModel has a non-empty constructor
- */
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
 
     @NonNull
@@ -24,3 +21,4 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
         }
     }
 }
+            */

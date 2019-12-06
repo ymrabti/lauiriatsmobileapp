@@ -2,9 +2,9 @@
     android:layout_height="wrap_content"
     android:layout_width="wrap_content">
     <gradient android:angle="45"
-        android:startColor="#FFE800"
-        android:centerColor="#FFAF78"
-        android:endColor="#FF9E9E"
+        android:centerColor="#4DB7FF"
+        android:endColor="#55FF55"
+        android:startColor="#FFF641"
         />
 
 </shape>

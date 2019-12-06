@@ -3,9 +3,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.home.Classtest;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -13,6 +20,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONException;
@@ -21,12 +29,15 @@ import org.json.JSONObject;
 import java.util.Objects;
 
 import static com.example.annuairelauriats.ui.home.Classtest.filter;
+import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
 import static com.example.annuairelauriats.ui.home.Classtest.loadJSONFromAsset;
+import static com.example.annuairelauriats.ui.home.Classtest.organismes;
 
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;
      private GoogleMap gmap;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+    public static long filiere=-1,org=-1;public static String promo="TOUTE",secteur="TOUTE";
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
         Bundle mapViewBundle = null;
@@ -71,17 +82,60 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-        gmap.moveCamera(CameraUpdateFactory.newLatLng(ny));
-        int filiere=0,org=0;String promo="TOUT",secteur="TOUT";
-        try {
-            JSONObject filter_json = new JSONObject(
-                    Objects.requireNonNull(loadJSONFromAsset(
-                            Objects.requireNonNull(getActivity()), filter)));
-            filiere=filter_json.getInt("filiere");promo=filter_json.getString("promotion");
-            org=filter_json.getInt("organisme");secteur=filter_json.getString("secteur");
-        } catch (JSONException e) {
-            e.printStackTrace();
+
+        if (filiere==-1 && org==-1&& secteur.equals("TOUTE") && promo.equals(secteur) ){
+            try {
+                JSONObject filter_json = new JSONObject(
+                        Objects.requireNonNull(loadJSONFromAsset(
+                                Objects.requireNonNull(getActivity()), filter)));
+                filiere=filter_json.getInt("filiere");promo=filter_json.getString("promotion");
+                org=filter_json.getInt("organisme");secteur=filter_json.getString("secteur");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Classtest.show_laureats_on_map(getActivity(),filiere,promo,"TOUT",org,secteur,gmap);
         }
-        Classtest.show_laureats_on_map(getActivity(),filiere,promo,"TOUT",org,secteur,gmap);
+        else{
+            Classtest.show_laureats_on_map(getActivity(),filiere,promo,"TOUT",org,secteur,gmap);
+        }
+        gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                GalleryFragment.org=Integer.parseInt(marker.getTitle().trim());
+                GalleryFragment.filiere=filiere;
+                GalleryFragment.promo=promo;
+                GalleryFragment.secteur=secteur;
+                assert getFragmentManager() != null;
+                Fragment fragment = new GalleryFragment();
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
+                return true;
+            }
+        });
+        /*gmap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+                long id_org = Integer.parseInt(marker.getTitle().trim());
+                Toast.makeText(getContext(),"drag start : "+id_org,Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+                long id_org = Integer.parseInt(marker.getTitle().trim());
+                Toast.makeText(getContext(),"drag drag : "+id_org,Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                long id_org = Integer.parseInt(marker.getTitle().trim());
+                Toast.makeText(getContext(),"drag end : "+id_org,Toast.LENGTH_LONG).show();
+            }
+        });*/
     }
+
+
 }
