@@ -5,13 +5,18 @@ public class Laureat {
     private String nom;
     private String organisation;
     private String description;
+    private int id;
     private boolean status;
-    public Laureat(String image ,String name , String org,String desc){
-        this.imgbase64= image;this.nom=name;this.organisation=org;this.description=desc;
+    public Laureat(int id,String image ,String name , String org,String desc){
+        this.imgbase64= image;this.nom=name;this.organisation=org;this.description=desc;this.id = id;
     }
 
     public String getImage() {
         return imgbase64;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getNameLaureat() {

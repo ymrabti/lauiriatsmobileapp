@@ -1,0 +1,31 @@
+<!--
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/map_show_laureat"
+android:name="com.google.android.gms.maps.SupportMapFragment"
+android:layout_width="300dp"
+android:layout_height="300dp"
+    android:layout_gravity="center"
+tools:context="com.example.annuairelauriats.ui.home.Classtest" />-->
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="220dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_constraintCircleRadius="100dp"
+    android:layout_gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <ImageView
+        android:id="@+id/pick_from_gallery"
+        android:layout_width="100dp"
+        android:src="@drawable/ic_menu_gallery"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="100dp"/>
+    <ImageView
+        android:id="@+id/pick_from_camera"
+        android:layout_width="100dp"
+        android:src="@drawable/camera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="100dp"/>
+    
+    </androidx.constraintlayout.widget.ConstraintLayout>

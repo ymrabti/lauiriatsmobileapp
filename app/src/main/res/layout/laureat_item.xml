@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/laureat_actuelle_inlist"
+    android:background="@drawable/colors_laureat_item"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image_laureat"
         android:layout_width="100dp"
         android:layout_height="100dp"

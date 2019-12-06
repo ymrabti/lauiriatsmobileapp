@@ -1,47 +1,44 @@
 package com.example.annuairelauriats.ui.login;
 
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
-import android.util.Patterns;
-
-import com.example.annuairelauriats.data.LoginRepository;
-import com.example.annuairelauriats.data.Result;
-import com.example.annuairelauriats.data.model.LoggedInUser;
+import android.content.Intent;
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
+import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBykey;
+import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.is_email_exist;
+import static com.example.annuairelauriats.ui.home.Classtest.is_password_correct;
+import static com.example.annuairelauriats.ui.home.Classtest.laureats;
+import static com.example.annuairelauriats.ui.home.Classtest.setPref;
 
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
-
-    LoginViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
-    }
-
-    LiveData<LoginFormState> getLoginFormState() {
-        return loginFormState;
-    }
-
-    LiveData<LoginResult> getLoginResult() {
-        return loginResult;
-    }
-
+    LiveData<LoginFormState> getLoginFormState() { return loginFormState; }
     public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
-
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
+        try {
+            if (!is_email_exist(LoginActivity.getContexte(),username)){
+                loginFormState.setValue(new LoginFormState(R.string.invalid_doesnotexist, null));
+            }
+            else {
+                if (!is_password_correct(LoginActivity.getContexte(),username,password)){
+                    loginFormState.setValue(new LoginFormState(null, R.string.wrong_password));
+                }
+                else{
+                    id_connected = getJsonObjectBykey(LoginActivity.getContexte(),"email",username,laureats).getInt("id");
+                    Intent i = new Intent(LoginActivity.getContexte(), MainActivity.class);
+                    setPref(LoginActivity.getContexte(),id_connected);
+                    LoginActivity.getContexte().startActivity(i);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public void loginDataChanged(String username, String password) {
+    void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
@@ -50,20 +47,9 @@ public class LoginViewModel extends ViewModel {
             loginFormState.setValue(new LoginFormState(true));
         }
     }
-
-    // A placeholder username validation check
     private boolean isUserNameValid(String username) {
-        if (username == null) {
-            return false;
-        }
-        if (username.contains("@")) {
-            return Patterns.EMAIL_ADDRESS.matcher(username).matches();
-        } else {
-            return !username.trim().isEmpty();
-        }
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
     }
-
-    // A placeholder password validation check
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
     }

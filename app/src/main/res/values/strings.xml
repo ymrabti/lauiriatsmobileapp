@@ -2,12 +2,12 @@
     <string name="app_name">AnnuaireLauriats</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Prenom Nom</string>
+    <string name="nav_header_title">Annuaire Laureats</string>
     <string name="nav_header_subtitle">username</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Parametres</string>
 
-    <string name="menu_home">Accueil</string>
+    <string name="menu_home">Profile</string>
     <string name="menu_gallery">Filter</string>
     <string name="menu_slideshow">Trouver sur la carte</string>
     <string name="menu_tools">Tools</string>
@@ -20,7 +20,7 @@
 
     <string name="communicate">Partage</string>
     <string name="menu_share">Partager L\'application</string>
-    <string name="menu_send">Envoyer sous message</string>
+    <string name="menu_send">Logout</string>
 
 
     <string name="title_activity_login">Annuaire</string>
@@ -78,11 +78,31 @@
     <string name="enregistrez_vous_ic">Enregistrez Vous</string>
     <string name="intitule_sur_votre_fonction">intitule sur votre fonction</string>
     <string name="petit_description_sur_vous">petit description sur vous</string>
-    <string name="date_hint">date</string>
+    <string name="date_hint">AAAA-MM-JJ</string>
     <string name="filierefiliere">Filiere</string>
+    <string name="invalid_date">date non valide</string>
     <string name="provinceprovince">Province</string>
     <string name="promotionpromotion">Promotion</string>
     <string name="accepter_ou_les_organisations_suivantes">Accepter ou les Organisations suivantes</string>
     <string name="prmpt_prenom_laureat">Votre Prenom</string>
     <string name="invalid_Tel">numero de telephone non valid</string>
+    <string name="mainmainmainmain">main</string>
+    <string name="sellect_gender">sexe</string>
+    <string name="select_filiere">Filiere</string>
+    <string name="select_promotion">promotion</string>
+    <string name="select_Organisation">Organisme</string>
+    <string name="select_secteur">secteur</string>
+    <string name="invalid_gender">selectionner votre genre</string>
+    <string name="invalid_filier">selectionner filiere</string>
+    <string name="invalid_promotion">SELECTIONNER promotion</string>
+    <string name="invalid_image">selectionner une image</string>
+    <string name="selectionner_votre_photo">Selectionner votre photo</string>
+    <string name="secteur_secteur_word">Secteur</string>
+    <string name="invalid_check_radio">choisir une option</string>
+    <string name="selectionner_organisation">selectionner organisation</string>
+    <string name="invalid_org">selectionner organisation</string>
+    <string name="invalid_secteur">choisir secteur</string>
+    <string name="invalid_doesnotexist">email n\'existe pas</string>
+    <string name="wrong_password">mot de passe erone</string>
+    <string name="email_taken">email deja pris !</string>
 </resources>

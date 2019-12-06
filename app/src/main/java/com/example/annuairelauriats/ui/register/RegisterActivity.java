@@ -1,23 +1,21 @@
 package com.example.annuairelauriats.ui.register;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -27,8 +25,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.example.annuairelauriats.MainActivity;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.home.Classtest;
 import com.example.annuairelauriats.ui.login.LoginActivity;
@@ -39,25 +42,33 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Calendar;
+import java.util.Objects;
 
-import android.app.Dialog;
+
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private MapView mapView;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private RegisterViewModel registerViewModel;
-    ImageView imageView;private int year,month,day;
+    public static double lat, lon;
+    private static Context context;
+    ImageView imageView;
     TextView base64TextView;
-    private double lat, lon;
+    long checked_radio;
+    private MapView mapView;
+    private int year, month, day;
+    private RegisterViewModel registerViewModel;
+
+    public static Context getContextext() {
+        return context;
+    }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        registerViewModel = ViewModelProviders.of(this, new RegisterViewModelFactory()).get(RegisterViewModel.class);
+        registerViewModel = ViewModelProviders.of(this).get(RegisterViewModel.class);
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
@@ -75,8 +86,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         base64TextView = findViewById(R.id.register_image_base_64_laureat);  // system                                          8
         imageView = findViewById(R.id.selected_file_image8laureat);   // system
         final EditText passwordEditText = findViewById(R.id.passwordword);  // Laureat                                  8       9
-        RadioGroup radioOrgGroup = findViewById(R.id.radio_organisation);  // system
-        final Spinner organisation =  findViewById(R.id.snipper_select_org);  // org get id put to Laureat_Org                  10
+        final RadioGroup radioOrgGroup = findViewById(R.id.radio_organisation);  // system
+        final Spinner organisation = findViewById(R.id.snipper_select_org);  // org get id put to Laureat_Org                  10
         final EditText nouveau_org_nom = findViewById(R.id.snipper_ecrire_nom_org);  // system                                  11
         final Spinner organisation_secteur = findViewById(R.id.snipper_select_secteur_org);  // system                          12
         final EditText date_debut_chez_org = findViewById(R.id.date_pick_with_org);  // Laureat_Org                             13
@@ -87,16 +98,15 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         final ProgressBar loadingProgressBar = findViewById(R.id.registering);
         final TextView go_to_login = findViewById(R.id.go_to_login);
         Classtest.spinner_list_adapt(getApplicationContext(), gender, "gender", "genders.json", 0);
-        Classtest.spinner_list_adapt(getApplicationContext(), promotion, "promotion", "promotions.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), filiere, "Nom", "filieres.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation, "org", "organismes.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation_secteur, "secteur", "secteurs.json", 0);
-
-        imageView.setImageResource(R.drawable.avatar);
+        final TextView org_select = findViewById(R.id.org_text_view_register);
+        final TextView secteur_select = findViewById(R.id.secteur_org_text_view_register);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                OpenGallery();
+                show_popup();
             }
         });
         go_to_login.setOnClickListener(new View.OnClickListener() {
@@ -106,56 +116,58 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 startActivity(i);
             }
         });
+        context = this;
+        filiere.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                try {
+                    Classtest.promotion_peuplement(RegisterActivity.this, id, promotion);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
-
-
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
+        });
         pick_date_debut_pop_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Dialog dialog=new DatePickerDialog(RegisterActivity.this, new DatePickerDialog.OnDateSetListener() {
+                Dialog dialog = new DatePickerDialog(RegisterActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year_selected, int month_selected, int dayOfMonth) {
                         year = year_selected;
                         month = month_selected;
                         day = dayOfMonth;
-                        date_debut_chez_org.setText(year+"-"+(month+1)+"-"+day);
+                        date_debut_chez_org.setText(year + "-" + (month + 1) + "-" + day);
                     }
-                },year,month,day);
+                }, year, month, day);
                 dialog.show();
-/*                Dialog dialog = new TimePickerDialog(RegisterActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        year = hourOfDay;
-                        month = minute;
-                        date_debut_chez_org.setText(year+" : "+month);
-                    }
-                },year,month,true);dialog.show();*/
             }
         });
-
         radioOrgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = findViewById(checkedId);
+                checked_radio = checkedId;
                 if (radioButton.getText().toString().contains("Organisation")) {
                     nouveau_org_nom.setVisibility(View.GONE);
                     organisation_secteur.setVisibility(View.GONE);
                     mapView.setVisibility(View.GONE);
                     organisation.setVisibility(View.VISIBLE);
+                    org_select.setVisibility(View.VISIBLE);
+                    secteur_select.setVisibility(View.GONE);
                 } else if (radioButton.getText().toString().contains("pas reconnue")) {
                     nouveau_org_nom.setVisibility(View.VISIBLE);
                     organisation_secteur.setVisibility(View.VISIBLE);
                     mapView.setVisibility(View.VISIBLE);
                     organisation.setVisibility(View.GONE);
+                    org_select.setVisibility(View.GONE);
+                    secteur_select.setVisibility(View.VISIBLE);
                 }
-                date_debut_chez_org.setVisibility(View.VISIBLE);
-                intitule_fonction_avec_org.setVisibility(View.VISIBLE);
-                pick_date_debut_pop_up.setVisibility(View.VISIBLE);
             }
         });
-
-
-
         registerViewModel.getREgisterFormState().observe(this, new Observer<RegisterFormState>() {
             @Override
             public void onChanged(@Nullable RegisterFormState registerFormState) {
@@ -163,6 +175,12 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     return;
                 }
                 registerButton.setEnabled(registerFormState.isDataValid());
+                if (registerFormState.isDataValid()) {
+                    registerButton.setBackgroundResource(R.drawable.register);
+                }
+                if (!registerFormState.isDataValid()) {
+                    registerButton.setBackgroundResource(R.drawable.register_disabled);
+                }
                 if (registerFormState.getNomError() != null) {
                     nomEditText.setError(getString(registerFormState.getNomError()));
                 }
@@ -178,132 +196,158 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 if (registerFormState.getPasswordError() != null) {
                     passwordEditText.setError(getString(registerFormState.getPasswordError()));
                 }
+                if (registerFormState.getDateError() != null) {
+                    date_debut_chez_org.setError(getString(registerFormState.getDateError()));
+                }
+                if (registerFormState.getGenderError() != null) {
+                    TextView errorText = (TextView) gender.getSelectedView();
+                    errorText.setError(getString(registerFormState.getGenderError()));
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getGenderError()));//changes the selected item text to this
+                }
+                if (registerFormState.getFiliereError() != null) {
+                    TextView errorText = (TextView) filiere.getSelectedView();
+                    errorText.setError(getString(registerFormState.getFiliereError()));
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getFiliereError()));//changes the selected item text to this
+                }
+                if (registerFormState.getPromotionError() != null) {
+                    TextView errorText = (TextView) promotion.getSelectedView();
+                    errorText.setError("");
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getPromotionError()));//changes the selected item text to this
+                }
+                if (registerFormState.getImageError() != null) {
+                    imageView.setImageResource(R.drawable.errorimage);
+                }
+                if (registerFormState.getIntituleError() != null) {
+                    intitule_fonction_avec_org.setError(getString(registerFormState.getIntituleError()));
+                }
+                if (registerFormState.getDescError() != null) {
+                    description_laureat.setError(getString(registerFormState.getDescError()));
+                }
+                if (registerFormState.getOrgError() != null) {
+                    TextView errorText = (TextView) organisation.getSelectedView();
+                    errorText.setError("");
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getOrgError()));//changes the selected item text to this
+                }
+                if (registerFormState.getSecteurError() != null) {
+                    TextView errorText = (TextView) organisation_secteur.getSelectedView();
+                    errorText.setError("");
+                    errorText.setTextColor(Color.RED);//just to highlight that this is an error
+                    errorText.setText(getString(registerFormState.getSecteurError()));//changes the selected item text to this
+                }
+                if (registerFormState.getNv_org_nom_Error() != null) {
+                    nouveau_org_nom.setError(getString(registerFormState.getNv_org_nom_Error()));
+                }
             }
         });
 
-        registerViewModel.getRegistreResult().observe(this, new Observer<RegisterResult>() {
-            @Override
-            public void onChanged(@Nullable RegisterResult registerResult) {
-                if (registerResult == null) {
-                    return;
-                }
-                loadingProgressBar.setVisibility(View.GONE);
-                if (registerResult.getError() != null) {
-                    showLoginFailed(registerResult.getError());
-                }
-                if (registerResult.getSuccess() != null) {
-                    updateUiWithUser(registerResult.getSuccess());
-                }
-                setResult(Activity.RESULT_OK);//Complete and destroy login activity once successful
-                finish();
-            }
-        });
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
-            @Override public void afterTextChanged(Editable s) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                loadingProgressBar.setVisibility(View.GONE);
                 registerViewModel.loginDataChanged(
-                        nomEditText.getText().toString() +"",
-                        prenomEditText.getText().toString()+"" ,
-                        NumTeleEditText.getText().toString()+"" ,
-                        usernameEditText.getText().toString()+"" ,
-                        passwordEditText.getText().toString()+"" ,
-                        base64TextView.getText().toString() +"",
-                        gender.getSelectedItem().toString()+"" ,
-                        promotion.getSelectedItem().toString()+"",
-                        filiere.getSelectedItemId()+1 ,
-                        organisation.getSelectedItemId()+1 ,
-                        nouveau_org_nom.getText().toString()+"",
-                        organisation_secteur.getSelectedItem().toString()+"",
-                        intitule_fonction_avec_org.getText().toString()+"",
-                        date_debut_chez_org.getText().toString()+"",
-                        description_laureat.getText().toString()+"");
+                        nomEditText.getText().toString() + "",
+                        prenomEditText.getText().toString() + "",
+                        NumTeleEditText.getText().toString() + "",
+                        usernameEditText.getText().toString() + "",
+                        passwordEditText.getText().toString() + "",
+                        base64TextView.getText().toString() + "",
+                        gender.getSelectedItem().toString() + "",
+                        promotion.getSelectedItem().toString() + "",
+                        filiere.getSelectedItemId(),
+                        organisation.getSelectedItemId(),
+                        nouveau_org_nom.getText().toString() + "",
+                        organisation_secteur.getSelectedItem().toString() + "",
+                        intitule_fonction_avec_org.getText().toString() + "",
+                        date_debut_chez_org.getText().toString() + "",
+                        description_laureat.getText().toString() + "",
+                        checked_radio);
             }
         };
         nomEditText.addTextChangedListener(afterTextChangedListener);
+        prenomEditText.addTextChangedListener(afterTextChangedListener);
+        NumTeleEditText.addTextChangedListener(afterTextChangedListener);
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        /*passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    registerViewModel.register(
-                            usernameEditText.getText().toString()+"", passwordEditText.getText().toString()+"",
-                            nomEditText.getText().toString()+"", prenomEditText.getText().toString()+"",
-                            NumTeleEditText.getText().toString()+"",
-                            base64TextView.getText().toString()+"", gender.getSelectedItem().toString()+"",
-                            promotion.getSelectedItem().toString()+"",filiere.getSelectedItem().toString()+"",
-                            "");
-                }
-                return false;
-            }
-        });*/
+        nouveau_org_nom.addTextChangedListener(afterTextChangedListener);
+        base64TextView.addTextChangedListener(afterTextChangedListener);
+        date_debut_chez_org.addTextChangedListener(afterTextChangedListener);
+        intitule_fonction_avec_org.addTextChangedListener(afterTextChangedListener);
+        description_laureat.addTextChangedListener(afterTextChangedListener);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
+                Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                 registerViewModel.register(
-                        usernameEditText.getText().toString()+"" ,
-                        passwordEditText.getText().toString()+"" ,
-                        nomEditText.getText().toString() +"",
-                        prenomEditText.getText().toString()+"" ,
-                        NumTeleEditText.getText().toString()+"" ,
-                        base64TextView.getText().toString() +"",
-                        gender.getSelectedItem().toString()+"" ,
-                        promotion.getSelectedItem().toString()+"",
-                        filiere.getSelectedItemId()+1 ,
-                        organisation.getSelectedItemId()+1 ,
-                        nouveau_org_nom.getText().toString()+"",
-                        organisation_secteur.getSelectedItem().toString()+"",
-                        intitule_fonction_avec_org.getText().toString()+"",
-                        date_debut_chez_org.getText().toString()+"",
-                        description_laureat.getText().toString()+"");
+                        usernameEditText.getText().toString() + "",
+                        passwordEditText.getText().toString() + "",
+                        nomEditText.getText().toString() + "",
+                        prenomEditText.getText().toString() + "",
+                        NumTeleEditText.getText().toString() + "",
+                        Classtest.encodeImage(icon) + "",
+                        gender.getSelectedItem().toString() + "",
+                        promotion.getSelectedItem().toString() + "",
+                        filiere.getSelectedItemId(),
+                        organisation.getSelectedItemId(),
+                        nouveau_org_nom.getText().toString() + "",
+                        organisation_secteur.getSelectedItem().toString() + "",
+                        intitule_fonction_avec_org.getText().toString() + "",
+                        date_debut_chez_org.getText().toString() + "",
+                        description_laureat.getText().toString() + "");
             }
         });
-    }
-    private void updateUiWithUser(RegisterUserView model) {
-        try {
-            Calendar rightNow = Calendar.getInstance();
-            int seconde = rightNow.get(Calendar.SECOND);int minute = rightNow.get(Calendar.MINUTE);int heur = rightNow.get(Calendar.HOUR_OF_DAY);
-            int jour = rightNow.get(Calendar.DAY_OF_MONTH);int mois = rightNow.get(Calendar.MONTH)+1;int annee = rightNow.get(Calendar.YEAR);
-            String dateNow = annee+"-"+mois+"-"+jour+" "+heur+":"+minute+":"+seconde;
-            int id_laureat_actuelle = Classtest.getLastID(this,Classtest.laureats);
-            Classtest.new_Laureat_Register(
-                    this,id_laureat_actuelle,
-                    model.getLaureatNom()+"", model.getLaureatPrenom() +"", model.getLaureatGender()+"",
-                    model.getLaureatPromotion()+"", model.getLaureatFiliere(), model.getEmailUser()+"",
-                    model.getPassWordUser()+"", model.getLaureatNumTel()+"", dateNow+"",
-                    model.getDescription()+"");
-            if (!model.getLaureatImageBase64().isEmpty()){
-                Classtest.setNewImgLaureat(this,model.getLaureatImageBase64(),id_laureat_actuelle);}
-            if(!model.getNomOrgEdited().isEmpty()){
-                Classtest.new_org_attente_admin(this,model.getNomOrgEdited(),id_laureat_actuelle,lat,lon,model.getSecteurOrgEdited());
-            }
-            else{
-                Classtest.new_org_laureat(this,model.getOrg_selected(),id_laureat_actuelle,
-                        model.getDate_debut_travail_chez_org(),model.getInitulePost());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Intent i = new Intent(getApplicationContext(), MainActivity.class);startActivity(i);
-    }
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
-        //Intent i = new Intent(getApplicationContext(), SettingsActivity.class);startActivity(i);
+
     }
     //////////////////////////////////  ACTION IMAGE   /////////////////////////////////////////
 
-    public void OpenGallery(){
+    public void OpenGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        this.startActivityForResult(gallery,100);
+        this.startActivityForResult(gallery, 100);
     }
-    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
-        if(resultCode==RESULT_OK && requestCode==100){
+
+    private void OpenCamera() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, 1337);
+    }
+
+    private void show_popup() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.take_image);
+        dialog.findViewById(R.id.pick_from_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenCamera();
+                dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.pick_from_gallery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenGallery();
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 100) {
             final Uri imageUriii = data.getData();
             try {
                 final InputStream imageStream;
@@ -311,15 +355,25 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 imageStream = getContentResolver().openInputStream(imageUriii);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 imageView.setImageBitmap(selectedImage);
-                String base64 = Classtest.encodeImage(selectedImage);
-                base64TextView.setText(base64);
+                //String base64 = Classtest.encodeImage(selectedImage);
+                base64TextView.setText("selected from gallery\n");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        } else if (resultCode == RESULT_OK && requestCode == 1337) {
+            Bitmap image = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
+            imageView.setImageBitmap(image);
+            //String base64 = Classtest.encodeImage(image);
+            base64TextView.setText("selected from camera\n");
+        } else {
+            imageView.setImageResource(R.drawable.errorimage);
+            base64TextView.setText("");
         }
     }
+
     //////////////////////////////////  MAP   /////////////////////////////////////////
-    @Override public void onSaveInstanceState(@NonNull Bundle outState) {
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
         if (mapViewBundle == null) {
@@ -328,13 +382,45 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         }
         mapView.onSaveInstanceState(mapViewBundle);
     }
-    @Override protected void onResume() { super.onResume();mapView.onResume(); }
-    @Override protected void onStart() { super.onStart();mapView.onStart(); }
-    @Override protected void onStop() { super.onStop();mapView.onStop(); }
-    @Override protected void onPause() { mapView.onPause();super.onPause(); }
-    @Override protected void onDestroy() { mapView.onDestroy();super.onDestroy(); }
-    @Override public void onLowMemory() { super.onLowMemory();mapView.onLowMemory(); }
-    @Override public void onMapReady(GoogleMap googleMap) {
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        mapView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mapView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
         final GoogleMap gmap;
         gmap = googleMap;
         gmap.setMinZoomPreference(1);
@@ -350,7 +436,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             public void onMapClick(LatLng latLng) {
                 gmap.clear();
                 MarkerOptions markerOptions = new MarkerOptions();
-                lat = latLng.latitude;lon = latLng.longitude;
+                lat = latLng.latitude;
+                lon = latLng.longitude;
                 markerOptions.position(latLng);
                 gmap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 gmap.addMarker(markerOptions);

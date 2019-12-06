@@ -13,8 +13,8 @@ public class Result<T> {
         if (this instanceof Result.Success) {
             Result.Success success = (Result.Success) this;
             return "Success[data=" + success.getData().toString() + "]";
-        } else if (this instanceof Result.Error) {
-            Result.Error error = (Result.Error) this;
+        } else if (this instanceof Result.ErroOr) {
+            Result.ErroOr error = (Result.ErroOr) this;
             return "Error[exception=" + error.getError().toString() + "]";
         }
         return "";
@@ -34,10 +34,10 @@ public class Result<T> {
     }
 
     // Error sub-class
-    public final static class Error extends Result {
+    public final static class ErroOr extends Result {
         private Exception error;
 
-        public Error(Exception error) {
+        public ErroOr(Exception error) {
             this.error = error;
         }
 

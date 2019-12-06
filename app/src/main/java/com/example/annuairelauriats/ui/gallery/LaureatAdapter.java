@@ -18,6 +18,10 @@ import com.example.annuairelauriats.R;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
+
 public class LaureatAdapter extends ArrayAdapter {
     private ArrayList<Laureat> listLaureats;
     private Context mContext;
@@ -30,7 +34,7 @@ public class LaureatAdapter extends ArrayAdapter {
         TextView nomlaureat;
         TextView orgLaureat;
         TextView descLaureat;
-        ImageView imageLaureat;
+        CircleImageView imageLaureat;
     }
     @SuppressLint("SetTextI18n")
     @Override
@@ -50,18 +54,35 @@ public class LaureatAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         final Laureat LaureatCourant = listLaureats.get(position);
-        holder.nomlaureat.setText(LaureatCourant.getNameLaureat());
-        holder.orgLaureat.setText(LaureatCourant.getOrganisation());
-        holder.descLaureat.setText(LaureatCourant.getDescription());
-        holder.imageLaureat.setImageResource(R.drawable.avatar);
-        //holder.imageLaureat.setImageBitmap(base64toImage(LaureatCourant.getImage()));
+        if (!LaureatCourant.getNameLaureat().isEmpty()){
+            holder.nomlaureat.setText(LaureatCourant.getNameLaureat());
+        }
+        else{
+            holder.nomlaureat.setText("utilisateur app");
+        }
+        if (!LaureatCourant.getOrganisation().isEmpty()){
+            holder.orgLaureat.setText(LaureatCourant.getOrganisation());
+        }
+        else{
+            holder.orgLaureat.setText("organisation");
+        }
+        if (!LaureatCourant.getDescription().isEmpty()){
+            holder.descLaureat.setText(LaureatCourant.getDescription());
+        }
+        else{
+            holder.descLaureat.setText("description");
+
+        }
+        if (!LaureatCourant.getImage().isEmpty()){
+            holder.imageLaureat.setImageBitmap(base64toImage(LaureatCourant.getImage()));
+        }
+        else{
+            holder.imageLaureat.setImageResource(R.drawable.ing);
+        }
+
+
+        //holder.imageLaureat.setImageResource(R.drawable.avatar);
+
         return convertView;
-    }
-    @SuppressLint("StaticFieldLeak")
-    private Bitmap base64toImage(final String imageString){
-        Bitmap new_bitmap;
-        byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
-        new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-        return new_bitmap;
     }
 }
