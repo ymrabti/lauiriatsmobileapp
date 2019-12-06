@@ -14,7 +14,15 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
+import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
+import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.images_file;
+import static com.example.annuairelauriats.ui.home.Classtest.laureats;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;public static NavigationView navigationView;
@@ -37,14 +45,23 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        /*private CircleImageView imageView;imageView = findViewById(R.id.pdp_show);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageView.setImageResource(R.drawable.bonnet);
-            }
-        });*/
 
+        View headerLayout = navigationView.getHeaderView(0);
+        CircleImageView image_main = headerLayout.findViewById(R.id.pdp_show);
+        TextView nom_prenom = headerLayout.findViewById(R.id.usernameclc);
+        TextView email = headerLayout.findViewById(R.id.email_top_navheader);
+
+        JSONObject laurat_visitee ;
+        try {
+            laurat_visitee = getJsonObjectBycle(this,"id",id_connected,laureats);
+            JSONObject image= getJsonObjectBycle(this,"laureat",id_connected,images_file);
+            image_main.setImageBitmap(base64toImage(image.getString("image")));
+            nom_prenom.setText(laurat_visitee.getString("nom"));
+            nom_prenom.append(" ");nom_prenom.append(laurat_visitee.getString("prenom"));
+            email.setText(laurat_visitee.getString("email"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

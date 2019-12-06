@@ -52,13 +52,10 @@ import android.app.Dialog;
 import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
 
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private MapView mapView;
-    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private RegisterViewModel registerViewModel;
-    ImageView imageView;private int year,month,day;
-    TextView base64TextView;
+    private MapView mapView;private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+    ImageView imageView;private int year,month,day;TextView base64TextView;
     private double lat, lon;long checked_radio;
-
+    private RegisterViewModel registerViewModel;
     @SuppressLint("SetTextI18n")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,12 +94,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         Classtest.spinner_list_adapt(getApplicationContext(), filiere, "Nom", "filieres.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation, "org", "organismes.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation_secteur, "secteur", "secteurs.json", 0);
-
         final TextView org_select = findViewById(R.id.org_text_view_register);
         final TextView secteur_select = findViewById(R.id.secteur_org_text_view_register);
-
-
-
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,14 +109,11 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 startActivity(i);
             }
         });
-
-
         filiere.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 try { Classtest.promotion_peuplement(RegisterActivity.this,id,promotion); }
                 catch (Exception e) { e.printStackTrace(); } }
                 @Override public void onNothingSelected(AdapterView<?> parentView) { }});
-
         pick_date_debut_pop_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,7 +127,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     }
                 },year,month,day);
                 dialog.show(); }});
-
         radioOrgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -162,36 +151,19 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 }
             }
         });
-
-
-
         registerViewModel.getREgisterFormState().observe(this, new Observer<RegisterFormState>() {
             @Override
             public void onChanged(@Nullable RegisterFormState registerFormState) {
-                if (registerFormState == null) {
-                    return;
-                }
+                if (registerFormState == null) { return; }
                 registerButton.setEnabled(registerFormState.isDataValid());
                 if (registerFormState.isDataValid()){registerButton.setBackgroundResource(R.drawable.register);}
                 if (!registerFormState.isDataValid()){registerButton.setBackgroundResource(R.drawable.register_disabled);}
-                if (registerFormState.getNomError() != null) {
-                    nomEditText.setError(getString(registerFormState.getNomError()));
-                }
-                if (registerFormState.getPreNomError() != null) {
-                    prenomEditText.setError(getString(registerFormState.getPreNomError()));
-                }
-                if (registerFormState.getNumeroTelError() != null) {
-                    NumTeleEditText.setError(getString(registerFormState.getNumeroTelError()));
-                }
-                if (registerFormState.getUsernameError() != null) {
-                    usernameEditText.setError(getString(registerFormState.getUsernameError()));
-                }
-                if (registerFormState.getPasswordError() != null) {
-                    passwordEditText.setError(getString(registerFormState.getPasswordError()));
-                }
-                if (registerFormState.getDateError() != null) {
-                    date_debut_chez_org.setError(getString(registerFormState.getDateError()));
-                }
+                if (registerFormState.getNomError() != null) { nomEditText.setError(getString(registerFormState.getNomError())); }
+                if (registerFormState.getPreNomError()!=null){prenomEditText.setError(getString(registerFormState.getPreNomError())); }
+                if (registerFormState.getNumeroTelError() != null) {NumTeleEditText.setError(getString(registerFormState.getNumeroTelError())); }
+                if (registerFormState.getUsernameError() != null) { usernameEditText.setError(getString(registerFormState.getUsernameError())); }
+                if (registerFormState.getPasswordError() != null) { passwordEditText.setError(getString(registerFormState.getPasswordError())); }
+                if (registerFormState.getDateError() != null) { date_debut_chez_org.setError(getString(registerFormState.getDateError())); }
                 if (registerFormState.getGenderError() != null) {
                     TextView errorText = (TextView)gender.getSelectedView();
                     errorText.setError(getString(registerFormState.getGenderError()));
@@ -287,22 +259,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         date_debut_chez_org.addTextChangedListener(afterTextChangedListener);
         intitule_fonction_avec_org.addTextChangedListener(afterTextChangedListener);
         description_laureat.addTextChangedListener(afterTextChangedListener);
-        /*passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    registerViewModel.register(
-                            usernameEditText.getText().toString()+"", passwordEditText.getText().toString()+"",
-                            nomEditText.getText().toString()+"", prenomEditText.getText().toString()+"",
-                            NumTeleEditText.getText().toString()+"",
-                            base64TextView.getText().toString()+"", gender.getSelectedItem().toString()+"",
-                            promotion.getSelectedItem().toString()+"",filiere.getSelectedItem().toString()+"",
-                            "");
-                }
-                return false;
-            }
-        });*/
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override

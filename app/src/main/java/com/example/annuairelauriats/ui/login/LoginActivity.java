@@ -1,8 +1,5 @@
 package com.example.annuairelauriats.ui.login;
 
-import android.app.Activity;
-
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -11,19 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.Html;
-import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -32,7 +23,6 @@ import android.widget.Toast;
 
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.data.Result;
 import com.example.annuairelauriats.ui.register.RegisterActivity;
 
 import static com.example.annuairelauriats.ui.home.Classtest.getPref;
@@ -95,34 +85,6 @@ private static Context context ;
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
 
-         /**passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
-                }
-                return false;
-            }
-        });
-
-
-
-          LoginResult loginResult= loginViewModel.getLoginResult().getValue();
-          if (loginResult == null) {
-          return;
-          }
-          if (loginResult.getError() != null) {
-          Toast.makeText(getApplicationContext(), "erreur connexion", Toast.LENGTH_SHORT).show();
-          }
-          if (loginResult.getSuccess() != null) {
-          Toast.makeText(getApplicationContext(), "connexion validee", Toast.LENGTH_SHORT).show();
-          }
-
-          */
-
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,19 +94,8 @@ private static Context context ;
                     @Override public void onFinish() {
                         loginViewModel.login(usernameEditText.getText().toString(),passwordEditText.getText().toString());
                         loadingProgressBar.setVisibility(View.GONE);
-                        /**LoginResult loginResult= loginViewModel.getLoginResult();
-                        if (loginResult == null) {
-                            return;
-                        }
-                        if (loginResult.getError() != null) {
-                            Toast.makeText(getApplicationContext(), "erreur connexion", Toast.LENGTH_SHORT).show();
-                        }
-                        else if (loginResult.getSuccess() != null) {
-                            Toast.makeText(getApplicationContext(), "connexion validee", Toast.LENGTH_SHORT).show();
-                        }*/
                     }
                 };c.start();
-                /***/
             }
         });
     }
@@ -152,12 +103,4 @@ private static Context context ;
     public static Context getContexte() {
         return context;
     }
-    /**    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-    }
-
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
-    }*/
 }
