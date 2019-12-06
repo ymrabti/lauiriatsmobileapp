@@ -2,6 +2,7 @@ package com.example.annuairelauriats.ui.home;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -46,7 +47,7 @@ import java.util.List;
 import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_list;
 
 public class Classtest  extends AppCompatActivity {
-    public static int id_connected=1,id_selected;
+    public static int id_connected,id_selected;
     public static String laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
             provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
@@ -553,10 +554,23 @@ public class Classtest  extends AppCompatActivity {
         nouveau_org.put("intitule_fonction",fonction);
         m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_laureat);
     }
-    public static boolean is_login_valid(Context context,String email,String password)  throws Exception{
-        JSONObject jsonObject = getJsonObjectBykey(context,"email",email,laureats);
-        return !jsonObject.isNull("id") && jsonObject.getString("password").equals(password);
+
+    public static boolean is_email_exist(Context context,String email) throws Exception {
+        return !getJsonObjectBykey(context,"email",email,laureats).isNull("id");
     }
+    public static boolean is_password_correct(Context context,String email,String password) throws Exception {
+        return getJsonObjectBykey(context,"email",email,laureats).getString("password").equals(password);
+    }
+    public static int getPref(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt("id",-1);
+    }
+    public static void setPref(Context context,int user_id){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("id",user_id);editor.apply();
+    }
+
     /*private void read_json(){
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());

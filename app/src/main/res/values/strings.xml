@@ -20,7 +20,7 @@
 
     <string name="communicate">Partage</string>
     <string name="menu_share">Partager L\'application</string>
-    <string name="menu_send">Envoyer sous message</string>
+    <string name="menu_send">Logout</string>
 
 
     <string name="title_activity_login">Annuaire</string>

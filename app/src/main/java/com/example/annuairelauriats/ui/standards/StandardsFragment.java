@@ -3,7 +3,9 @@ package com.example.annuairelauriats.ui.standards;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,8 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static android.app.Activity.RESULT_OK;
-import static com.example.annuairelauriats.ui.home.Classtest.is_login_valid;
-
 public class StandardsFragment extends Fragment {
     private TextView result_http_client;private VideoView videoView;private EditText url;
     private ImageView imageView;private EditText password;
@@ -56,8 +56,9 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    result_http_client.setText(java.util.UUID.randomUUID().toString());
-                    /*OpenGallery();
+                    getPref();
+                    /*result_http_client.setText(java.util.UUID.randomUUID().toString());
+                    OpenGallery();
                     Bitmap icon = ((BitmapDrawable) imageView.getDrawable() ).getBitmap();
                     int height = icon.getHeight(),width = icon.getWidth();
                     result_http_client.setText(height+" * "+width);
@@ -102,7 +103,26 @@ public class StandardsFragment extends Fragment {
                 }
             }
         });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setPref(url.getText().toString(),password.getText().toString());
+            }
+        });
         return root;
+    }
+
+
+    public void getPref(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("username", Context.MODE_PRIVATE);
+        String usename = sharedPreferences.getString("username","");
+        String password = sharedPreferences.getString("password","");
+        result_http_client.append(usename +"  "+password+"\n");
+    }
+    public void setPref(String username,String password){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("username", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("username",username);editor.putString("password",password);editor.apply();
     }
 
 

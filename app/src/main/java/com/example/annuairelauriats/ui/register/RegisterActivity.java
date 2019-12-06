@@ -328,13 +328,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
-        findViewById(R.id.enregitrer_vous).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent main = new Intent(getApplicationContext(),MainActivity.class);
-                startActivity(main);
-            }
-        });
     }
     private void updateUiWithUser(RegisterUserView model) {
         try {

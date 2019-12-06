@@ -17,7 +17,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.Html;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -32,18 +35,27 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.data.Result;
 import com.example.annuairelauriats.ui.register.RegisterActivity;
 
+import static com.example.annuairelauriats.ui.home.Classtest.getPref;
+import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
+
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-private static Context context;
+private static Context context ;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        int user = getPref(this);
+        if (user!=-1){
+            id_connected = user;
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);}
+        else{Toast.makeText(this,"not connected",Toast.LENGTH_LONG).show();}
 
-        final EditText usernameEditText = findViewById(R.id.username);
-        final EditText passwordEditText = findViewById(R.id.password);
+        final EditText usernameEditText = findViewById(R.id.username);usernameEditText.setText("younesmrabti50@gmail.com");
+        final EditText passwordEditText = findViewById(R.id.password);passwordEditText.setText("jfhdhhdhhdxbjj");
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
         final TextView go_to_register = findViewById(R.id.go_to_register);
@@ -54,6 +66,7 @@ private static Context context;
                 startActivity(i);
             }
         });
+        context=this;
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
@@ -72,16 +85,11 @@ private static Context context;
                 }
             }
         });
-        /***/
-
-
-         /**    */
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                loginViewModel.loginDataChanged(usernameEditText.getText().toString(), passwordEditText.getText().toString());
             }
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
@@ -136,8 +144,7 @@ private static Context context;
                         }*/
                     }
                 };c.start();
-                /**Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);*/
+                /***/
             }
         });
     }

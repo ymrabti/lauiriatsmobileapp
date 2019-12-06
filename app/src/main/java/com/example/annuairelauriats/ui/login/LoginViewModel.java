@@ -14,6 +14,14 @@ import com.example.annuairelauriats.data.LoginDataSource;
 import com.example.annuairelauriats.data.Result;
 import com.example.annuairelauriats.data.model.LoggedInUser;
 import com.example.annuairelauriats.R;
+
+import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBykey;
+import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.is_email_exist;
+import static com.example.annuairelauriats.ui.home.Classtest.is_password_correct;
+import static com.example.annuairelauriats.ui.home.Classtest.laureats;
+import static com.example.annuairelauriats.ui.home.Classtest.setPref;
+
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
@@ -26,10 +34,6 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
-    /**LoginViewModel(LoginDataSource loginDataSource) {
-        this.loginDataSource = loginDataSource;
-    }
-*/
     public void login(String username, String password) {
         /**Result<LoggedInUser> result = loginDataSource.login(username, password);
         if (result instanceof Result.Success) {
@@ -39,18 +43,23 @@ public class LoginViewModel extends ViewModel {
             loginResult=new LoginResult(100);
         }
          */
-        if (!isemailexist(username)){
-            loginFormState.setValue(new LoginFormState(R.string.invalid_doesnotexist, null));
-        }
-        else {
-            if (!(username.equals("younesmrabti50@gmail.com") && password.equals("111111"))){
-                loginFormState.setValue(new LoginFormState(null, R.string.wrong_password));
+        try {
+            if (!is_email_exist(LoginActivity.getContexte(),username)){
+                loginFormState.setValue(new LoginFormState(R.string.invalid_doesnotexist, null));
             }
-            else{
-                Toast.makeText(LoginActivity.getContexte(),"successfull",Toast.LENGTH_LONG).show();
-                /**Intent i = new Intent(LoginActivity.getContexte(), MainActivity.class);
-                LoginActivity.getContexte().startActivity(i);*/
+            else {
+                if (!is_password_correct(LoginActivity.getContexte(),username,password)){
+                    loginFormState.setValue(new LoginFormState(null, R.string.wrong_password));
+                }
+                else{
+                    id_connected = getJsonObjectBykey(LoginActivity.getContexte(),"email",username,laureats).getInt("id");
+                    Intent i = new Intent(LoginActivity.getContexte(), MainActivity.class);
+                    setPref(LoginActivity.getContexte(),id_connected);
+                    LoginActivity.getContexte().startActivity(i);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -79,6 +88,10 @@ public class LoginViewModel extends ViewModel {
     private boolean iscomibinationvalid(String email,String password){
         return email.equals("younesmrabti50@gmail.com") && password.equals("123123");
     }
+    /**LoginViewModel(LoginDataSource loginDataSource) {
+     this.loginDataSource = loginDataSource;
+     }
+     */
     /**private LoginRepository loginRepository;
      LoginViewModel(LoginRepository loginRepository) {
      this.loginRepository = loginRepository;
