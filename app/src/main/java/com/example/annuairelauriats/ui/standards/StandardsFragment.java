@@ -90,7 +90,6 @@ public class StandardsFragment extends Fragment {
                     String string = "{\n" +
                             "\"organisme\":1,\"province\":djnfjj,\"filiere\":3,\"promotion\":\"2020\"\n" +
                             "}";
-                    Classtest.write_file_cache(getContext(),string);
                     result_http_client.setText(Classtest.loadJSONfromCACHE(getContext()));
                     assert getFragmentManager() != null;
                     Fragment fragment = new HelpFragment();

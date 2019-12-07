@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -17,54 +16,38 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.tools.ToolsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Objects;
-
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
-import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
-import static com.example.annuairelauriats.ui.home.Classtest.loadJSONFromAsset;
-import static com.example.annuairelauriats.ui.home.Classtest.organismes;
+import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
+import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
 import static com.example.annuairelauriats.ui.home.Classtest.peupler_array_list;
 import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
-import static com.example.annuairelauriats.ui.home.Classtest.filter;
 
 public class GalleryFragment extends Fragment{
     private ListView malist;public static ArrayList<Laureat> laureats_list;
-    public static long filiere=-1,org=-1;public static String promo="TOUTE",secteur="TOUTE";
+
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        final TextView textView = root.findViewById(R.id.text_gallery);
-
+        TextView textView = root.findViewById(R.id.text_gallery);
         malist = root.findViewById(R.id.list_laureat);
-        if (filiere==-1 && org==-1&& secteur.equals("TOUTE") && promo.equals(secteur) ){
-            try {
-                JSONObject filter_json = new JSONObject(
-                        Objects.requireNonNull(loadJSONFromAsset(
-                                Objects.requireNonNull(getActivity()), filter)));
-                filiere=filter_json.getInt("filiere");promo=filter_json.getString("promotion");
-                org=filter_json.getInt("organisme");secteur=filter_json.getString("secteur");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            peupler_array_list(getActivity(),filiere,promo,"TOUT",org,secteur,malist);
+
+        long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
+        String promo = get_filter_pref_string(getActivity(), "promotion");
+        String secteur ;long org;
+        try {
+            assert getArguments() != null;
+            org =getArguments().getLong("organisation");secteur="TOUT";
+            textView.setText("organisation\n"+ filiere +" "+ promo +" "+org+" "+ secteur);
+
+        }
+        catch(Exception e){
+            org = get_filter_pref_long(getActivity(), "organisation");
+            secteur= get_filter_pref_string(getActivity(), "sector");
             textView.setText("Liste des Laureats");
         }
-        else{
-            try {
-                JSONObject coordinates = getJsonObjectBycle(getActivity(),"id",org,organismes);
-                textView.setText(coordinates.getString("org"));
-                textView.setTextSize(30);
-                peupler_array_list(getActivity(),filiere,promo,"TOUT",org,secteur,malist);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
+        peupler_array_list(getActivity(), filiere, promo,"TOUT", org, secteur,malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -72,10 +55,8 @@ public class GalleryFragment extends Fragment{
                         id_selected = laureat.getId();
                         assert getFragmentManager() != null;
                         Fragment fragment = new ToolsFragment();
-                        FragmentManager fm = getFragmentManager();
-                        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                         fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
-                        fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
                     }}
         );
@@ -87,12 +68,6 @@ public class GalleryFragment extends Fragment{
             }
         });
         return root;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        filiere=-1 ; org=-1; secteur="TOUTE"; promo="TOUTE";
     }
 
 }
