@@ -224,6 +224,35 @@ public class Classtest  extends AppCompatActivity {
         dialogFilter.setCancelable(false);
         dialogFilter.show();
     }
+    private static List<String> peupler_list(Context context,String Champ,String file,int mark){
+        List<String> list_a_peupler = new ArrayList<>();
+        if (mark==1){list_a_peupler.add("TOUT");}
+        else{list_a_peupler.add("SELECTIONNER");}
+        try {
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,file));
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+                list_a_peupler.add(jo_inside.getString(Champ)+"");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list_a_peupler;
+    }   //RETOURNE UNE LIST PEUPLE PRET POUR DROP DOWN
+    public static void promotion_peuplement(Context context,long id,Spinner spinner) throws Exception {
+        ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
+        Calendar rightNow = Calendar.getInstance();
+        if (id!=0){
+            JSONObject Filiere_Selected = getJsonObjectBycle(context,"id",id,filiers);
+            final int premier_promotion= Integer.parseInt(Filiere_Selected.getString("Date_Creation").substring(0,4).trim());
+            for (int i=premier_promotion;i<=rightNow.get(Calendar.YEAR);i++){
+                promos_filier.add(i+"");
+            }
+        }
+        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
+        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(list_adapter);
+    } //AFFICHE POPUP POUR UN FILTRE
     public static void spinner_list_adapt(Context context, Spinner spinner, String champ, String fichier,int mark){
         List<String> list_items = peupler_list(context,champ,fichier,mark);
         ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,list_items);
@@ -308,78 +337,25 @@ public class Classtest  extends AppCompatActivity {
         for(int i=0;i<latLngsIds.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLngsIds.get(i).getLatLng());
-            builder.include(latLngsIds.get(i).getLatLng());
             markerOptions.title(""+latLngsIds.get(i).getIden());
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            builder.include(latLngsIds.get(i).getLatLng());markerOptions.flat(true);
             gmap.addMarker(markerOptions);
         }
-        /**List<LatLng> latLngListe = peupler_list_latslong(context,filiere,promotion,province,secteurr);
+        /***/List<Orglatlonid> latLngListe = peupler_list_latslong(context,filiere,promotion,province,secteurr);
          for(int i=0;i<latLngListe.size();i++){
          MarkerOptions markerOptions = new MarkerOptions();
-         markerOptions.position(latLngListe.get(i));
-         builder.include(latLngListe.get(i));
+         markerOptions.position(latLngListe.get(i).getLatLng());
+         markerOptions.title(""+latLngListe.get(i).getIden());
          markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+         builder.include(latLngListe.get(i).getLatLng());markerOptions.flat(false);
          gmap.addMarker(markerOptions);
-         }*/
+         }
         LatLngBounds bounds = builder.build();
         int padding = 50;
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
         gmap.moveCamera(cu);gmap.animateCamera(cu);
     }//AFFICHER LIST DES LATLON SUR LA CARTE
-    private static JSONArray checkField(String cle,String valeur,JSONArray m_jArry){
-        JSONArray array_checked = new JSONArray();
-        if (!valeur.equals("TOUT")){
-            for (int i = 0; i < m_jArry.length(); i++) {
-                try {
-                    JSONObject jo_inside = m_jArry.getJSONObject(i);
-                    if (jo_inside.getString(cle).equals(valeur) ){
-                        array_checked.put(jo_inside);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        else{
-            array_checked = m_jArry;
-        }
-        return array_checked;
-    }
-    private static JSONArray checkFieldInteger(String cle,long valeur,JSONArray m_jArry){
-        JSONArray array_checked = new JSONArray();
-        if (valeur!=0){
-            try {
-                for (int i = 0; i < m_jArry.length(); i++) {
-                    JSONObject jo_inside = m_jArry.getJSONObject(i);
-                    if (jo_inside.getInt(cle)==valeur){
-                        array_checked.put(jo_inside);
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else{
-            array_checked = m_jArry;
-        }
-        return array_checked;
-    }
-    private static List<String> peupler_list(Context context,String Champ,String file,int mark){
-        List<String> list_a_peupler = new ArrayList<>();
-        if (mark==1){list_a_peupler.add("TOUT");}
-        else{list_a_peupler.add("SELECTIONNER");}
-        try {
-            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,file));
-            for (int i = 0; i < m_jArry.length(); i++) {
-                JSONObject jo_inside = m_jArry.getJSONObject(i);
-                list_a_peupler.add(jo_inside.getString(Champ)+"");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list_a_peupler;
-    }   //RETOURNE UNE LIST PEUPLE PRET POUR DROP DOWN
     private static List<Orglatlonid> peupler_list_latslongs(Context context,long filiere, String promotion,String province,long organisation,String secteur){
         List<Orglatlonid> list_orgsIds = new ArrayList<>();
         try {
@@ -461,29 +437,17 @@ public class Classtest  extends AppCompatActivity {
         catch (Exception e){e.printStackTrace();}
         return list_orgsIds;
     }
-    public static void promotion_peuplement(Context context,long id,Spinner spinner) throws Exception {
-        ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
-        Calendar rightNow = Calendar.getInstance();
-        if (id!=0){
-            JSONObject Filiere_Selected = getJsonObjectBycle(context,"id",id,filiers);
-            final int premier_promotion= Integer.parseInt(Filiere_Selected.getString("Date_Creation").substring(0,4).trim());
-            for (int i=premier_promotion;i<=rightNow.get(Calendar.YEAR);i++){
-                promos_filier.add(i+"");
-            }
-        }
-        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
-        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(list_adapter);
-    } //AFFICHE POPUP POUR UN FILTRE
-    private static List<LatLng> peupler_list_latslong(Context context,long filiere, String promotion,String province,String secteur){
-        List<LatLng> list_a_peupler = new ArrayList<>();
+    private static List<Orglatlonid> peupler_list_latslong(Context context, long filiere, String promotion, String province, String secteur){
+        List<Orglatlonid> list_orgsIds = new ArrayList<>();
         try {
             JSONArray orgs = new JSONArray(loadJSONFromAsset(context,org_en_attente));
             for (int i=0;i<orgs.length();i++){
                 JSONObject org_courant = orgs.getJSONObject(i);
-                //long id_laureat = org_courant.getInt("laureat");
+                long id_laureat = org_courant.getInt("laureat");
                 LatLng latLngOrg = new LatLng(org_courant.getDouble("latitude"),
-                        org_courant.getDouble("longitude"));list_a_peupler.add(latLngOrg);
+                        org_courant.getDouble("longitude"));
+                Orglatlonid orglatlonid = new Orglatlonid(latLngOrg,id_laureat);
+                list_orgsIds.add(orglatlonid);
 
                 /**if (filiere!=0 && !promotion.equals("TOUT")){
                     if (laureat_courant.getString("promotion").equals(promotion) && laureat_courant.getInt("filiere")==filiere){
@@ -531,7 +495,46 @@ public class Classtest  extends AppCompatActivity {
 
         }
         catch (Exception e){e.printStackTrace();}
-        return list_a_peupler;
+        return list_orgsIds;
+    }
+    private static JSONArray checkField(String cle,String valeur,JSONArray m_jArry){
+        JSONArray array_checked = new JSONArray();
+        if (!valeur.equals("TOUT")){
+            for (int i = 0; i < m_jArry.length(); i++) {
+                try {
+                    JSONObject jo_inside = m_jArry.getJSONObject(i);
+                    if (jo_inside.getString(cle).equals(valeur) ){
+                        array_checked.put(jo_inside);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else{
+            array_checked = m_jArry;
+        }
+        return array_checked;
+    }
+    private static JSONArray checkFieldInteger(String cle,long valeur,JSONArray m_jArry){
+        JSONArray array_checked = new JSONArray();
+        if (valeur!=0){
+            try {
+                for (int i = 0; i < m_jArry.length(); i++) {
+                    JSONObject jo_inside = m_jArry.getJSONObject(i);
+                    if (jo_inside.getInt(cle)==valeur){
+                        array_checked.put(jo_inside);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        else{
+            array_checked = m_jArry;
+        }
+        return array_checked;
     }   //RETOURNE UNE LISTE DE LATLON
 
 

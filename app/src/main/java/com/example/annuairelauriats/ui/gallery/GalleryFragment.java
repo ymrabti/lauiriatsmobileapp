@@ -16,11 +16,16 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.tools.ToolsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
+import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
+import static com.example.annuairelauriats.ui.home.Classtest.organismes;
 import static com.example.annuairelauriats.ui.home.Classtest.peupler_array_list;
 import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 
@@ -39,8 +44,8 @@ public class GalleryFragment extends Fragment{
         try {
             assert getArguments() != null;
             org =getArguments().getLong("organisation");secteur="TOUT";
-            textView.setText("organisation\n"+ filiere +" "+ promo +" "+org+" "+ secteur);
-
+            JSONObject jsonObject= getJsonObjectBycle(getActivity(),"id",org,organismes);
+            textView.setText(jsonObject.getString("org"));
         }
         catch(Exception e){
             org = get_filter_pref_long(getActivity(), "organisation");

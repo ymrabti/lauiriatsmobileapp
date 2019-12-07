@@ -3,6 +3,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -11,6 +13,7 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.home.Classtest;
+import com.example.annuairelauriats.ui.tools.ToolsFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,6 +25,7 @@ import java.util.Objects;
 
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
+import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;
@@ -80,20 +84,22 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
             @Override
             public boolean onMarkerClick(Marker marker) {
                 assert getFragmentManager() != null;
-                Bundle bundle=new Bundle();
-                bundle.putString("message", "From Activity");
-                bundle.putString("sector", "From Activity");
-                bundle.putString("promotion", "From Activity");
-                bundle.putLong("organisation", Integer.parseInt(marker.getTitle().trim()));
-                bundle.putString("branch", "From Activity");
-                Fragment fragment = new GalleryFragment();
-                Fragment fragmente = new HelpFragment();
-                fragment.setArguments(bundle);
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, fragmente);
-                fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
-                fragmentTransaction.commit();
-                MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
+                fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+                if(marker.isFlat()){
+                    Fragment fragment = new GalleryFragment();
+                    Bundle bundle=new Bundle();
+                    bundle.putLong("organisation", Integer.parseInt(marker.getTitle().trim()));
+                    fragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
+                    fragmentTransaction.commit();
+                    MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
+                }
+                else{
+                    id_selected=Integer.parseInt(marker.getTitle().trim());
+                    fragmentTransaction.replace(R.id.nav_host_fragment, new ToolsFragment());
+                    fragmentTransaction.commit();
+                }
                 return true;
             }
         });
