@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -46,6 +47,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Objects;
+
+import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
+import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
 
 
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -103,6 +107,10 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         Classtest.spinner_list_adapt(getApplicationContext(), organisation_secteur, "secteur", "secteurs.json", 0);
         final TextView org_select = findViewById(R.id.org_text_view_register);
         final TextView secteur_select = findViewById(R.id.secteur_org_text_view_register);
+        Drawable drawable = getDrawable(R.drawable.ing);
+        assert drawable != null;
+        imageView.setImageBitmap(resize_drawable(drawable));
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -176,7 +184,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 }
                 registerButton.setEnabled(registerFormState.isDataValid());
                 if (registerFormState.isDataValid()) {
-                    registerButton.setBackgroundResource(R.drawable.register);
+                    registerButton.setBackgroundResource(R.drawable.img_356567_unclicked);
                 }
                 if (!registerFormState.isDataValid()) {
                     registerButton.setBackgroundResource(R.drawable.register_disabled);
@@ -218,7 +226,9 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     errorText.setText(getString(registerFormState.getPromotionError()));//changes the selected item text to this
                 }
                 if (registerFormState.getImageError() != null) {
-                    imageView.setImageResource(R.drawable.errorimage);
+                    Drawable drawable = getDrawable(R.drawable.errorimage);
+                    assert drawable != null;
+                    imageView.setImageBitmap(resize_drawable(drawable));
                 }
                 if (registerFormState.getIntituleError() != null) {
                     intitule_fonction_avec_org.setError(getString(registerFormState.getIntituleError()));
@@ -291,6 +301,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
+                registerButton.setBackgroundResource(R.drawable.register);
                 Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                 registerViewModel.register(
                         usernameEditText.getText().toString() + "",
@@ -354,19 +365,20 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 assert imageUriii != null;
                 imageStream = getContentResolver().openInputStream(imageUriii);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                imageView.setImageBitmap(selectedImage);
-                //String base64 = Classtest.encodeImage(selectedImage);
+                imageView.setImageBitmap(resize_bitmap(selectedImage));
                 base64TextView.setText("selected from gallery\n");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         } else if (resultCode == RESULT_OK && requestCode == 1337) {
-            Bitmap image = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-            imageView.setImageBitmap(image);
-            //String base64 = Classtest.encodeImage(image);
+            Bitmap selectedImage = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
+            assert selectedImage != null;
+            imageView.setImageBitmap(resize_bitmap(selectedImage));
             base64TextView.setText("selected from camera\n");
         } else {
-            imageView.setImageResource(R.drawable.errorimage);
+            Drawable drawable = getDrawable(R.drawable.errorimage);
+            assert drawable != null;
+            imageView.setImageBitmap(resize_drawable(drawable));
             base64TextView.setText("");
         }
     }

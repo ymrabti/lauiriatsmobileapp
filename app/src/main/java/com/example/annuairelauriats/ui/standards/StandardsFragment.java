@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -29,6 +31,7 @@ import com.example.annuairelauriats.R;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 public class StandardsFragment extends Fragment {
@@ -56,8 +59,21 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    getPref();
-                    /*result_http_client.setText(java.util.UUID.randomUUID().toString());
+
+                    Drawable drawable = Objects.requireNonNull(getActivity()).getDrawable(R.drawable.ing);
+                    assert drawable != null;
+                    Bitmap b = ((BitmapDrawable)drawable).getBitmap();
+                    int width = drawable.getIntrinsicWidth(),heigh=drawable.getIntrinsicHeight();
+                    float scaleFactor =(float)200/Math.max(heigh,width);
+                    int sizeX =(Integer) Math.round(width * scaleFactor);
+                    int sizeY = (Integer) Math.round(heigh* scaleFactor);
+                    result_http_client.append("drawable size : "+width+"  X "+heigh+"\n");
+                    result_http_client.append("resize : "+sizeX+"  X "+sizeY+"\n");
+                    result_http_client.append("scale factor : "+scaleFactor+"\n");
+                    result_http_client.append("scale factor * 100: "+scaleFactor*100+"\n");
+                    result_http_client.append("bitmap size : "+b.getWidth()+"  X "+b.getHeight()+"\n");
+                    /*getPref();
+                    result_http_client.setText(java.util.UUID.randomUUID().toString());
                     OpenGallery();
                     Bitmap icon = ((BitmapDrawable) imageView.getDrawable() ).getBitmap();
                     int height = icon.getHeight(),width = icon.getWidth();

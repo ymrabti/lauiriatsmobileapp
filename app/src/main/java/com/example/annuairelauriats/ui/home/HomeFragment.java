@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -26,13 +27,16 @@ import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
 import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.images_file;
 import static com.example.annuairelauriats.ui.home.Classtest.laureats;
+import static com.example.annuairelauriats.ui.home.Classtest.logout;
 import static com.example.annuairelauriats.ui.home.Classtest.org_en_attente;
 import static com.example.annuairelauriats.ui.home.Classtest.org_laureat;
 import static com.example.annuairelauriats.ui.home.Classtest.organismes;
 
 public class HomeFragment extends Fragment  implements OnMapReadyCallback {
     private MapView mapView;
+    private ImageView edit;
     private LatLng latLng;
+    private ImageView log_out;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -52,6 +56,21 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
         TextView promotion = root.findViewById(R.id.promotion_laureat_profile_sssss);
         TextView filiere = root.findViewById(R.id.filiere_laureat_profile_sssss);
         TextView organisation = root.findViewById(R.id.organisation_laureat_profile_sssss);
+        edit = root.findViewById(R.id.edit_profile);
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                edit.setImageResource(R.drawable.edit_profilee);
+            }
+        });
+        log_out = root.findViewById(R.id.log_out);
+        log_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                log_out.setImageResource(R.drawable.logout);
+                logout(getActivity());
+            }
+        });
         try {
             JSONObject laurat_visitee = getJsonObjectBycle(getActivity(),"id",id_connected,laureats);
             JSONObject image= getJsonObjectBycle(getActivity(),"laureat",id_connected,images_file);

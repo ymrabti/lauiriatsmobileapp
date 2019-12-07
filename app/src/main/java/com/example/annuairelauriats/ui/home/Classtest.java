@@ -2,16 +2,18 @@ package com.example.annuairelauriats.ui.home;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,11 +21,14 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.gallery.Laureat;
 import com.example.annuairelauriats.ui.gallery.LaureatAdapter;
+import com.example.annuairelauriats.ui.login.LoginActivity;
 import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -341,9 +346,11 @@ public class Classtest  extends AppCompatActivity {
     public static void show_laureats_on_map(Context context,long filiere, String promotion,String province, long organisation,String secteurr, GoogleMap gmap){
         List<Orglatlonid> latLngsIds= peupler_list_latslongs(context,filiere,promotion,province,organisation,secteurr);
         gmap.clear();
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for(int i=0;i<latLngsIds.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLngsIds.get(i).getLatLng());
+            builder.include(latLngsIds.get(i).getLatLng());
             markerOptions.title(""+latLngsIds.get(i).getIden());
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
             //markerOptions.draggable(true);
@@ -353,9 +360,14 @@ public class Classtest  extends AppCompatActivity {
         for(int i=0;i<latLngListe.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLngListe.get(i));
+            builder.include(latLngListe.get(i));
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
             gmap.addMarker(markerOptions);
         }
+        LatLngBounds bounds = builder.build();
+        int padding = 50;
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        gmap.moveCamera(cu);gmap.animateCamera(cu);
     }//AFFICHER LIST DES LATLON SUR LA CARTE
     private static List<Orglatlonid> peupler_list_latslongs(Context context,long filiere, String promotion,String province,long organisation,String secteur){
         List<Orglatlonid> list_orgsIds = new ArrayList<>();
@@ -445,7 +457,7 @@ public class Classtest  extends AppCompatActivity {
             for (int i=0;i<laureats_finaux.length();i++){
                 JSONObject laureat_courant = laureats_finaux.getJSONObject(i);
                 long id_laureat = laureat_courant.getInt("id");
-                JSONObject coordinates = getJsonObjectBycle(context,"laureat",id_laureat,org_laureat);
+                JSONObject coordinates = getJsonObjectBycle(context,"laureat",id_laureat,org_en_attente);
                 LatLng latLngOrg = new LatLng(coordinates.getDouble("latitude"),
                         coordinates.getDouble("longitude"));
 
@@ -571,6 +583,27 @@ public class Classtest  extends AppCompatActivity {
         editor.putInt("id",user_id);editor.apply();
     }
 
+    public static void logout(Context context){
+        setPref(context,-1);
+        Intent intent = new Intent(context, LoginActivity.class);
+        context.startActivity(intent);
+    }
+    public static Bitmap resize_drawable(Drawable drawable){
+        assert drawable != null;
+        Bitmap b = ((BitmapDrawable)drawable).getBitmap();
+        int width = drawable.getIntrinsicWidth(),heigh=drawable.getIntrinsicHeight();
+        float scaleFactor =(float)200/Math.max(heigh,width);
+        int sizeX = Math.round(width * scaleFactor);
+        int sizeY =  Math.round(heigh* scaleFactor);
+        return Bitmap.createScaledBitmap(b, sizeX, sizeY, false);
+    }
+    public static Bitmap resize_bitmap(Bitmap bitmap){
+        int width = bitmap.getWidth(),heigh=bitmap.getHeight();
+        float scaleFactor =(float)200/Math.max(heigh,width);
+        int sizeX = Math.round(width * scaleFactor);
+        int sizeY =  Math.round(heigh* scaleFactor);
+        return Bitmap.createScaledBitmap(bitmap, sizeX, sizeY, false);
+    }
     /*private void read_json(){
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());
