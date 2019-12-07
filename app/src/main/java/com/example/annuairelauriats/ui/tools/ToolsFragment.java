@@ -35,9 +35,10 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     private TextView email ;
-/**    private CircleImageView pdp_visit;
-    private TextView NomPrenomUser ;
     private TextView tel ;
+    /**
+ private CircleImageView pdp_visit;
+    private TextView NomPrenomUser ;
     private TextView promotion ;
     private TextView filiere ;
     private TextView organisation ;*/
@@ -54,7 +55,7 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
         CircleImageView pdp_visit = root.findViewById(R.id.pdp_visit);
         TextView NomPrenomUser = root.findViewById(R.id.nom_visit);
         email = root.findViewById(R.id.email_visit);
-        TextView tel = root.findViewById(R.id.tel_visit);
+        tel = root.findViewById(R.id.tel_visit);
         TextView promotion = root.findViewById(R.id.promotion_visit);
         TextView filiere = root.findViewById(R.id.filiere_visit);
         TextView organisation = root.findViewById(R.id.organisation_visit);
@@ -93,7 +94,16 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
                 startActivity(Intent.createChooser(emailIntent, "Send email..."));
             }
         });
+        tel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phone = tel.getText().toString();
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                startActivity(intent);
+            }
+        });
         email.setTextColor(getResources().getColor(R.color.email));
+        tel.setTextColor(getResources().getColor(R.color.email));
         return root;
     }
 
