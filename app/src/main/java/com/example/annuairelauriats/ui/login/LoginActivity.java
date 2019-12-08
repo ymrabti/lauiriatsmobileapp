@@ -42,7 +42,6 @@ private static Context context ;
             id_connected = user;
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);}
-        else{Toast.makeText(this,"not connected",Toast.LENGTH_LONG).show();}
 
         final EditText usernameEditText = findViewById(R.id.username);usernameEditText.setText("younesmrabti50@gmail.com");
         final EditText passwordEditText = findViewById(R.id.password);passwordEditText.setText("jfhdhhdhhdxbjj");

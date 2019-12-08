@@ -2,43 +2,42 @@ package com.example.annuairelauriats.ui.home;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.gallery.Laureat;
 import com.example.annuairelauriats.ui.gallery.LaureatAdapter;
-import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
+import com.example.annuairelauriats.ui.login.LoginActivity;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,21 +52,33 @@ public class Classtest  extends AppCompatActivity {
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
             folder = "Annuaire",images_file="images.json",filiers="filieres.json",promotions="promotions.json";
     @SuppressLint("StaticFieldLeak")
-    public static Bitmap base64toImage(final String imageString){
-        Bitmap new_bitmap;
-        byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
-        new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-        return new_bitmap;
-    }
-    public static int getLastID(Context context,String filename) throws Exception {
-        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
-        int pa =0;
-        for (int i = 0; i < m_jArry.length(); i++) {
-            JSONObject jo_inside = m_jArry.getJSONObject(i);
-            pa = jo_inside.getInt("id")+1;
+    public static String loadJSONFromAsset(Context context,String fichier) {
+        String json;
+        try {
+            File myExternalFile = new File(context.getExternalFilesDir(folder), fichier);
+            FileInputStream fis = new FileInputStream(myExternalFile);
+            DataInputStream in = new DataInputStream(fis);
+            int size = in.available();
+            byte[] buffer = new byte[size];
+            in.read(buffer);
+            in.close();
+            json = new String(buffer, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
         }
-        return pa;
-    }
+        return json;
+    }         //LIRE CONTENUE D UN FICHIER
+    public static void write_file_data(Context context,String textToWrite,String filename) {
+        try {
+            File myExternalFile = new File(context.getExternalFilesDir(folder), filename);
+            FileOutputStream fos = new FileOutputStream(myExternalFile);
+            fos.write(textToWrite.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }    //ECRIRE UN CONTENUE DANS UN FICHIER
     public static JSONObject getJsonObjectBycle(Context context,String cle,long id,String filename) throws Exception {
         JSONArray m_jArray = new JSONArray(loadJSONFromAsset(context,filename)) ;
         JSONObject jsonObject=new JSONObject();
@@ -86,28 +97,133 @@ public class Classtest  extends AppCompatActivity {
         }
         return jsonObject;
     }
-    public static String encodeImage(Bitmap bm) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
-        byte[] b = baos.toByteArray();
-        return Base64.encodeToString(b, Base64.DEFAULT);
-    }
-    public static void write_file_data(Context context,String textToWrite,String filename) {
-        try {
-            File myExternalFile = new File(context.getExternalFilesDir(folder), filename);
-            FileOutputStream fos = new FileOutputStream(myExternalFile);
-            fos.write(textToWrite.getBytes());
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static int getLastID(Context context,String filename) throws Exception {
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
+        int pa =0;
+        for (int i = 0; i < m_jArry.length(); i++) {
+            JSONObject jo_inside = m_jArry.getJSONObject(i);
+            pa = jo_inside.getInt("id")+1;
         }
-    }    //ECRIRE UN CONTENUE DANS UN FICHIER
-    public static void spinner_list_adapt(Context context, Spinner spinner, String champ, String fichier,int mark){
-        List<String> list_items = peupler_list(context,champ,fichier,mark);
-        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,list_items);
-        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(list_adapter);
-    }  //ADAPTER UNE LIST A UN SPINNER
+        return pa;
+    }
+    public static void new_Laureat_Register(Context context,int id, String nom, String prenom, String gender, String promotion, long filiere, String email, String password, String tel, String dateNow, String description) throws Exception {
+        JSONObject new_Laureat = new JSONObject();
+        new_Laureat.put("id",id);
+        new_Laureat.put("nom",nom);
+        new_Laureat.put("prenom",prenom);
+        new_Laureat.put("genre",gender);
+        if (promotion.equals("SELECTIONNER")){new_Laureat.put("promotion","2020");}
+        else{new_Laureat.put("promotion",promotion);}
+        new_Laureat.put("filiere",filiere);
+        new_Laureat.put("email",email);
+        new_Laureat.put("password",password);
+        new_Laureat.put("telephone",tel);
+        new_Laureat.put("roleName",1);
+        new_Laureat.put("date_insc", dateNow);
+        new_Laureat.put("description",description);
+        new_Laureat.put("actif",true);
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,laureats));
+        m_jArry.put(new_Laureat);
+        write_file_data(context,m_jArry.toString(),laureats);
+    }
+    public static void setNewImgLaureat(Context context,String image,int laureat) throws Exception{
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,images_file));
+        JSONObject nouveau_image = new JSONObject();
+        nouveau_image.put("id",laureat);
+        nouveau_image.put("current",true);
+        nouveau_image.put("laureat",laureat);
+        nouveau_image.put("image",image);
+        /*JSONObject old_image = getJsonObjectBycle("laureat",laureat,m_jArry);
+        int id_old_image = old_image.getInt("id");old_image.put("current",false);
+        m_jArry.remove(id_old_image);m_jArry.put(old_image);*/
+        m_jArry.put(nouveau_image);
+        write_file_data(context,m_jArry.toString(),images_file);
+    }
+    public static void new_org_attente_admin(Context context, String nom,int laureat, double lat,double lon, String secteur,String datee,String intitule) throws Exception {
+        if (!nom.isEmpty()){
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_en_attente));
+            JSONObject nouveau_org = new JSONObject();
+            nouveau_org.put("id",getLastID(context,org_en_attente));
+            nouveau_org.put("org",nom);
+            nouveau_org.put("laureat",laureat);
+            nouveau_org.put("latitude",lat);
+            nouveau_org.put("longitude",lon);
+            nouveau_org.put("secteur",secteur);
+            nouveau_org.put("date_debut",datee);
+            nouveau_org.put("intitule",intitule);
+            m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_en_attente);}
+    }
+    public static void new_org_laureat(Context context,long id_org_selected,int laureat,String date_debut,String fonction) throws Exception {
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_laureat));
+        JSONObject nouveau_org = new JSONObject();
+        nouveau_org.put("id_laureat",laureat);
+        nouveau_org.put("id_org",id_org_selected);
+        nouveau_org.put("date_debut",date_debut);
+        nouveau_org.put("en_cours",true);
+        nouveau_org.put("intitule_fonction",fonction);
+        m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_laureat);
+    }
+
+
+    public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
+        final Dialog dialogFilter = new Dialog(context);
+        dialogFilter.setContentView(R.layout.filter_pop_up_liste);
+        final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
+        final Spinner findbypromotion = dialogFilter.findViewById(R.id.snipper_filtre_laureat_promotion);
+        final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
+        final Spinner findbyorganisation = dialogFilter.findViewById(R.id.snipper_filtre_laureat_organisation);
+        final Spinner findbysecteur = dialogFilter.findViewById(R.id.snipper_filtre_laureat_secteur);
+        Classtest.spinner_list_adapt(context,findbyfiliere,"Nom",filiers,1);
+        Classtest.spinner_list_adapt(context,findbypromotion,"promotion",promotions,1);
+        Classtest.spinner_list_adapt(context,findbyprovince,"province",provinces,1);
+        Classtest.spinner_list_adapt(context,findbysecteur,"secteur",secteurs,1);
+        Classtest.spinner_list_adapt(context,findbyorganisation,"org",organismes,1);
+        dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { dialogFilter.dismiss(); }});
+        findbyorganisation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (position!=0){findbysecteur.setEnabled(false);}
+                else {findbysecteur.setEnabled(true);} }
+            @Override public void onNothingSelected(AdapterView<?> parentView) {}});
+        findbysecteur.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (position!=0){findbyorganisation.setEnabled(false);}
+                else{findbyorganisation.setEnabled(true);}}
+            @Override public void onNothingSelected(AdapterView<?> parentView) {}});
+
+        dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mark==1){
+                            peupler_array_list(context,
+                                    findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString(),
+                                    findbyprovince.getSelectedItem().toString(),
+                                    findbyorganisation.getSelectedItemId(),findbysecteur.getSelectedItem().toString(),listView);
+                        }
+                        else
+                        {
+                            show_laureats_on_map(context,findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString()+"",
+                                    findbyprovince.getSelectedItem().toString()+"",findbyorganisation.getSelectedItemId(),
+                                    findbysecteur.getSelectedItem().toString()+""
+                                    ,googleMap);
+                        }
+                        try {
+                            set_filter_pref(context,findbysecteur.getSelectedItem().toString()+""
+                                    ,findbypromotion.getSelectedItem().toString()+"", findbyfiliere.getSelectedItemId(),
+                                    findbyorganisation.getSelectedItemId()
+                            );
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        dialogFilter.dismiss();
+                    }
+                }
+        );
+        dialogFilter.setCancelable(false);
+        dialogFilter.show();
+    }
     private static List<String> peupler_list(Context context,String Champ,String file,int mark){
         List<String> list_a_peupler = new ArrayList<>();
         if (mark==1){list_a_peupler.add("TOUT");}
@@ -136,137 +252,13 @@ public class Classtest  extends AppCompatActivity {
         ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
         list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(list_adapter);
-    }
-    public static String loadJSONFromAsset(Context context,String fichier) {
-        String json;
-        try {
-            File myExternalFile = new File(context.getExternalFilesDir(folder), fichier);
-            FileInputStream fis = new FileInputStream(myExternalFile);
-            DataInputStream in = new DataInputStream(fis);
-            int size = in.available();
-            byte[] buffer = new byte[size];
-            in.read(buffer);
-            in.close();
-            json = new String(buffer, StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }         //LIRE CONTENUE D UN FICHIER
-    public static void write_file_cache(Context context, long organisme,String province, long filiere,String promotion,String secteur) throws Exception {
-        JSONObject jsonObject= new JSONObject();
-        jsonObject.put("organisme",organisme);jsonObject.put("province",province);
-        jsonObject.put("filiere",filiere);jsonObject.put("promotion",promotion);
-        jsonObject.put("secteur",secteur);
-        write_file_data(context,jsonObject.toString(),filter);
-    }
-    public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
-        final Dialog dialogFilter = new Dialog(context);
-        dialogFilter.setContentView(R.layout.filter_pop_up_liste);
-        final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
-        final Spinner findbypromotion = dialogFilter.findViewById(R.id.snipper_filtre_laureat_promotion);
-        final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
-        final Spinner findbyorganisation = dialogFilter.findViewById(R.id.snipper_filtre_laureat_organisation);
-        final Spinner findbysecteur = dialogFilter.findViewById(R.id.snipper_filtre_laureat_secteur);
-        Classtest.spinner_list_adapt(context,findbyfiliere,"Nom",filiers,1);
-        Classtest.spinner_list_adapt(context,findbypromotion,"promotion",promotions,1);
-        Classtest.spinner_list_adapt(context,findbyprovince,"province",provinces,1);
-        Classtest.spinner_list_adapt(context,findbysecteur,"secteur",secteurs,1);
-        Classtest.spinner_list_adapt(context,findbyorganisation,"org",organismes,1);
-        dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { dialogFilter.dismiss(); }});
-        findbyorganisation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (position!=0){findbysecteur.setEnabled(false);}
-            else {findbysecteur.setEnabled(true);} }
-            @Override public void onNothingSelected(AdapterView<?> parentView) {}});
-        findbysecteur.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (position!=0){findbyorganisation.setEnabled(false);}
-            else{findbyorganisation.setEnabled(true);}}
-            @Override public void onNothingSelected(AdapterView<?> parentView) {}});
-
-        dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
-        new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mark==1){
-                    peupler_array_list(context,
-                            findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString(),
-                            findbyprovince.getSelectedItem().toString(),
-                            findbyorganisation.getSelectedItemId(),findbysecteur.getSelectedItem().toString(),listView);
-                    GalleryFragment.org=findbyorganisation.getSelectedItemId();
-                    GalleryFragment.filiere=findbyfiliere.getSelectedItemId();
-                    GalleryFragment.promo=findbypromotion.getSelectedItem().toString();
-                    GalleryFragment.secteur=findbysecteur.getSelectedItem().toString();
-                }
-                else
-                {
-                    show_laureats_on_map(context,findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString()+"",
-                            findbyprovince.getSelectedItem().toString()+"",findbyorganisation.getSelectedItemId(),
-                            findbysecteur.getSelectedItem().toString()+""
-                            ,googleMap);
-                    SlideshowFragment.org=findbyorganisation.getSelectedItemId();
-                    SlideshowFragment.filiere=findbyfiliere.getSelectedItemId();
-                    SlideshowFragment.promo=findbypromotion.getSelectedItem().toString();
-                    SlideshowFragment.secteur=findbysecteur.getSelectedItem().toString();
-                }
-                try {
-                    write_file_cache(context,findbyorganisation.getSelectedItemId(),
-                            findbyprovince.getSelectedItem().toString(),
-                            findbyfiliere.getSelectedItemId(),findbypromotion.getSelectedItem().toString()
-                            ,findbysecteur.getSelectedItem().toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                dialogFilter.dismiss();
-            }
-        }
-        );
-        dialogFilter.setCancelable(false);
-        dialogFilter.show();
-    }  //AFFICHE POPUP POUR UN FILTRE
-    private static JSONArray checkField(String cle,String valeur,JSONArray m_jArry){
-        JSONArray array_checked = new JSONArray();
-        if (!valeur.equals("TOUT")){
-            for (int i = 0; i < m_jArry.length(); i++) {
-                try {
-                    JSONObject jo_inside = m_jArry.getJSONObject(i);
-                    if (jo_inside.getString(cle).equals(valeur) ){
-                        array_checked.put(jo_inside);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        else{
-            array_checked = m_jArry;
-        }
-        return array_checked;
-    }
-    private static JSONArray checkFieldInteger(String cle,long valeur,JSONArray m_jArry){
-        JSONArray array_checked = new JSONArray();
-        if (valeur!=0){
-            try {
-                for (int i = 0; i < m_jArry.length(); i++) {
-                    JSONObject jo_inside = m_jArry.getJSONObject(i);
-                    if (jo_inside.getInt(cle)==valeur){
-                        array_checked.put(jo_inside);
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else{
-            array_checked = m_jArry;
-        }
-        return array_checked;
-    }           //RETOUNE ARRAYJSON APRES VERIFICATION CLE VALEUR
+    } //AFFICHE POPUP POUR UN FILTRE
+    public static void spinner_list_adapt(Context context, Spinner spinner, String champ, String fichier,int mark){
+        List<String> list_items = peupler_list(context,champ,fichier,mark);
+        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,list_items);
+        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(list_adapter);
+    }  //ADAPTER UNE LIST A UN SPINNER
     public static void peupler_array_list(Context context, long filiere, String promotion, String province, long organisation, String secteur, ListView malist){
         laureats_list = new ArrayList<>();
         try {
@@ -341,21 +333,28 @@ public class Classtest  extends AppCompatActivity {
     public static void show_laureats_on_map(Context context,long filiere, String promotion,String province, long organisation,String secteurr, GoogleMap gmap){
         List<Orglatlonid> latLngsIds= peupler_list_latslongs(context,filiere,promotion,province,organisation,secteurr);
         gmap.clear();
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for(int i=0;i<latLngsIds.size();i++){
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLngsIds.get(i).getLatLng());
             markerOptions.title(""+latLngsIds.get(i).getIden());
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            //markerOptions.draggable(true);
+            builder.include(latLngsIds.get(i).getLatLng());markerOptions.flat(true);
             gmap.addMarker(markerOptions);
         }
-        List<LatLng> latLngListe = peupler_list_latslong(context,filiere,promotion,province,secteurr);
-        for(int i=0;i<latLngListe.size();i++){
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLngListe.get(i));
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-            gmap.addMarker(markerOptions);
-        }
+        List<Orglatlonid> latLngListe = peupler_list_latslong(context,filiere,promotion,province,secteurr);
+         for(int i=0;i<latLngListe.size();i++){
+         MarkerOptions markerOptions = new MarkerOptions();
+         markerOptions.position(latLngListe.get(i).getLatLng());
+         markerOptions.title(""+latLngListe.get(i).getIden());
+         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+         builder.include(latLngListe.get(i).getLatLng());markerOptions.flat(false);
+         gmap.addMarker(markerOptions);
+         }
+        LatLngBounds bounds = builder.build();
+        int padding = 50;
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        gmap.moveCamera(cu);gmap.animateCamera(cu);
     }//AFFICHER LIST DES LATLON SUR LA CARTE
     private static List<Orglatlonid> peupler_list_latslongs(Context context,long filiere, String promotion,String province,long organisation,String secteur){
         List<Orglatlonid> list_orgsIds = new ArrayList<>();
@@ -438,18 +437,20 @@ public class Classtest  extends AppCompatActivity {
         catch (Exception e){e.printStackTrace();}
         return list_orgsIds;
     }
-    private static List<LatLng> peupler_list_latslong(Context context,long filiere, String promotion,String province,String secteur){
-        List<LatLng> list_a_peupler = new ArrayList<>();
+    private static List<Orglatlonid> peupler_list_latslong(Context context, long filiere, String promotion, String province, String secteur){
+        List<Orglatlonid> list_orgsIds = new ArrayList<>();
         try {
-            JSONArray laureats_finaux = new JSONArray(loadJSONFromAsset(context,laureats));
-            for (int i=0;i<laureats_finaux.length();i++){
-                JSONObject laureat_courant = laureats_finaux.getJSONObject(i);
-                long id_laureat = laureat_courant.getInt("id");
-                JSONObject coordinates = getJsonObjectBycle(context,"laureat",id_laureat,org_laureat);
-                LatLng latLngOrg = new LatLng(coordinates.getDouble("latitude"),
-                        coordinates.getDouble("longitude"));
+            JSONArray orgs = new JSONArray(loadJSONFromAsset(context,org_en_attente));
+            for (int i=0;i<orgs.length();i++){
+                JSONObject org_courant = orgs.getJSONObject(i);
+                long id_laureat = org_courant.getInt("laureat");
+                LatLng latLngOrg = new LatLng(org_courant.getDouble("latitude"),
+                        org_courant.getDouble("longitude"));
+                Orglatlonid orglatlonid = new Orglatlonid(latLngOrg,id_laureat);
+                if (id_laureat!=id_connected){list_orgsIds.add(orglatlonid);}
 
-                if (filiere!=0 && !promotion.equals("TOUT")){
+
+                /**if (filiere!=0 && !promotion.equals("TOUT")){
                     if (laureat_courant.getString("promotion").equals(promotion) && laureat_courant.getInt("filiere")==filiere){
                         if ( !secteur.equals("TOUT")){
                             if (coordinates.getString("secteur").equals(secteur)){
@@ -490,76 +491,111 @@ public class Classtest  extends AppCompatActivity {
                     else {
                         list_a_peupler.add(latLngOrg);
                     }
-                }
+                }*/
             }
 
         }
         catch (Exception e){e.printStackTrace();}
-        return list_a_peupler;
+        return list_orgsIds;
+    }
+    private static JSONArray checkField(String cle,String valeur,JSONArray m_jArry){
+        JSONArray array_checked = new JSONArray();
+        if (!valeur.equals("TOUT")){
+            for (int i = 0; i < m_jArry.length(); i++) {
+                try {
+                    JSONObject jo_inside = m_jArry.getJSONObject(i);
+                    if (jo_inside.getString(cle).equals(valeur) ){
+                        array_checked.put(jo_inside);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else{
+            array_checked = m_jArry;
+        }
+        return array_checked;
+    }
+    private static JSONArray checkFieldInteger(String cle,long valeur,JSONArray m_jArry){
+        JSONArray array_checked = new JSONArray();
+        if (valeur!=0){
+            try {
+                for (int i = 0; i < m_jArry.length(); i++) {
+                    JSONObject jo_inside = m_jArry.getJSONObject(i);
+                    if (jo_inside.getInt(cle)==valeur){
+                        array_checked.put(jo_inside);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        else{
+            array_checked = m_jArry;
+        }
+        return array_checked;
     }   //RETOURNE UNE LISTE DE LATLON
-    public static void new_Laureat_Register(Context context,int id, String nom, String prenom, String gender, String promotion, long filiere, String email, String password, String tel, String dateNow, String description) throws Exception {
-        JSONObject new_Laureat = new JSONObject();
-        new_Laureat.put("id",id);
-        new_Laureat.put("nom",nom);
-        new_Laureat.put("prenom",prenom);
-        new_Laureat.put("genre",gender);
-        if (promotion.equals("SELECTIONNER")){new_Laureat.put("promotion","2020");}
-        else{new_Laureat.put("promotion",promotion);}
-        new_Laureat.put("filiere",filiere);
-        new_Laureat.put("email",email);
-        new_Laureat.put("password",password);
-        new_Laureat.put("telephone",tel);
-        new_Laureat.put("roleName",1);
-        new_Laureat.put("date_insc", dateNow);
-        new_Laureat.put("description",description);
-        new_Laureat.put("actif",true);
-        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,laureats));
-        m_jArry.put(new_Laureat);
-        write_file_data(context,m_jArry.toString(),laureats);
-    }
-    public static void setNewImgLaureat(Context context,String image,int laureat) throws Exception{
-        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,images_file));
-        JSONObject nouveau_image = new JSONObject();
-        nouveau_image.put("id",laureat);
-        nouveau_image.put("current",true);
-        nouveau_image.put("laureat",laureat);
-        nouveau_image.put("image",image);
-        /*JSONObject old_image = getJsonObjectBycle("laureat",laureat,m_jArry);
-        int id_old_image = old_image.getInt("id");old_image.put("current",false);
-        m_jArry.remove(id_old_image);m_jArry.put(old_image);*/
-        m_jArry.put(nouveau_image);
-        write_file_data(context,m_jArry.toString(),images_file);
-    }
-    public static void new_org_attente_admin(Context context, String nom,int laureat, double lat,double lon, String secteur,String datee,String intitule) throws Exception {
-        if (!nom.isEmpty()){
-            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_en_attente));
-            JSONObject nouveau_org = new JSONObject();
-            nouveau_org.put("id",getLastID(context,org_en_attente));
-            nouveau_org.put("org",nom);
-            nouveau_org.put("laureat",laureat);
-            nouveau_org.put("latitude",lat);
-            nouveau_org.put("longitude",lon);
-            nouveau_org.put("secteur",secteur);
-            nouveau_org.put("date_debut",datee);
-            nouveau_org.put("intitule",intitule);
-            m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_en_attente);}
-    }
-    public static void new_org_laureat(Context context,long id_org_selected,int laureat,String date_debut,String fonction) throws Exception {
-        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_laureat));
-        JSONObject nouveau_org = new JSONObject();
-        nouveau_org.put("id_laureat",laureat);
-        nouveau_org.put("id_org",id_org_selected);
-        nouveau_org.put("date_debut",date_debut);
-        nouveau_org.put("en_cours",true);
-        nouveau_org.put("intitule_fonction",fonction);
-        m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_laureat);
-    }
+
+
+
 
     public static boolean is_email_exist(Context context,String email) throws Exception {
         return !getJsonObjectBykey(context,"email",email,laureats).isNull("id");
     }
     public static boolean is_password_correct(Context context,String email,String password) throws Exception {
         return getJsonObjectBykey(context,"email",email,laureats).getString("password").equals(password);
+    }
+    public static void logout(Context context){
+        setPref(context,-1);
+        Intent intent = new Intent(context, LoginActivity.class);
+        context.startActivity(intent);
+    }
+    public static Bitmap resize_drawable(Drawable drawable){
+        assert drawable != null;
+        Bitmap b = ((BitmapDrawable)drawable).getBitmap();
+        int width = drawable.getIntrinsicWidth(),heigh=drawable.getIntrinsicHeight();
+        float scaleFactor =(float)200/Math.max(heigh,width);
+        int sizeX = Math.round(width * scaleFactor);
+        int sizeY =  Math.round(heigh* scaleFactor);
+        return Bitmap.createScaledBitmap(b, sizeX, sizeY, false);
+    }
+    public static Bitmap resize_bitmap(Bitmap bitmap){
+        int width = bitmap.getWidth(),heigh=bitmap.getHeight();
+        float scaleFactor =(float)200/Math.max(heigh,width);
+        int sizeX = Math.round(width * scaleFactor);
+        int sizeY =  Math.round(heigh* scaleFactor);
+        return Bitmap.createScaledBitmap(bitmap, sizeX, sizeY, false);
+    }
+    public static String encodeImage(Bitmap bm) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        byte[] b = baos.toByteArray();
+        return Base64.encodeToString(b, Base64.DEFAULT);
+    }
+    public static Bitmap base64toImage(final String imageString){
+        Bitmap new_bitmap;
+        byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
+        new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        return new_bitmap;
+    }
+    public static void set_filter_pref(Context context,String secteur,String promo,long filieree,long org){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("filter", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("sector",secteur);
+        editor.putString("promotion",promo);
+        editor.putLong("branch",filieree);
+        editor.putLong("organisation",org);
+        editor.apply();
+    }
+    public static long get_filter_pref_long(Context context,String key){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("filter", Context.MODE_PRIVATE);
+        return sharedPreferences.getLong(key,0);
+    }
+    public static String get_filter_pref_string(Context context,String key){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("filter", Context.MODE_PRIVATE);
+        return sharedPreferences.getString(key,"TOUT");
     }
     public static int getPref(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
@@ -570,7 +606,6 @@ public class Classtest  extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("id",user_id);editor.apply();
     }
-
     /*private void read_json(){
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());
@@ -608,25 +643,4 @@ public class Classtest  extends AppCompatActivity {
         });
     }
 */
-    private static String convertStreamToString(InputStream is) {
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-
-        String line;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return sb.toString();
-    }
 }

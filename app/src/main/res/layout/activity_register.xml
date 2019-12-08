@@ -157,18 +157,24 @@
             android:textSize="24sp"
             android:text="@string/selectionner_votre_photo"
             app:layout_constraintTop_toBottomOf="@id/snipper_promotion_laureat"/>
-
-        <ImageView
-            android:id="@+id/selected_file_image8laureat"
+        <LinearLayout
+            android:id="@+id/layouuuut"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="24dp"
-            android:gravity="center"
-            android:src="@drawable/ing"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.125"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/register_image_base_64_show_hint" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/register_image_base_64_show_hint" >
+
+            <ImageView
+                android:id="@+id/selected_file_image8laureat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:maxHeight="250dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                app:layout_constraintHorizontal_bias="0.125" />
+        </LinearLayout>
+
         <EditText
             android:id="@+id/usernamename"
             android:layout_width="0dp"
@@ -181,7 +187,7 @@
             android:selectAllOnFocus="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/selected_file_image8laureat" />
+            app:layout_constraintTop_toBottomOf="@id/layouuuut" />
 
         <EditText
             android:id="@+id/passwordword"

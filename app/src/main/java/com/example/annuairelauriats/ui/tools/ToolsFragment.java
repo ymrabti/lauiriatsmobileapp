@@ -1,4 +1,6 @@
 package com.example.annuairelauriats.ui.tools;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,15 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
     private MapView mapView;
     private LatLng latLng;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+
+    private TextView email ;
+    private TextView tel ;
+    /**
+ private CircleImageView pdp_visit;
+    private TextView NomPrenomUser ;
+    private TextView promotion ;
+    private TextView filiere ;
+    private TextView organisation ;*/
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_tools, container, false);
         Bundle mapViewBundle = null;
@@ -43,8 +54,8 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
 
         CircleImageView pdp_visit = root.findViewById(R.id.pdp_visit);
         TextView NomPrenomUser = root.findViewById(R.id.nom_visit);
-        TextView email = root.findViewById(R.id.email_visit);
-        TextView tel = root.findViewById(R.id.tel_visit);
+        email = root.findViewById(R.id.email_visit);
+        tel = root.findViewById(R.id.tel_visit);
         TextView promotion = root.findViewById(R.id.promotion_visit);
         TextView filiere = root.findViewById(R.id.filiere_visit);
         TextView organisation = root.findViewById(R.id.organisation_visit);
@@ -73,6 +84,26 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
         catch (Exception e) {
             e.printStackTrace();
         }
+        email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto",email.getText().toString(), null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Annuaire Laureats");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Bonjour");
+                startActivity(Intent.createChooser(emailIntent, "Send email..."));
+            }
+        });
+        tel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phone = tel.getText().toString();
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                startActivity(intent);
+            }
+        });
+        email.setTextColor(getResources().getColor(R.color.email));
+        tel.setTextColor(getResources().getColor(R.color.email));
         return root;
     }
 

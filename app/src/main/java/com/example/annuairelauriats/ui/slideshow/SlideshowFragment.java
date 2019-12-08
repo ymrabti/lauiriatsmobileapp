@@ -7,37 +7,31 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.home.Classtest;
+import com.example.annuairelauriats.ui.tools.ToolsFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Objects;
 
-import static com.example.annuairelauriats.ui.home.Classtest.filter;
-import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
-import static com.example.annuairelauriats.ui.home.Classtest.loadJSONFromAsset;
-import static com.example.annuairelauriats.ui.home.Classtest.organismes;
+import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
+import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
+import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;
      private GoogleMap gmap;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-    public static long filiere=-1,org=-1;public static String promo="TOUTE",secteur="TOUTE";
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
         Bundle mapViewBundle = null;
@@ -74,7 +68,6 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
     @Override public void onMapReady(GoogleMap googleMap) {
         gmap = googleMap;
         gmap.setMinZoomPreference(1);
-        LatLng ny = new LatLng(33.589886, -7.603869);
         gmap.setIndoorEnabled(true);
         UiSettings uiSettings = gmap.getUiSettings();
         uiSettings.setIndoorLevelPickerEnabled(true);
@@ -82,59 +75,34 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-
-        if (filiere==-1 && org==-1&& secteur.equals("TOUTE") && promo.equals(secteur) ){
-            try {
-                JSONObject filter_json = new JSONObject(
-                        Objects.requireNonNull(loadJSONFromAsset(
-                                Objects.requireNonNull(getActivity()), filter)));
-                filiere=filter_json.getInt("filiere");promo=filter_json.getString("promotion");
-                org=filter_json.getInt("organisme");secteur=filter_json.getString("secteur");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Classtest.show_laureats_on_map(getActivity(),filiere,promo,"TOUT",org,secteur,gmap);
-        }
-        else{
-            Classtest.show_laureats_on_map(getActivity(),filiere,promo,"TOUT",org,secteur,gmap);
-        }
+        long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
+        String promo = get_filter_pref_string(getActivity(), "promotion");
+        long org = get_filter_pref_long(getActivity(), "organisation");
+        String secteur = get_filter_pref_string(getActivity(), "sector");
+        Classtest.show_laureats_on_map(getActivity(), filiere, promo,"TOUT", org, secteur,gmap);
         gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                GalleryFragment.org=Integer.parseInt(marker.getTitle().trim());
-                GalleryFragment.filiere=filiere;
-                GalleryFragment.promo=promo;
-                GalleryFragment.secteur=secteur;
                 assert getFragmentManager() != null;
-                Fragment fragment = new GalleryFragment();
-                FragmentManager fm = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+                if(marker.isFlat()){
+                    Fragment fragment = new GalleryFragment();
+                    Bundle bundle=new Bundle();
+                    bundle.putLong("organisation", Integer.parseInt(marker.getTitle().trim()));
+                    fragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
+                    fragmentTransaction.commit();
+                    MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
+                }
+                else{
+                    id_selected=Integer.parseInt(marker.getTitle().trim());
+                    fragmentTransaction.replace(R.id.nav_host_fragment, new ToolsFragment());
+                    fragmentTransaction.commit();
+                }
                 return true;
             }
         });
-        /*gmap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-            @Override
-            public void onMarkerDragStart(Marker marker) {
-                long id_org = Integer.parseInt(marker.getTitle().trim());
-                Toast.makeText(getContext(),"drag start : "+id_org,Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onMarkerDrag(Marker marker) {
-                long id_org = Integer.parseInt(marker.getTitle().trim());
-                Toast.makeText(getContext(),"drag drag : "+id_org,Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onMarkerDragEnd(Marker marker) {
-                long id_org = Integer.parseInt(marker.getTitle().trim());
-                Toast.makeText(getContext(),"drag end : "+id_org,Toast.LENGTH_LONG).show();
-            }
-        });*/
     }
 
 

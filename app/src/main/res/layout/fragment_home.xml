@@ -157,11 +157,11 @@
                     android:layout_gravity="start"
                     android:layout_width="100dp"
                     android:layout_marginEnd="50dp"
-                    android:background="@drawable/edit_profilee"
+                    android:background="@drawable/edit_profilee_unclicked"
                     android:layout_height="100dp"/>
                 <ImageView
                     android:id="@+id/log_out"
-                    android:background="@drawable/logout"
+                    android:background="@drawable/logout_unclicked"
                     android:layout_gravity="end"
                     android:layout_marginStart="50dp"
                     android:layout_width="100dp"
