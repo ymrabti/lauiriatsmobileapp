@@ -342,7 +342,7 @@ public class Classtest  extends AppCompatActivity {
             builder.include(latLngsIds.get(i).getLatLng());markerOptions.flat(true);
             gmap.addMarker(markerOptions);
         }
-        /***/List<Orglatlonid> latLngListe = peupler_list_latslong(context,filiere,promotion,province,secteurr);
+        List<Orglatlonid> latLngListe = peupler_list_latslong(context,filiere,promotion,province,secteurr);
          for(int i=0;i<latLngListe.size();i++){
          MarkerOptions markerOptions = new MarkerOptions();
          markerOptions.position(latLngListe.get(i).getLatLng());
@@ -447,7 +447,8 @@ public class Classtest  extends AppCompatActivity {
                 LatLng latLngOrg = new LatLng(org_courant.getDouble("latitude"),
                         org_courant.getDouble("longitude"));
                 Orglatlonid orglatlonid = new Orglatlonid(latLngOrg,id_laureat);
-                list_orgsIds.add(orglatlonid);
+                if (id_laureat!=id_connected){list_orgsIds.add(orglatlonid);}
+
 
                 /**if (filiere!=0 && !promotion.equals("TOUT")){
                     if (laureat_courant.getString("promotion").equals(promotion) && laureat_courant.getInt("filiere")==filiere){

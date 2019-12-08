@@ -1,11 +1,10 @@
 package com.example.annuairelauriats.ui.standards;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
@@ -20,13 +20,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 
 import com.example.annuairelauriats.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,9 +37,15 @@ import java.io.InputStream;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 public class StandardsFragment extends Fragment {
     private TextView result_http_client;private VideoView videoView;private EditText url;
     private ImageView imageView;private EditText password;
+    private boolean isFABOpen;private FloatingActionButton fab1,fab2,fab3,fab;
+    private LinearLayout fm1,fm2,fm3; private TextView t1,t2,t3;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.standardscommunute, container, false);
         url = root.findViewById(R.id.editText1);password=root.findViewById(R.id.pssssss);
@@ -118,26 +127,46 @@ public class StandardsFragment extends Fragment {
                 }
             }
         });
-        imageView.setOnClickListener(new View.OnClickListener() {
+        isFABOpen=false;
+        fab =  root.findViewById(R.id.fab);
+        fab1 =  root.findViewById(R.id.fab1);fm1=root.findViewById(R.id.fl1);t1=root.findViewById(R.id.txt1);
+        fab2 =  root.findViewById(R.id.fab2);fm2=root.findViewById(R.id.fl2);t2=root.findViewById(R.id.txt2);
+        fab3 =  root.findViewById(R.id.fab3);fm3=root.findViewById(R.id.fl3);t3=root.findViewById(R.id.txt3);
+
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                setPref(url.getText().toString(),password.getText().toString());
+            public void onClick(View view) {
+                if(!isFABOpen){
+                    fab.animate().rotation(45);
+                    showFABMenu();
+                }else{
+                    fab.animate().rotation(0);
+                    closeFABMenu();
+                }
             }
         });
+
         return root;
     }
 
-
-    public void getPref(){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("username", Context.MODE_PRIVATE);
-        String usename = sharedPreferences.getString("username","");
-        String password = sharedPreferences.getString("password","");
-        result_http_client.append(usename +"  "+password+"\n");
+    private void showFABMenu(){
+        isFABOpen=true;
+        final int rayon = 150;
+        final double angle= PI/4;
+        fm1.animate().translationX(-rayon/*(fab.getHeight()+10)*/);
+        fm2.animate().translationY(-Math.round(rayon*sin(angle)));
+        fm2.animate().translationX(-Math.round(rayon*cos(angle)));
+        fm3.animate().translationY(-rayon);
+        t1.setVisibility(View.VISIBLE);t2.setVisibility(View.VISIBLE);t3.setVisibility(View.VISIBLE);
     }
-    public void setPref(String username,String password){
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("username", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("username",username);editor.putString("password",password);editor.apply();
+
+    private void closeFABMenu(){
+        isFABOpen=false;
+        fm1.animate().translationX(0);
+        fm2.animate().translationX(0);
+        fm2.animate().translationY(0);
+        fm3.animate().translationY(0);
+        t1.setVisibility(View.GONE);t2.setVisibility(View.GONE);t3.setVisibility(View.GONE);
     }
 
 

@@ -7,4 +7,5 @@
     <color name="rouge">#ff0000</color>
     <color name="graylight">#FFFFFF</color>
     <color name="email">#114FFF</color>
+    <color name="transparent">#00114FFF</color>
 </resources>
