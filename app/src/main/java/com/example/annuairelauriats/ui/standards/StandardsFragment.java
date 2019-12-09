@@ -44,7 +44,8 @@ import static java.lang.Math.sin;
 public class StandardsFragment extends Fragment {
     private TextView result_http_client;private VideoView videoView;private EditText url;
     private ImageView imageView;private EditText password;
-    private boolean isFABOpen;private FloatingActionButton fab1,fab2,fab3,fab;
+    private boolean isFABOpen;
+    private FloatingActionButton fab;
     private LinearLayout fm1,fm2,fm3; private TextView t1,t2,t3;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.standardscommunute, container, false);
@@ -129,9 +130,12 @@ public class StandardsFragment extends Fragment {
         });
         isFABOpen=false;
         fab =  root.findViewById(R.id.fab);
-        fab1 =  root.findViewById(R.id.fab1);fm1=root.findViewById(R.id.fl1);t1=root.findViewById(R.id.txt1);
-        fab2 =  root.findViewById(R.id.fab2);fm2=root.findViewById(R.id.fl2);t2=root.findViewById(R.id.txt2);
-        fab3 =  root.findViewById(R.id.fab3);fm3=root.findViewById(R.id.fl3);t3=root.findViewById(R.id.txt3);
+        FloatingActionButton fab1 = root.findViewById(R.id.fab1);
+        fm1=root.findViewById(R.id.fl1);t1=root.findViewById(R.id.txt1);
+        FloatingActionButton fab2 = root.findViewById(R.id.fab2);
+        fm2=root.findViewById(R.id.fl2);t2=root.findViewById(R.id.txt2);
+        FloatingActionButton fab3 = root.findViewById(R.id.fab3);
+        fm3=root.findViewById(R.id.fl3);t3=root.findViewById(R.id.txt3);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

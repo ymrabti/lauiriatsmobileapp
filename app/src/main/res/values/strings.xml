@@ -105,4 +105,7 @@
     <string name="invalid_doesnotexist">email n\'existe pas</string>
     <string name="wrong_password">mot de passe erone</string>
     <string name="email_taken">email deja pris !</string>
+    <string name="appliquer_nouveau_filtre">Appliquer nouveau filtre</string>
+    <string name="afficher_dans_liste">Afficher sur la liste</string>
+    <string name="afficher_dans_carte">Afficher le resultat dans la carte</string>
 </resources>
