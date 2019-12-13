@@ -36,17 +36,6 @@
                 android:textColor="#fff"
                 android:textStyle="bold"
                 android:textSize="21sp"/>
-            <EditText
-                android:id="@+id/nom_laureat_profile_edit"
-                android:visibility="gone"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Wiliam Snoe"
-                android:textColor="#fff"
-                android:textStyle="bold"
-                android:textSize="21sp"/>
         </LinearLayout>
 
 
@@ -76,15 +65,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="Wiliam@gmail.com"/>
-                <EditText
-                    android:id="@+id/email_laureat_profile_edit"
-                    android:visibility="gone"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="Wiliam@gmail.com"/>
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"
@@ -98,15 +78,6 @@
                     android:src="@drawable/telephone"/>
                 <TextView
                     android:id="@+id/tel_laureat_profile_sssss"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="+266 225 225"/>
-                <EditText
-                    android:id="@+id/tel_laureat_profile_edit"
-                    android:visibility="gone"
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content"
@@ -132,15 +103,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:text="filiere"/>
-                <Spinner
-                    android:id="@+id/filiere_laureat_profile_edit"
-                    android:visibility="gone"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="filiere"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_marginTop="25dp"
@@ -154,15 +116,6 @@
                     android:src="@drawable/bonnet"/>
                 <TextView
                     android:id="@+id/promotion_laureat_profile_sssss"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:text="Promotion : "/>
-                <Spinner
-                    android:id="@+id/promotion_laureat_profile_edit"
-                    android:visibility="gone"
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content"

@@ -1,8 +1,11 @@
 package com.example.annuairelauriats.ui.home;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.aide.HelpFragment;
+import com.example.annuairelauriats.ui.signaler.SignalerFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -37,7 +40,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private ImageView log_out;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private MapView mapView;private GoogleMap gmap;
-    private boolean edite=false;
     private float zoom ;
     private LatLng latLng_currennt;
     private Button top, bottom, right,left;
@@ -47,25 +49,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
-        int modifie;
-        int affiche;
-        if (edite){
-            modifie =View.VISIBLE;
-            affiche =View.GONE;}
-        else{
-            modifie =View.GONE;
-            affiche =View.VISIBLE;}
         mapView = root.findViewById(R.id.map_laureat_profile_sssss) ;
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
         //latLng = new LatLng(34.687529,1.926189);
         CircleImageView pdp_visit = root.findViewById(R.id.pdp_laureat_profile_sssss);
-        TextView NomPrenomUser = root.findViewById(R.id.nom_laureat_profile_sssss);NomPrenomUser.setVisibility(affiche);
-        TextView email = root.findViewById(R.id.email_laureat_profile_sssss);email.setVisibility(affiche);
-        TextView tel = root.findViewById(R.id.tel_laureat_profile_sssss);tel.setVisibility(affiche);
-        TextView NomPrenomUser_edit = root.findViewById(R.id.nom_laureat_profile_edit);NomPrenomUser_edit.setVisibility(modifie);
-        TextView email_edit = root.findViewById(R.id.email_laureat_profile_edit);email_edit.setVisibility(modifie);
-        TextView tel_edit = root.findViewById(R.id.tel_laureat_profile_edit);tel_edit.setVisibility(modifie);
+        TextView NomPrenomUser = root.findViewById(R.id.nom_laureat_profile_sssss);
+        TextView email = root.findViewById(R.id.email_laureat_profile_sssss);
+        TextView tel = root.findViewById(R.id.tel_laureat_profile_sssss);
         TextView promotion = root.findViewById(R.id.promotion_laureat_profile_sssss);
         TextView filiere = root.findViewById(R.id.filiere_laureat_profile_sssss);
         TextView organisation = root.findViewById(R.id.organisation_laureat_profile_sssss);
@@ -73,8 +64,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         ImageView edit = root.findViewById(R.id.edit_profile);
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                edite = true;
+            public void onClick(View v) {assert getFragmentManager() != null;
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+                fragmentTransaction.replace(R.id.nav_host_fragment, new SignalerFragment());
+                fragmentTransaction.commit();
             }
         });
         log_out = root.findViewById(R.id.log_out);

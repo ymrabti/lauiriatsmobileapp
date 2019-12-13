@@ -16,17 +16,11 @@ import com.example.annuairelauriats.R;
 
 public class SignalerFragment extends Fragment {
 
+    private SignalerViewModel signalerViewModel;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        SignalerViewModel signalerViewModel;
         signalerViewModel = ViewModelProviders.of(this).get(SignalerViewModel.class);
         View root = inflater.inflate(R.layout.signalerproblem, container, false);
-        final TextView textView = root.findViewById(R.id.text_signaler);
-        signalerViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+
         return root;
     }
 }
