@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -62,14 +63,14 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
     private MapView mapView;
     private int year, month, day;
     private RegisterViewModel registerViewModel;
-
+    private float zoom ;
+    private LatLng latLng_currennt;
+    private Button top, bottom, right,left;
     public static Context getContextext() {
         return context;
     }
-
     @SuppressLint("SetTextI18n")
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         registerViewModel = ViewModelProviders.of(this).get(RegisterViewModel.class);
@@ -101,6 +102,10 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         final Button registerButton = findViewById(R.id.register);
         final ProgressBar loadingProgressBar = findViewById(R.id.registering);
         final TextView go_to_login = findViewById(R.id.go_to_login);
+        final ConstraintLayout constraintLayout = findViewById(R.id.constraint_layout);
+
+        top=findViewById(R.id.go_top_1);bottom=findViewById(R.id.go_bottom_1);
+        right=findViewById(R.id.go_right_1);left=findViewById(R.id.go_left_1);
         Classtest.spinner_list_adapt(getApplicationContext(), gender, "gender", "genders.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), filiere, "Nom", "filieres.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation, "org", "organismes.json", 0);
@@ -162,14 +167,14 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 if (radioButton.getText().toString().contains("Organisation")) {
                     nouveau_org_nom.setVisibility(View.GONE);
                     organisation_secteur.setVisibility(View.GONE);
-                    mapView.setVisibility(View.GONE);
+                    constraintLayout.setVisibility(View.GONE);
                     organisation.setVisibility(View.VISIBLE);
                     org_select.setVisibility(View.VISIBLE);
                     secteur_select.setVisibility(View.GONE);
                 } else if (radioButton.getText().toString().contains("pas reconnue")) {
                     nouveau_org_nom.setVisibility(View.VISIBLE);
                     organisation_secteur.setVisibility(View.VISIBLE);
-                    mapView.setVisibility(View.VISIBLE);
+                    constraintLayout.setVisibility(View.VISIBLE);
                     organisation.setVisibility(View.GONE);
                     org_select.setVisibility(View.GONE);
                     secteur_select.setVisibility(View.VISIBLE);
@@ -324,17 +329,14 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
 
     }
     //////////////////////////////////  ACTION IMAGE   /////////////////////////////////////////
-
     public void OpenGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         this.startActivityForResult(gallery, 100);
     }
-
     private void OpenCamera() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, 1337);
     }
-
     private void show_popup() {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.take_image);
@@ -354,9 +356,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         });
         dialog.show();
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == 100) {
             final Uri imageUriii = data.getData();
@@ -382,10 +382,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             base64TextView.setText("");
         }
     }
-
     //////////////////////////////////  MAP   /////////////////////////////////////////
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    @Override public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
         if (mapViewBundle == null) {
@@ -394,45 +392,13 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         }
         mapView.onSaveInstanceState(mapViewBundle);
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mapView.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mapView.onStop();
-    }
-
-    @Override
-    protected void onPause() {
-        mapView.onPause();
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        mapView.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
+    @Override protected void onResume() { super.onResume();mapView.onResume(); }
+    @Override protected void onStart() { super.onStart();mapView.onStart(); }
+    @Override public void onStop() { super.onStop();mapView.onStop(); }
+    @Override public void onPause() { mapView.onPause();super.onPause(); }
+    @Override public void onDestroy() { mapView.onDestroy();super.onDestroy(); }
+    @Override public void onLowMemory() { super.onLowMemory();mapView.onLowMemory(); }
+    @Override public void onMapReady(GoogleMap googleMap) {
         final GoogleMap gmap;
         gmap = googleMap;
         gmap.setMinZoomPreference(1);
@@ -456,5 +422,41 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
         gmap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                latLng_currennt = gmap.getCameraPosition().target;
+                zoom = gmap.getCameraPosition().zoom;
+                LatLng farLeft = gmap.getProjection().getVisibleRegion().farLeft;
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng_currennt.latitude,farLeft.longitude), zoom));
+            }
+        });
+        top.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                latLng_currennt = gmap.getCameraPosition().target;
+                zoom = gmap.getCameraPosition().zoom;
+                LatLng farLeft = gmap.getProjection().getVisibleRegion().farLeft;
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(farLeft.latitude,latLng_currennt.longitude), zoom));
+            }
+        });
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                latLng_currennt = gmap.getCameraPosition().target;
+                zoom = gmap.getCameraPosition().zoom;
+                LatLng droit_bas = gmap.getProjection().getVisibleRegion().nearRight;
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng_currennt.latitude,droit_bas.longitude), zoom));
+            }
+        });
+        bottom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                latLng_currennt = gmap.getCameraPosition().target;
+                zoom = gmap.getCameraPosition().zoom;
+                LatLng droit_bas = gmap.getProjection().getVisibleRegion().nearRight;
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droit_bas.latitude,latLng_currennt.longitude), zoom));
+            }
+        });
     }
 }

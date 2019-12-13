@@ -245,7 +245,7 @@ public class Classtest  extends AppCompatActivity {
         if (id!=0){
             JSONObject Filiere_Selected = getJsonObjectBycle(context,"id",id,filiers);
             final int premier_promotion= Integer.parseInt(Filiere_Selected.getString("Date_Creation").substring(0,4).trim());
-            for (int i=premier_promotion;i<=rightNow.get(Calendar.YEAR);i++){
+            for (int i=premier_promotion;i<=rightNow.get(Calendar.YEAR)+1;i++){
                 promos_filier.add(i+"");
             }
         }
