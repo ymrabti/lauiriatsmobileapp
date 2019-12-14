@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -41,7 +42,6 @@ public class GalleryFragment extends Fragment{
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        TextView textView = root.findViewById(R.id.text_gallery);
         malist = root.findViewById(R.id.list_laureat);
 
         long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
@@ -51,12 +51,14 @@ public class GalleryFragment extends Fragment{
             assert getArguments() != null;
             org =getArguments().getLong("organisation");secteur="TOUT";
             JSONObject jsonObject= getJsonObjectBycle(getActivity(),"id",org,organismes);
-            textView.setText(jsonObject.getString("org"));
+            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                    .setTitle(jsonObject.getString("org"));
         }
         catch(Exception e){
             org = get_filter_pref_long(getActivity(), "organisation");
             secteur= get_filter_pref_string(getActivity(), "sector");
-            textView.setText("Liste des Laureats");
+            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                    .setTitle("Liste des Laureats");
         }
         peupler_array_list(getActivity(), filiere, promo,"TOUT", org, secteur,malist);
         malist.setOnItemClickListener(

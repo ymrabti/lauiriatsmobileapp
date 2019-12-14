@@ -99,6 +99,16 @@ private static Context context ;
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int user = getPref(this);
+        if (user!=-1){
+            id_connected = user;
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);}
+    }
+
     public static Context getContexte() {
         return context;
     }

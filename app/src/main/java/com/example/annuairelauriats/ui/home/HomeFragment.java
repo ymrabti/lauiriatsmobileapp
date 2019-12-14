@@ -1,5 +1,6 @@
 package com.example.annuairelauriats.ui.home;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -22,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONObject;
+
+import java.util.Objects;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
@@ -69,6 +73,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
                 fragmentTransaction.replace(R.id.nav_host_fragment, new SignalerFragment());
                 fragmentTransaction.commit();
+                Objects.requireNonNull(getActivity()).setTitle("Modifier vos informations");
             }
         });
         log_out = root.findViewById(R.id.log_out);
@@ -84,12 +89,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             JSONObject image= getJsonObjectBycle(getActivity(),"laureat",id_connected,images_file);
             JSONObject filier= getJsonObjectBycle(getActivity(),"id",laurat_visitee.getInt("filiere"),filiers);
             pdp_visit.setImageBitmap(base64toImage(image.getString("image")));
-            NomPrenomUser.setText(laurat_visitee.getString("nom"));NomPrenomUser.append(" ");NomPrenomUser.append(laurat_visitee.getString("prenom"));
+            NomPrenomUser.setText(laurat_visitee.getString("nom"));NomPrenomUser.append(" ");
+            NomPrenomUser.append(laurat_visitee.getString("prenom"));
             email.setText(laurat_visitee.getString("email"));
             tel.setText(laurat_visitee.getString("telephone"));
             promotion.setText(laurat_visitee.getString("promotion"));
             filiere.setText(filier.getString("Nom"));
-
+            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                    .setTitle(laurat_visitee.getString("nom")+" "+laurat_visitee.getString("prenom"));
             JSONObject org_lau= getJsonObjectBycle(getActivity(),"id_laureat",id_connected,org_laureat);
             JSONObject org_lau_attente= getJsonObjectBycle(getActivity(),"laureat",id_connected,org_en_attente);
             if (!org_lau.isNull("id_org")){
