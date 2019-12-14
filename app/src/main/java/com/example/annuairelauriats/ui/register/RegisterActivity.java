@@ -55,17 +55,17 @@ import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
 
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+    private LatLng latLng_currennt;
+    private float zoom ;
+    private Button top, bottom, right,left;
     public static double lat, lon;
+    private MapView mapView;
     private static Context context;
     ImageView imageView;
     TextView base64TextView;
     long checked_radio;
-    private MapView mapView;
     private int year, month, day;
     private RegisterViewModel registerViewModel;
-    private float zoom ;
-    private LatLng latLng_currennt;
-    private Button top, bottom, right,left;
     public static Context getContextext() {
         return context;
     }
