@@ -103,6 +103,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         final ProgressBar loadingProgressBar = findViewById(R.id.registering);
         final TextView go_to_login = findViewById(R.id.go_to_login);
         final ConstraintLayout constraintLayout = findViewById(R.id.constraint_layout);
+        final TextView org_select = findViewById(R.id.org_text_view_register);
+        final TextView secteur_select = findViewById(R.id.secteur_org_text_view_register);
 
         top=findViewById(R.id.go_top_1);bottom=findViewById(R.id.go_bottom_1);
         right=findViewById(R.id.go_right_1);left=findViewById(R.id.go_left_1);
@@ -110,8 +112,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         Classtest.spinner_list_adapt(getApplicationContext(), filiere, "Nom", "filieres.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation, "org", "organismes.json", 0);
         Classtest.spinner_list_adapt(getApplicationContext(), organisation_secteur, "secteur", "secteurs.json", 0);
-        final TextView org_select = findViewById(R.id.org_text_view_register);
-        final TextView secteur_select = findViewById(R.id.secteur_org_text_view_register);
         Drawable drawable = getDrawable(R.drawable.ing);
         assert drawable != null;
         imageView.setImageBitmap(resize_drawable(drawable));
@@ -329,14 +329,6 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
 
     }
     //////////////////////////////////  ACTION IMAGE   /////////////////////////////////////////
-    public void OpenGallery() {
-        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        this.startActivityForResult(gallery, 100);
-    }
-    private void OpenCamera() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, 1337);
-    }
     private void show_popup() {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.take_image);
@@ -355,6 +347,14 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
         dialog.show();
+    }
+    public void OpenGallery() {
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        this.startActivityForResult(gallery, 100);
+    }
+    private void OpenCamera() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, 1337);
     }
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

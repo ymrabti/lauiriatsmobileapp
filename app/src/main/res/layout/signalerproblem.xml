@@ -9,282 +9,293 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <EditText
-            android:id="@+id/edit_infos_register_nom_laureat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:textSize="24sp"
-            android:selectAllOnFocus="true"
-            android:hint="@string/prmpt_nom_laureat"/>
-        <EditText
-            android:id="@+id/edit_infos_register_prenom_laureat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:textSize="24sp"
-            android:hint="@string/prmpt_prenom_laureat"/>
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp">
-            <TextView
-                android:id="@+id/edit_infos_gender_text_view_register"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:textSize="24sp"
-                android:text="@string/sellect_gender"/>
-            <Spinner
-                android:id="@+id/edit_infos_snipper_gender_laureat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"/>
-        </LinearLayout>
-        <EditText
-            android:id="@+id/edit_infos_register_telephone_laureat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:inputType="phone"
-            android:hint="@string/prmpt_tel_laureat"
-            android:textSize="24sp"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp">
-            <TextView
-                android:id="@+id/edit_infos_filiere_text_view_register"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/select_filiere"
-                android:layout_marginEnd="24dp"
-                android:textSize="24sp"/>
-            <Spinner
-                android:id="@+id/edit_infos_snipper_filiere_laureat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp">
-            <TextView
-                android:id="@+id/edit_infos_promotion_text_view_register"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/select_promotion"
-                android:layout_marginEnd="24dp"
-                android:textSize="24sp"/>
-            <Spinner
-                android:id="@+id/edit_infos_snipper_promotion_laureat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"/>
-        </LinearLayout>
-        <TextView
-            android:id="@+id/edit_infos_register_image_base_64_laureat"
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:visibility="invisible"/>
-        <TextView
-            android:id="@+id/edit_infos_register_image_base_64_show_hint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="30dp"
-            android:gravity="center"
-            android:textSize="24sp"
-            android:text="@string/selectionner_votre_photo"/>
-        <LinearLayout
-            android:id="@+id/edit_infos_layouuuut"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-        <ImageView
-                android:id="@+id/edit_infos_selected_file_image8laureat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:maxHeight="250dp"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center"
-                app:layout_constraintHorizontal_bias="0.125" />
-        </LinearLayout>
-        <EditText
-            android:id="@+id/edit_infos_usernamename"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:hint="@string/prompt_email"
-            android:inputType="textEmailAddress"
-            android:selectAllOnFocus="true"
-            android:textSize="24sp"/>
-        <EditText
-            android:id="@+id/edit_infos_passwordword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:hint="@string/prompt_password"
-            android:imeActionLabel="@string/action_sign_in_short"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword"
-            android:selectAllOnFocus="true"
-            android:textSize="24sp"/>
-        <TextView
-            android:id="@+id/edit_infos_selectradio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:textSize="24sp"
-            android:gravity="center_horizontal"
-            android:text="@string/selectionner_organisation"/>
-        <RadioGroup
-            android:id="@+id/edit_infos_radio_organisation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp">
-
-            <RadioButton
-                android:id="@+id/edit_infos_radio_organisation_existe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/organisation"/>
-            <TextView
-                android:id="@+id/edit_infos_org_text_view_register"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/select_Organisation"
-                android:layout_margin="24dp"/>
-            <Spinner
-                android:id="@+id/edit_infos_snipper_select_org"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_margin="24dp"/>
-
-
-            <RadioButton
-                android:id="@+id/edit_infos_radio_organisation_non_existe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/organisation_non_existe"/>
             <EditText
-                android:id="@+id/edit_infos_snipper_ecrire_nom_org"
+                android:id="@+id/edit_infos_register_nom_laureat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="24dp"
-                android:hint="@string/nom_de_l_organisatiom"
-                android:inputType="text"
-                android:visibility="gone" />
-            <TextView
-                android:id="@+id/edit_infos_secteur_org_text_view_register"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/select_secteur"
-                android:layout_margin="24dp"
-                android:visibility="gone"/>
-            <Spinner
-                android:id="@+id/edit_infos_snipper_select_secteur_org"
+                android:textSize="24sp"
+                android:selectAllOnFocus="true"
+                android:hint="@string/prmpt_nom_laureat"/><!--nom-->
+            <EditText
+                android:id="@+id/edit_infos_register_prenom_laureat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="24dp"
-                android:visibility="gone"/>
-
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/edit_infos_constraint_layout"
-                android:visibility="gone"
+                android:textSize="24sp"
+                android:hint="@string/prmpt_prenom_laureat"/><!--prenom-->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="45dp">
-                <com.google.android.gms.maps.MapView
-                    android:id="@+id/edit_infos_map_put_org"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp">
+                <TextView
+                    android:id="@+id/edit_infos_gender_text_view_register"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:textSize="24sp"
+                    android:text="@string/sellect_gender"/>
+                <Spinner
+                    android:id="@+id/edit_infos_snipper_gender_laureat"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-                <Button
-                    android:id="@+id/edit_infos_go_top_1"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"/>
+            </LinearLayout><!--gender-->
+            <EditText
+                android:id="@+id/edit_infos_register_telephone_laureat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp"
+                android:inputType="phone"
+                android:hint="@string/prmpt_tel_laureat"
+                android:textSize="24sp"/><!--telephone-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp">
+                <TextView
+                    android:id="@+id/edit_infos_filiere_text_view_register"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_filiere"
+                    android:layout_marginEnd="24dp"
+                    android:textSize="24sp"/>
+                <Spinner
+                    android:id="@+id/edit_infos_snipper_filiere_laureat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"/>
+            </LinearLayout><!--filiere-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp">
+                <TextView
+                    android:id="@+id/edit_infos_promotion_text_view_register"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_promotion"
+                    android:layout_marginEnd="24dp"
+                    android:textSize="24sp"/>
+                <Spinner
+                    android:id="@+id/edit_infos_snipper_promotion_laureat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"/>
+            </LinearLayout><!--promotion-->
+            <TextView
+                android:id="@+id/edit_infos_register_image_base_64_laureat"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:visibility="invisible"/><!--base64-->
+            <TextView
+                android:id="@+id/edit_infos_register_image_base_64_show_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="@string/selectionner_votre_photo"/><!--image-->
+            <LinearLayout
+                android:id="@+id/edit_infos_layouuuut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/edit_infos_selected_file_image8laureat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:maxHeight="250dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/haut"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
-                <Button
-                    android:id="@+id/edit_infos_go_bottom_1"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:background="@drawable/bas"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-                <Button
-                    android:id="@+id/edit_infos_go_left_1"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/gauche"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    />
-                <Button
-                    android:id="@+id/edit_infos_go_right_1"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_vertical|end"
-                    android:background="@drawable/droit"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </RadioGroup>
+                    android:gravity="center"
+                    app:layout_constraintHorizontal_bias="0.125" />
+            </LinearLayout><!--image-->
+            <EditText
+                android:id="@+id/edit_infos_usernamename"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp"
+                android:hint="@string/prompt_email"
+                android:inputType="textEmailAddress"
+                android:selectAllOnFocus="true"
+                android:textSize="24sp"/><!--email-->
+            <EditText
+                android:id="@+id/edit_infos_passwordword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp"
+                android:hint="@string/prompt_password"
+                android:imeActionLabel="@string/action_sign_in_short"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                android:textSize="24sp"/><!--mdp-->
+            <EditText
+                android:id="@+id/edit_infos_description_laureat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp"
+                android:hint="@string/petit_description_sur_vous"
+                android:inputType="textMultiLine"
+                android:lines="6" /><!--description-->
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_margin="24dp">
-            <EditText
-                android:id="@+id/edit_infos_date_pick_with_org"
-                android:layout_width="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/edit_infos_selectradio"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="datetime"
-                android:hint="@string/date_hint"/>
-            <ImageView
-                android:id="@+id/edit_infos_pick_date_button"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="end"
-                android:background="@drawable/agenda"/>
+                android:layout_margin="24dp"
+                android:textSize="24sp"
+                android:gravity="center_horizontal"
+                android:text="@string/selectionner_organisation"/><!--org-->
+            <RadioGroup
+                android:id="@+id/edit_infos_radio_organisation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp">
+
+                <RadioButton
+                    android:id="@+id/edit_infos_radio_organisation_existe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/organisation"/>
+                <TextView
+                    android:id="@+id/edit_infos_org_text_view_register"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_Organisation"
+                    android:layout_margin="24dp"/>
+                <Spinner
+                    android:id="@+id/edit_infos_snipper_select_org"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_margin="24dp"/>
+
+
+                <RadioButton
+                    android:id="@+id/edit_infos_radio_organisation_non_existe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/organisation_non_existe"/>
+                <EditText
+                    android:id="@+id/edit_infos_snipper_ecrire_nom_org"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="24dp"
+                    android:hint="@string/nom_de_l_organisatiom"
+                    android:inputType="text"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/edit_infos_secteur_org_text_view_register"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_secteur"
+                    android:layout_margin="24dp"
+                    android:visibility="gone"/>
+                <Spinner
+                    android:id="@+id/edit_infos_snipper_select_secteur_org"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="24dp"
+                    android:visibility="gone"/>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/edit_infos_constraint_layout"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginBottom="45dp">
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/edit_infos_map_put_org"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                    <Button
+                        android:id="@+id/edit_infos_go_top_1"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/haut"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                    <Button
+                        android:id="@+id/edit_infos_go_bottom_1"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:background="@drawable/bas"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+                    <Button
+                        android:id="@+id/edit_infos_go_left_1"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/gauche"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
+                    <Button
+                        android:id="@+id/edit_infos_go_right_1"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:background="@drawable/droit"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </RadioGroup><!--org-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="24dp">
+                <EditText
+                    android:id="@+id/edit_infos_date_pick_with_org"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="datetime"
+                    android:hint="@string/date_hint"/>
+                <ImageView
+                    android:id="@+id/edit_infos_pick_date_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="end"
+                    android:background="@drawable/agenda"/>
+            </LinearLayout><!--date-->
+            <EditText
+                android:id="@+id/edit_infos_intitule_fonction_with_org"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp"
+                android:hint="@string/intitule_sur_votre_fonction"/><!--intitule-->
         </LinearLayout>
-        <EditText
-            android:id="@+id/edit_infos_intitule_fonction_with_org"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:hint="@string/intitule_sur_votre_fonction"/>
-        <EditText
-            android:id="@+id/edit_infos_description_laureat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:hint="@string/petit_description_sur_vous"
-            android:inputType="textMultiLine"
-            android:lines="6" />
         <Button
             android:id="@+id/edit_infos_register"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_margin="48dp"
+            android:alpha="0.3"
             android:enabled="false"
-            android:background="@drawable/register_disabled"
-            app:layout_constraintVertical_bias="0.2" />
+            android:background="@drawable/savee"
+            app:layout_constraintVertical_bias="0.2" /><!--btn save-->
         <ProgressBar
             android:id="@+id/edit_infos_registering"
             android:layout_width="wrap_content"
@@ -293,13 +304,5 @@
             android:layout_margin="64dp"
             android:visibility="gone"
             app:layout_constraintVertical_bias="0.3" />
-        <TextView
-            android:id="@+id/edit_infos_go_to_login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="28sp"
-            android:layout_margin="24dp"
-            android:text="@string/connectez_vous"
-            android:selectAllOnFocus="true" />
     </LinearLayout>
 </ScrollView>
