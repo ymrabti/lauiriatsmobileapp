@@ -606,6 +606,16 @@ public class Classtest  extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("id",user_id);editor.apply();
     }
+    public static void set_pref(Context context,String cle,long id){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(cle, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("id",id);
+        editor.apply();
+    }
+    public static long get_pref(Context context,String key){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(key, Context.MODE_PRIVATE);
+        return sharedPreferences.getLong("id",0);
+    }
     /*private void read_json(){
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());
