@@ -148,7 +148,7 @@
         android:layout_height="72dp"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="36dp"
-        android:background="@drawable/loop"
+        android:background="@android:drawable/ic_search_category_default"
         android:layout_marginEnd="24dp"
         app:layout_constraintTop_toBottomOf="@+id/snipper_filtre_laureat_province"/>
     <Button
@@ -157,7 +157,7 @@
         android:layout_height="72dp"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="36dp"
-        android:background="@drawable/dismiss"
+        android:background="@android:drawable/ic_menu_close_clear_cancel"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
         app:layout_constraintTop_toBottomOf="@+id/snipper_filtre_laureat_province"/>

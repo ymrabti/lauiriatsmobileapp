@@ -1,9 +1,11 @@
 package com.example.annuairelauriats.ui.standards;
 
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -24,36 +26,47 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.home.DatabaseHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
+import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
+import static com.example.annuairelauriats.ui.home.Classtest.encodeImage;
+import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class StandardsFragment extends Fragment {
     private TextView result_http_client;private VideoView videoView;private EditText url;
-    private ImageView imageView;private EditText password;
-    private boolean isFABOpen;private FloatingActionButton fab1,fab2,fab3,fab;
-    private LinearLayout fm1,fm2,fm3; private TextView t1,t2,t3;
+    private ImageView imageView,imageViewm;private EditText password;
+    private static Context context;
+    private DatabaseHandler databaseHandler ;
+    @Nullable
+    public static Context getContexte() {
+        return context;
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.standardscommunute, container, false);
+        context=getActivity();
         url = root.findViewById(R.id.editText1);password=root.findViewById(R.id.pssssss);
+        url.setText("israe");password.setText("hyouri sama");
         videoView = root.findViewById(R.id.videoView);
         result_http_client=root.findViewById(R.id.result_http_client);
-        imageView = root.findViewById(R.id.ImageView01);
-        //url.setText("http://videocdn.bodybuilding.com/video/mp4/62000/62792m.mp4");
-        //url.setText("https://docs.google.com/file/d/1QQUAGvruSoUGfcUO4_SjUc2VuQq34n4i/preview");
+        imageView = root.findViewById(R.id.ImageView01);imageViewm=root.findViewById(R.id.ImageView99);
         videoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,13 +75,34 @@ public class StandardsFragment extends Fragment {
             }
         });
         imageView.setImageResource( R.drawable.ing);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenGallery();
+            }
+        });
         Button but_connect = root.findViewById(R.id.buttonSend);
+        databaseHandler = new DatabaseHandler(getActivity());
         but_connect.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 try {
-
+                    Bitmap icon = resize_bitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                    databaseHandler.insert_photo(encodeImage(icon) + "");
+                    Bitmap base=base64toImage(databaseHandler.return_photo());
+                    url.setText(base.getHeight()+" + "+base.getWidth());
+                    imageViewm.setImageBitmap(base);
+                    /*String lien=url.getText().toString(),mdp=password.getText().toString();
+                    if (!(lien.isEmpty() && mdp.isEmpty())){
+                        databaseHandler.insert_laureat(lien,mdp);
+                    }
+                    List<String> list = databaseHandler.return_laureats();
+                    result_http_client.setText(""+list.size()+"\n"+"\n");
+                    for (String e:list) {
+                        result_http_client.append("\t"+e+"\n");
+                    }
+                    result_http_client.append("\n"+"\n");
                     Drawable drawable = Objects.requireNonNull(getActivity()).getDrawable(R.drawable.ing);
                     assert drawable != null;
                     Bitmap b = ((BitmapDrawable)drawable).getBitmap();
@@ -81,7 +115,7 @@ public class StandardsFragment extends Fragment {
                     result_http_client.append("scale factor : "+scaleFactor+"\n");
                     result_http_client.append("scale factor * 100: "+scaleFactor*100+"\n");
                     result_http_client.append("bitmap size : "+b.getWidth()+"  X "+b.getHeight()+"\n");
-                    /*getPref();
+                    getPref();
                     result_http_client.setText(java.util.UUID.randomUUID().toString());
                     OpenGallery();
                     Bitmap icon = ((BitmapDrawable) imageView.getDrawable() ).getBitmap();
@@ -127,46 +161,9 @@ public class StandardsFragment extends Fragment {
                 }
             }
         });
-        isFABOpen=false;
-        fab =  root.findViewById(R.id.fab);
-        fab1 =  root.findViewById(R.id.fab1);fm1=root.findViewById(R.id.fl1);t1=root.findViewById(R.id.txt1);
-        fab2 =  root.findViewById(R.id.fab2);fm2=root.findViewById(R.id.fl2);t2=root.findViewById(R.id.txt2);
-        fab3 =  root.findViewById(R.id.fab3);fm3=root.findViewById(R.id.fl3);t3=root.findViewById(R.id.txt3);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isFABOpen){
-                    fab.animate().rotation(45);
-                    showFABMenu();
-                }else{
-                    fab.animate().rotation(0);
-                    closeFABMenu();
-                }
-            }
-        });
 
         return root;
-    }
-
-    private void showFABMenu(){
-        isFABOpen=true;
-        final int rayon = 150;
-        final double angle= PI/4;
-        fm1.animate().translationX(-rayon/*(fab.getHeight()+10)*/);
-        fm2.animate().translationY(-Math.round(rayon*sin(angle)));
-        fm2.animate().translationX(-Math.round(rayon*cos(angle)));
-        fm3.animate().translationY(-rayon);
-        t1.setVisibility(View.VISIBLE);t2.setVisibility(View.VISIBLE);t3.setVisibility(View.VISIBLE);
-    }
-
-    private void closeFABMenu(){
-        isFABOpen=false;
-        fm1.animate().translationX(0);
-        fm2.animate().translationX(0);
-        fm2.animate().translationY(0);
-        fm3.animate().translationY(0);
-        t1.setVisibility(View.GONE);t2.setVisibility(View.GONE);t3.setVisibility(View.GONE);
     }
 
 

@@ -245,7 +245,7 @@ public class Classtest  extends AppCompatActivity {
         if (id!=0){
             JSONObject Filiere_Selected = getJsonObjectBycle(context,"id",id,filiers);
             final int premier_promotion= Integer.parseInt(Filiere_Selected.getString("Date_Creation").substring(0,4).trim());
-            for (int i=premier_promotion;i<=rightNow.get(Calendar.YEAR);i++){
+            for (int i=premier_promotion;i<=rightNow.get(Calendar.YEAR)+1;i++){
                 promos_filier.add(i+"");
             }
         }
@@ -605,6 +605,16 @@ public class Classtest  extends AppCompatActivity {
         SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("id",user_id);editor.apply();
+    }
+    public static void set_pref(Context context,String cle,long id){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(cle, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("id",id);
+        editor.apply();
+    }
+    public static long get_pref(Context context,String key){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(key, Context.MODE_PRIVATE);
+        return sharedPreferences.getLong("id",0);
     }
     /*private void read_json(){
         try {

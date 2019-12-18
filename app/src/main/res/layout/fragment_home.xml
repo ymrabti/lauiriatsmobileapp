@@ -94,15 +94,15 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/bonnet"/>
+                    android:src="@drawable/filiere"/>
                 <TextView
-                    android:id="@+id/promotion_laureat_profile_sssss"
+                    android:id="@+id/filiere_laureat_profile_sssss"
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:text="Promotion : "/>
+                    android:text="filiere"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_marginTop="25dp"
@@ -113,15 +113,15 @@
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/filiere"/>
+                    android:src="@drawable/bonnet"/>
                 <TextView
-                    android:id="@+id/filiere_laureat_profile_sssss"
+                    android:id="@+id/promotion_laureat_profile_sssss"
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:text="filiere"/>
+                    android:text="Promotion : "/>
             </LinearLayout>
             <LinearLayout
                 android:layout_marginTop="25dp"
@@ -142,12 +142,55 @@
                     android:layout_marginStart="20dp"
                     android:text="organisation"/>
             </LinearLayout>
-
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/map_laureat_profile_sssss"
-                android:layout_marginTop="45dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"/>
+                android:layout_height="300dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="45dp">
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/map_laureat_profile_sssss"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <Button
+                    android:id="@+id/go_top"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/haut"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+                <Button
+                    android:id="@+id/go_bottom"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:background="@drawable/bas"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <Button
+                    android:id="@+id/go_left"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/gauche"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
+                <Button
+                    android:id="@+id/go_right"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:background="@drawable/droit"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
