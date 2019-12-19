@@ -32,12 +32,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -69,6 +72,13 @@ public class Classtest  extends AppCompatActivity {
         }
         return json;
     }         //LIRE CONTENUE D UN FICHIER
+    public static void raw_to_asset(Context context) throws Exception
+    {
+        InputStream in_s = context.getResources().openRawResource(R.raw.filieres);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in_s));
+        String line ;StringBuilder result=new StringBuilder();
+        while ((line = reader.readLine()) != null) { result.append(line); }
+    }
     public static void write_file_data(Context context,String textToWrite,String filename) {
         try {
             File myExternalFile = new File(context.getExternalFilesDir(folder), filename);

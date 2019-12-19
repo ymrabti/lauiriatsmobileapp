@@ -91,7 +91,12 @@ private static Context context ;
                     @Override public void onTick(long millisUntilFinished) {
                         loadingProgressBar.setVisibility(View.VISIBLE);}
                     @Override public void onFinish() {
-                        loginViewModel.login(usernameEditText.getText().toString(),passwordEditText.getText().toString());
+                        try {
+                            loginViewModel.login(usernameEditText.getText().toString(),passwordEditText.getText().toString());
+                        }
+                        catch(Exception error){
+
+                        }
                         loadingProgressBar.setVisibility(View.GONE);
                     }
                 };c.start();
