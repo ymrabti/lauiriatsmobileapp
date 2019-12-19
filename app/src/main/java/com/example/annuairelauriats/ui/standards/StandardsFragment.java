@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,9 +36,11 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.home.DatabaseHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Objects;
 
@@ -88,12 +91,17 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    Bitmap icon = resize_bitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                    InputStream in_s = getResources().openRawResource(R.raw.filieres);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in_s));
+                    String line ;int i=0;StringBuilder result=new StringBuilder();
+                    while ((line = reader.readLine()) != null) { result.append(line); }
+                    result_http_client.append(result);
+                    /*Bitmap icon = resize_bitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap());
                     databaseHandler.insert_photo(encodeImage(icon) + "");
                     Bitmap base=base64toImage(databaseHandler.return_photo());
                     url.setText(base.getHeight()+" + "+base.getWidth());
                     imageViewm.setImageBitmap(base);
-                    /*String lien=url.getText().toString(),mdp=password.getText().toString();
+                    String lien=url.getText().toString(),mdp=password.getText().toString();
                     if (!(lien.isEmpty() && mdp.isEmpty())){
                         databaseHandler.insert_laureat(lien,mdp);
                     }
@@ -124,8 +132,8 @@ public class StandardsFragment extends Fragment {
                     ImageView img= getActivity().findViewById(R.id.ImageView99);
                     img.setImageBitmap(icon);
                     videoView.setVideoPath(url.getText().toString());
-                    videoView.start();*/
-                    /*OpenCamera();
+                    videoView.start();
+                    OpenCamera();
                     show_popup();
                     String date = "2009-10-10";
                     int i = Integer.parseInt(date.substring(0,4).trim())+2000;
@@ -147,11 +155,9 @@ public class StandardsFragment extends Fragment {
                     trans.replace(R.id.nav_host_fragment, new SlideshowFragment());
                     //MainActivity.navigationView.getCheckedItem();
                     result_http_client.setText(MainActivity.navigationView.getCheckedItem().getGroupId()+""
-                    */
-                    /*+ Classtest.getJsonObjectById(getActivity(),"myjson.json",1).toString()
+                    + Classtest.getJsonObjectById(getActivity(),"myjson.json",1).toString()
 
-                     */
-                    /*);
+                     );
                     trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     trans.addToBackStack(null);
                     trans.commit();*/

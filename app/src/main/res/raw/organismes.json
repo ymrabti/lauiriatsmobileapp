@@ -1,0 +1,30 @@
+[
+  {
+    "id":1,
+    "org":"EHTP",
+    "secteur":"Public",
+    "longitude":-1.926189,
+    "latitude":34.687529
+  },
+  {
+    "id":2,
+    "org":"Marsa Maroc",
+    "secteur":"Public",
+    "longitude":-5.857140,
+    "latitude":35.748758
+  },
+  {
+    "id":3,
+    "org":"OCP",
+    "secteur":"Public",
+    "longitude":-6.855007,
+    "latitude":33.999759
+  },
+  {
+    "id":4,
+    "org":"Geo4Net",
+    "secteur":"Prive",
+    "longitude":-4.855007,
+    "latitude":30.999759
+  }
+]
