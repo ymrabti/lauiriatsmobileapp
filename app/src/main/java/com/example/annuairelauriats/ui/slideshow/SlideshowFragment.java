@@ -1,6 +1,9 @@
 package com.example.annuairelauriats.ui.slideshow;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -24,81 +27,32 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 
+import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
 import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;
-     private GoogleMap gmap;
+     private static GoogleMap gmap;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private boolean isFABOpen;
-    private FloatingActionButton fab;
-    private LinearLayout fm1,fm2; private TextView t1,t2;
+    private static FragmentTransaction fragmentTransaction;private static Context context;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
+        context=getActivity();
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
+        setHasOptionsMenu(true);
+        assert getFragmentManager() != null;
+        fragmentTransaction = getFragmentManager().beginTransaction();
         mapView = root.findViewById(R.id.map_view) ;
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
-        FloatingActionButton filter_fab = root.findViewById(R.id.fab_filter_laureat_on_map);
-        filter_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Classtest.ShowPopupfilter(getActivity(),null ,gmap,0);
-                fab.animate().rotation(0);closeFABMenu();
-            }
-        });
 
-        isFABOpen=false;
-        FloatingActionButton fab1 = root.findViewById(R.id.go_to_liste);
-        fm1=root.findViewById(R.id.afficher_dans_liste_ll);
-        fm2=root.findViewById(R.id.appliquer_nouveau_filtre_ll);
-        t1=root.findViewById(R.id.afficher_dans_liste);
-        t2=root.findViewById(R.id.appliquer_nouveau_filtre);
-        fab =  root.findViewById(R.id.fab_filter_choice);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isFABOpen){
-                    fab.animate().rotation(45);
-                    showFABMenu();
-                }else{
-                    fab.animate().rotation(0);
-                    closeFABMenu();
-                }
-            }
-        });
-        fab1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                assert getFragmentManager() != null;
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
-                fragmentTransaction.replace(R.id.nav_host_fragment, new GalleryFragment());
-                fragmentTransaction.commit();
-                MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
-            }
-        });
         return root;
-    }
-
-    private void showFABMenu(){
-        isFABOpen=true;
-        fm1.animate().translationY(-(fab.getHeight()+10));
-        fm2.animate().translationY(-2*(fab.getHeight()+10));
-        t1.setVisibility(View.VISIBLE);t2.setVisibility(View.VISIBLE);
-    }
-
-    private void closeFABMenu(){
-        isFABOpen=false;
-        fm1.animate().translationY(0);
-        fm2.animate().translationY(0);
-        t1.setVisibility(View.GONE);t2.setVisibility(View.GONE);
     }
     @Override public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -154,6 +108,19 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
             }
         });
     }
-
+    @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.findItem(R.id.action_filter_new_map).setVisible(true);
+        menu.findItem(R.id.action_goto_liste).setVisible(true);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    public static void popup(){
+        ShowPopupfilter(context,null ,gmap,0);
+    }
+    public static void to_list(){
+        fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+        fragmentTransaction.replace(R.id.nav_host_fragment, new GalleryFragment());
+        fragmentTransaction.commit();
+        MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
+    }
 
 }

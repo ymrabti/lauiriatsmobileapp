@@ -14,6 +14,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.annuairelauriats.R;
@@ -23,6 +25,7 @@ import com.example.annuairelauriats.ui.login.LoginActivity;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -45,6 +48,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_list;
 
@@ -66,18 +70,35 @@ public class Classtest  extends AppCompatActivity {
             in.read(buffer);
             in.close();
             json = new String(buffer, StandardCharsets.UTF_8);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             ex.printStackTrace();
             return null;
         }
         return json;
     }         //LIRE CONTENUE D UN FICHIER
-    public static void raw_to_asset(Context context) throws Exception
-    {
-        InputStream in_s = context.getResources().openRawResource(R.raw.filieres);
+    public static boolean is_file_exists(Context context,String fichier) {
+        File myExternalFile = new File(context.getExternalFilesDir(folder), fichier);
+        return myExternalFile.exists();
+    }         //LIRE CONTENUE D UN FICHIER
+    public static String load_raw(Context context,int id) throws Exception {
+        InputStream in_s = context.getResources().openRawResource(id);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in_s));
         String line ;StringBuilder result=new StringBuilder();
         while ((line = reader.readLine()) != null) { result.append(line); }
+        return result.toString();
+    }
+    public static void raw_to_asset(Context context) throws Exception{
+        write_file_data(context,load_raw(context,R.raw.filieres),filiers);
+        write_file_data(context,load_raw(context,R.raw.filter),filter);
+        write_file_data(context,load_raw(context,R.raw.images),images_file);
+        write_file_data(context,load_raw(context,R.raw.laureats),laureats);
+        write_file_data(context,load_raw(context,R.raw.org_en_attente),org_en_attente);
+        write_file_data(context,load_raw(context,R.raw.org_laureat),org_laureat);
+        write_file_data(context,load_raw(context,R.raw.organismes),organismes);
+        write_file_data(context,load_raw(context,R.raw.posts),posts);
+        write_file_data(context,load_raw(context,R.raw.secteurs),secteurs);
+        write_file_data(context,load_raw(context,R.raw.genders),genders);
     }
     public static void write_file_data(Context context,String textToWrite,String filename) {
         try {
@@ -183,11 +204,21 @@ public class Classtest  extends AppCompatActivity {
         final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
         final Spinner findbyorganisation = dialogFilter.findViewById(R.id.snipper_filtre_laureat_organisation);
         final Spinner findbysecteur = dialogFilter.findViewById(R.id.snipper_filtre_laureat_secteur);
-        Classtest.spinner_list_adapt(context,findbyfiliere,"Nom",filiers,1);
-        Classtest.spinner_list_adapt(context,findbypromotion,"promotion",promotions,1);
-        Classtest.spinner_list_adapt(context,findbyprovince,"province",provinces,1);
-        Classtest.spinner_list_adapt(context,findbysecteur,"secteur",secteurs,1);
-        Classtest.spinner_list_adapt(context,findbyorganisation,"org",organismes,1);
+        spinner_list_adapt(context,findbyfiliere,"Nom",filiers,1);
+        spinner_list_adapt(context,findbypromotion,"promotion",promotions,1);
+        spinner_list_adapt(context,findbyprovince,"province",provinces,1);
+        spinner_list_adapt(context,findbysecteur,"secteur",secteurs,1);
+        spinner_list_adapt(context,findbyorganisation,"org",organismes,1);
+
+        long filiere = get_filter_pref_long(context, "branch");
+        long org = get_filter_pref_long(context, "organisation");
+        String promo = get_filter_pref_string(context, "promotion");
+        String secteur = get_filter_pref_string(context, "sector");
+        findbyfiliere.setSelection((int)filiere);
+        if (org==0){findbysecteur.setSelection(secteur_select(secteur));}
+        else{findbyorganisation.setSelection((int)org);}
+        Toast.makeText(context,filiere+"\n"+org+"\n"+promo+"\n"+secteur+"\n",Toast.LENGTH_LONG).show();
+
         dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { dialogFilter.dismiss(); }});
@@ -259,14 +290,14 @@ public class Classtest  extends AppCompatActivity {
                 promos_filier.add(i+"");
             }
         }
+        spinner.setSelection(1);
         ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
         list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(list_adapter);
     } //AFFICHE POPUP POUR UN FILTRE
     public static void spinner_list_adapt(Context context, Spinner spinner, String champ, String fichier,int mark){
         List<String> list_items = peupler_list(context,champ,fichier,mark);
-        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,list_items);
-        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,R.layout.spim,R.id.text_spinner,list_items);
         spinner.setAdapter(list_adapter);
     }  //ADAPTER UNE LIST A UN SPINNER
     public static void peupler_array_list(Context context, long filiere, String promotion, String province, long organisation, String secteur, ListView malist){
@@ -357,7 +388,14 @@ public class Classtest  extends AppCompatActivity {
          MarkerOptions markerOptions = new MarkerOptions();
          markerOptions.position(latLngListe.get(i).getLatLng());
          markerOptions.title(""+latLngListe.get(i).getIden());
-         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+             try {
+                 JSONObject image= getJsonObjectBycle(context,"laureat",latLngListe.get(i).getIden(),images_file);
+                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resize_icon(base64toImage(image.getString("image")))));
+             } catch (Exception e) {
+                 e.printStackTrace();
+                 Toast.makeText(context,e.toString(),Toast.LENGTH_LONG).show();
+                 //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+             }
          builder.include(latLngListe.get(i).getLatLng());markerOptions.flat(false);
          gmap.addMarker(markerOptions);
          }
@@ -547,7 +585,11 @@ public class Classtest  extends AppCompatActivity {
         }
         return array_checked;
     }   //RETOURNE UNE LISTE DE LATLON
-
+    private static int secteur_select(String secteur){
+        if (secteur.equals("Public")){return 1;}
+        else if(secteur.equals("Prive")){return 2;}
+        else {return 0;}
+    }
 
 
 
@@ -574,6 +616,13 @@ public class Classtest  extends AppCompatActivity {
     public static Bitmap resize_bitmap(Bitmap bitmap){
         int width = bitmap.getWidth(),heigh=bitmap.getHeight();
         float scaleFactor =(float)200/Math.max(heigh,width);
+        int sizeX = Math.round(width * scaleFactor);
+        int sizeY =  Math.round(heigh* scaleFactor);
+        return Bitmap.createScaledBitmap(bitmap, sizeX, sizeY, false);
+    }
+    public static Bitmap resize_icon(Bitmap bitmap){
+        int width = bitmap.getWidth(),heigh=bitmap.getHeight();
+        float scaleFactor =(float)100/Math.max(heigh,width);
         int sizeX = Math.round(width * scaleFactor);
         int sizeY =  Math.round(heigh* scaleFactor);
         return Bitmap.createScaledBitmap(bitmap, sizeX, sizeY, false);

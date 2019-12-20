@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
+import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.signaler.SignalerFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -14,7 +16,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
@@ -47,12 +54,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private float zoom ;
     private LatLng latLng_currennt;
     private Button top, bottom, right,left;
+    private static FragmentTransaction fragmentTransaction;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_home, container, false);
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
+        setHasOptionsMenu(true);
+        assert getFragmentManager() != null;
+        fragmentTransaction = getFragmentManager().beginTransaction();
         mapView = root.findViewById(R.id.map_laureat_profile_sssss) ;
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
@@ -64,26 +75,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         TextView promotion = root.findViewById(R.id.promotion_laureat_profile_sssss);
         TextView filiere = root.findViewById(R.id.filiere_laureat_profile_sssss);
         TextView organisation = root.findViewById(R.id.organisation_laureat_profile_sssss);
-
-        ImageView edit = root.findViewById(R.id.edit_profile);
-        edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {assert getFragmentManager() != null;
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
-                fragmentTransaction.replace(R.id.nav_host_fragment, new SignalerFragment());
-                fragmentTransaction.commit();
-                Objects.requireNonNull(getActivity()).setTitle("Modifier vos informations");
-            }
-        });
-        log_out = root.findViewById(R.id.log_out);
-        log_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                log_out.setImageResource(R.drawable.logout);
-                logout(getActivity());
-            }
-        });
         try {
             JSONObject laurat_visitee = getJsonObjectBycle(getActivity(),"id",id_connected,laureats);
             JSONObject image= getJsonObjectBycle(getActivity(),"laureat",id_connected,images_file);
@@ -184,4 +175,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
          });
     }
 
+    @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.findItem(R.id.action_edit_profile).setVisible(true);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    public static void edit_profile(){
+        fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+        fragmentTransaction.replace(R.id.nav_host_fragment, new SignalerFragment());
+        fragmentTransaction.commit();
+    }
 }

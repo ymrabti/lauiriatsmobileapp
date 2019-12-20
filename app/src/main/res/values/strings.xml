@@ -109,4 +109,5 @@
     <string name="afficher_dans_liste">Afficher sur la liste</string>
     <string name="afficher_dans_carte">Afficher le resultat dans la carte</string>
     <string name="invalid_position">selectionner une position</string>
+    <string name="modifier_votre_profile">Modifier votre profile</string>
 </resources>

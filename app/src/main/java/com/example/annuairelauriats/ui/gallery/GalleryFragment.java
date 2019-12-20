@@ -1,14 +1,18 @@
 package com.example.annuairelauriats.ui.gallery;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -34,15 +38,17 @@ import static com.example.annuairelauriats.ui.home.Classtest.peupler_array_list;
 import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 
 public class GalleryFragment extends Fragment{
-    private ListView malist;public static ArrayList<Laureat> laureats_list;
-    private boolean isFABOpen;
-    private FloatingActionButton fab;
-    private LinearLayout fm1,fm2; private TextView t1,t2;
+    static private ListView malist;public static ArrayList<Laureat> laureats_list;
+    private static Context context;
+    private static FragmentTransaction fragmentTransaction;
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        malist = root.findViewById(R.id.list_laureat);
+        malist = root.findViewById(R.id.list_laureat);context=getActivity();
+        setHasOptionsMenu(true);
+        assert getFragmentManager() != null;
+        fragmentTransaction = getFragmentManager().beginTransaction();
 
         long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
         String promo = get_filter_pref_string(getActivity(), "promotion");
@@ -73,58 +79,20 @@ public class GalleryFragment extends Fragment{
                         fragmentTransaction.commit();
                     }}
         );
-        FloatingActionButton filter_fab = root.findViewById(R.id.fab_filter_laureat);
-        filter_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                 ShowPopupfilter(getActivity(),malist,null,1);
-                 fab.animate().rotation(0);closeFABMenu();
-            }
-        });
-        isFABOpen=false;
-        FloatingActionButton fab1 = root.findViewById(R.id.go_to_slideshow_gallery);
-        fm1=root.findViewById(R.id.afficher_dans_liste_ll_gallery);
-        fm2=root.findViewById(R.id.appliquer_nouveau_filtre_ll_gallery);
-        t1=root.findViewById(R.id.afficher_dans_liste_gallery);
-        t2=root.findViewById(R.id.appliquer_nouveau_filtre_gallery);
-        fab =  root.findViewById(R.id.fab_filter_choice_gallery);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isFABOpen){
-                    fab.animate().rotation(45);
-                    showFABMenu();
-                }else{
-                    fab.animate().rotation(0);
-                    closeFABMenu();
-                }
-            }
-        });
-        fab1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                assert getFragmentManager() != null;
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
-                fragmentTransaction.replace(R.id.nav_host_fragment, new SlideshowFragment());
-                fragmentTransaction.commit();
-                MainActivity.navigationView.setCheckedItem(R.id.nav_slideshow);
-            }
-        });
         return root;
     }
-
-    private void showFABMenu(){
-        isFABOpen=true;
-        fm1.animate().translationY(-(fab.getHeight()+10));
-        fm2.animate().translationY(-2*(fab.getHeight()+10));
-        t1.setVisibility(View.VISIBLE);t2.setVisibility(View.VISIBLE);
+    @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.findItem(R.id.action_filter_new).setVisible(true);
+        menu.findItem(R.id.action_goto_map).setVisible(true);
+        super.onCreateOptionsMenu(menu, inflater);
     }
-
-    private void closeFABMenu(){
-        isFABOpen=false;
-        fm1.animate().translationY(0);
-        fm2.animate().translationY(0);
-        t1.setVisibility(View.GONE);t2.setVisibility(View.GONE);
+    public static void popup(){
+        ShowPopupfilter(context,malist,null,1);
+    }
+    public static void to_map(){
+        fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+        fragmentTransaction.replace(R.id.nav_host_fragment, new SlideshowFragment());
+        fragmentTransaction.commit();
+        MainActivity.navigationView.setCheckedItem(R.id.nav_slideshow);
     }
 }

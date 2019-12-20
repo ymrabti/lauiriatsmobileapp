@@ -47,6 +47,8 @@ import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
 import static com.example.annuairelauriats.ui.home.Classtest.encodeImage;
+import static com.example.annuairelauriats.ui.home.Classtest.is_file_exists;
+import static com.example.annuairelauriats.ui.home.Classtest.load_raw;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
@@ -91,11 +93,7 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    InputStream in_s = getResources().openRawResource(R.raw.filieres);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in_s));
-                    String line ;int i=0;StringBuilder result=new StringBuilder();
-                    while ((line = reader.readLine()) != null) { result.append(line); }
-                    result_http_client.append(result);
+                    result_http_client.setText(is_file_exists(getContext(),url.getText().toString())+" file");
                     /*Bitmap icon = resize_bitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap());
                     databaseHandler.insert_photo(encodeImage(icon) + "");
                     Bitmap base=base64toImage(databaseHandler.return_photo());

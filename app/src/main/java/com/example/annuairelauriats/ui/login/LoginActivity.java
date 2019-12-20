@@ -27,6 +27,10 @@ import com.example.annuairelauriats.ui.register.RegisterActivity;
 
 import static com.example.annuairelauriats.ui.home.Classtest.getPref;
 import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.is_file_exists;
+import static com.example.annuairelauriats.ui.home.Classtest.laureats;
+import static com.example.annuairelauriats.ui.home.Classtest.raw_to_asset;
+import static com.example.annuairelauriats.ui.home.Classtest.setPref;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -42,6 +46,13 @@ private static Context context ;
             id_connected = user;
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);}
+            try {
+                if (!is_file_exists(getContexte(),laureats)){
+                        raw_to_asset(getContexte());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         final EditText usernameEditText = findViewById(R.id.username);usernameEditText.setText("younesmrabti50@gmail.com");
         final EditText passwordEditText = findViewById(R.id.password);passwordEditText.setText("jfhdhhdhhdxbjj");
