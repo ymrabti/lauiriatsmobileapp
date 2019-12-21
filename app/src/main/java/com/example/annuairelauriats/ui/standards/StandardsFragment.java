@@ -50,8 +50,11 @@ import static com.example.annuairelauriats.ui.home.Classtest.encodeImage;
 import static com.example.annuairelauriats.ui.home.Classtest.is_file_exists;
 import static com.example.annuairelauriats.ui.home.Classtest.load_raw;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
+import static com.example.annuairelauriats.ui.home.Classtest.write_file_data;
 import static java.lang.Math.PI;
 import static java.lang.Math.cos;
+import static java.lang.Math.random;
+import static java.lang.Math.round;
 import static java.lang.Math.sin;
 
 public class StandardsFragment extends Fragment {
@@ -93,8 +96,9 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    result_http_client.setText(is_file_exists(getContext(),url.getText().toString())+" file");
-                    /*Bitmap icon = resize_bitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                    script();
+                    /*result_http_client.setText(is_file_exists(getContext(),url.getText().toString())+" file");
+                    Bitmap icon = resize_bitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap());
                     databaseHandler.insert_photo(encodeImage(icon) + "");
                     Bitmap base=base64toImage(databaseHandler.return_photo());
                     url.setText(base.getHeight()+" + "+base.getWidth());
@@ -171,7 +175,7 @@ public class StandardsFragment extends Fragment {
     }
 
 
-    public void OpenGallery(){
+    private void OpenGallery(){
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         this.startActivityForResult(gallery,100);
     }
@@ -216,4 +220,94 @@ public class StandardsFragment extends Fragment {
             result_http_client.setText("please select img\n");
         }
     }
+    private String nom(){
+        String list="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        return "'" +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                "'";
+    }
+    private String email(){
+        String list="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        return "'" +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +"@"+
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +"."+
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                "'";
+    }
+    private String nu_tel(){
+        String list="0123456789";
+        return "'0" +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                list.charAt((int) num(0, list.length() - 1)) +
+                "'";
+    }
+    private String genre(){
+        String list="MF";
+        return "'" + list.charAt((int) num(0, list.length() - 1)) + "'";
+    }
+    private String date (){
+        return "'"+num(2017,2020)+"-"+num(1,12)+"-"+num(1,28)+"'";
+    }
+    private long num(int min,int max){
+        return round(min+random()*(max-min));
+    }
+    private void script(){
+        StringBuilder sql = new StringBuilder();
+        for (int i=52;i<252;i++){
+            result_http_client.append("UPDATE public.laureats\n" +
+                    "\tSET  status="+num(1,4)+"\n" +
+                    "\tWHERE id="+i+";");
+            sql.append("UPDATE public.laureats\n" + "\tSET  status=").append(num(1, 4))
+                    .append("\n").append("\tWHERE id=").append(i).append(";");
+        }
+        write_file_data(getContexte(),sql.toString(),"sqloo.sql");
+    }
 }
+/*sql.append("INSERT INTO public.laureat_org(\n" + "\torg, laureat, en_cours, date_debut, fonction)\n" + "\tVALUES (")
+                    .append(num(2, 5)).append(", ").append(i).append(", ").append(true).append(", ")
+                    .append(date()).append(", ").append(nom()).append(");");
+
+       sql.append("INSERT INTO public.laureats(\n" + "\tnom, prenom, gender, promotion, filiere, date_inscription" +
+                    ", description, telephone, email, pass_word, role, actif)\n" + "\tVALUES ( ")
+                    .append(nom()).append(", ").append(nom()).append(", ").append(genre())
+                    .append(", ").append(num(2000, 2020)).append(", ").append(num(2, 5))
+                    .append(", ").append(date ()).append(", ").append(nom()).append(", ")
+                    .append(nom()).append(", ").append(email()).append(", ").append(nom())
+                    .append(", ").append(1).append(", ").append(true).append(");");
+
+            sql.append("UPDATE public.laureats\n" + "\tSET  status=").append(num(1, 4))
+                    .append("\n").append("\tWHERE id=").append(i).append(";");
+
+                    
+       */

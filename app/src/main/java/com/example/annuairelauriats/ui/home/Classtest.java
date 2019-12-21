@@ -205,19 +205,34 @@ public class Classtest  extends AppCompatActivity {
         final Spinner findbyorganisation = dialogFilter.findViewById(R.id.snipper_filtre_laureat_organisation);
         final Spinner findbysecteur = dialogFilter.findViewById(R.id.snipper_filtre_laureat_secteur);
         spinner_list_adapt(context,findbyfiliere,"Nom",filiers,1);
-        spinner_list_adapt(context,findbypromotion,"promotion",promotions,1);
         spinner_list_adapt(context,findbyprovince,"province",provinces,1);
         spinner_list_adapt(context,findbysecteur,"secteur",secteurs,1);
         spinner_list_adapt(context,findbyorganisation,"org",organismes,1);
 
         long filiere = get_filter_pref_long(context, "branch");
+        try {
+            promotion_peuplement(context,filiere,findbypromotion);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         long org = get_filter_pref_long(context, "organisation");
         String promo = get_filter_pref_string(context, "promotion");
         String secteur = get_filter_pref_string(context, "sector");
         findbyfiliere.setSelection((int)filiere);
-        if (org==0){findbysecteur.setSelection(secteur_select(secteur));}
+        if (org==0){
+            findbysecteur.setSelection(secteur_select(secteur));
+        }
         else{findbyorganisation.setSelection((int)org);}
-        Toast.makeText(context,filiere+"\n"+org+"\n"+promo+"\n"+secteur+"\n",Toast.LENGTH_LONG).show();
+        int promo_selec=0;
+        try {
+        if (!promo.equals("SELECTIONNER")){
+            promo_selec=promotion_premier(context,filiere,promo);
+            findbypromotion.setSelection(promo_selec+1);
+            Toast.makeText(context,filiere+"\n"+org+"\n"+promo+"\n"+secteur+"\n"+promo_selec+"\n",Toast.LENGTH_LONG).show();
+        }
+        } catch (Exception e) {
+        e.printStackTrace();
+    }
 
         dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,6 +309,12 @@ public class Classtest  extends AppCompatActivity {
         ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
         list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(list_adapter);
+    } //AFFICHE POPUP POUR UN FILTRE
+    public static int promotion_premier(Context context,long id,String actu) throws Exception {
+        JSONObject Filiere_Selected = getJsonObjectBycle(context,"id",id,filiers);
+        int premier_promotion= Integer.parseInt(Filiere_Selected.getString("Date_Creation").substring(0,4).trim());
+        int actue= Integer.parseInt(actu.trim());
+        return actue-premier_promotion;
     } //AFFICHE POPUP POUR UN FILTRE
     public static void spinner_list_adapt(Context context, Spinner spinner, String champ, String fichier,int mark){
         List<String> list_items = peupler_list(context,champ,fichier,mark);
