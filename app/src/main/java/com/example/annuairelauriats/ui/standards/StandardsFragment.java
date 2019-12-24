@@ -14,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +25,18 @@ import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.home.DatabaseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -43,24 +48,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 import static android.app.Activity.RESULT_OK;
-import static com.example.annuairelauriats.ui.home.Classtest.get_Array_connect;
+import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 import static com.example.annuairelauriats.ui.home.Classtest.write_file_data;
 import static java.lang.Math.random;
 import static java.lang.Math.round;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.util.HashMap;
-import java.util.Map;
 public class StandardsFragment extends Fragment {
     private TextView result_http_client;private VideoView videoView;private EditText url;
     private ImageView imageView,imageViewm;private EditText password;
@@ -75,7 +70,7 @@ public class StandardsFragment extends Fragment {
         View root = inflater.inflate(R.layout.standardscommunute, container, false);
         context=getActivity();
         url = root.findViewById(R.id.editText1);password=root.findViewById(R.id.pssssss);
-        url.setText("israe");password.setText("hyouri sama");
+        url.setText(ip_server+"/laureat/id/8");password.setText("hyouri sama");
         videoView = root.findViewById(R.id.videoView);
         result_http_client=root.findViewById(R.id.result_http_client);
         imageView = root.findViewById(R.id.ImageView01);imageViewm=root.findViewById(R.id.ImageView99);
@@ -100,7 +95,35 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
         try {
-            result_http_client.append(get_Array_connect(getActivity(),ip_server+"/laureat").toString());
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest( url.getText().toString()
+                    , new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    try {
+                        JSONObject image_obj = response.getJSONObject(0);
+                        imageView.setImageBitmap(base64toImage(image_obj.getString("photo")));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            },null);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("laureat",8);jsonObject.put("IME","njjfjjfjjfjfjfjfjfj");
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                    ip_server + "/autres/insert_device", jsonObject,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            result_http_client.setText(response.toString());
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    result_http_client.setText(error.toString());
+                }
+            });
+            requestQueue.add(jsonArrayRequest);requestQueue.add(jsonObjectRequest);
             /*JsonObjectRequest ExampleRequest = new JsonObjectRequest("",null,  new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

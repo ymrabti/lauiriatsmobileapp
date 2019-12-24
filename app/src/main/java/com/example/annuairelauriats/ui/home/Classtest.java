@@ -76,13 +76,14 @@ import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_l
 import static java.lang.Math.min;
 
 public class Classtest  extends AppCompatActivity {
-    public static int id_connected,id_selected;private static JSONObject result;
-    private static VolleyError volleyError;private static JSONArray resultat ;
+    public static int id_connected,id_selected;
+    private static VolleyError volleyError;
     public static String laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
             provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
             folder = "Annuaire",images_file="images.json",filiers="filieres.json"
             ,ip_server="http://192.168.137.1:3000";
+    private static JSONArray liste_resultat ;private static JSONObject single_resultat;
     @SuppressLint("StaticFieldLeak")
     public static String loadJSONFromAsset(Context context,String fichier) {
         String json;
@@ -144,6 +145,16 @@ public class Classtest  extends AppCompatActivity {
         }
         return jsonObject;
     }
+
+    public static JSONObject getJsonObjectByclee(String cle,long id,JSONArray m_jArray) throws Exception {
+        JSONObject jsonObject=new JSONObject();
+        for (int i = 0; i < m_jArray.length(); i++) {
+            JSONObject jo_inside = m_jArray.getJSONObject(i);
+            if(jo_inside.getInt(cle)==id){jsonObject=jo_inside;}
+        }
+        return jsonObject;
+    }
+
     public static JSONObject getJsonObjectBykey(Context context,String cle,String valeur,String filename) throws Exception {
         JSONArray m_jArray = new JSONArray(loadJSONFromAsset(context,filename)) ;
         JSONObject jsonObject=new JSONObject();
@@ -763,57 +774,41 @@ public class Classtest  extends AppCompatActivity {
         return sharedPreferences.getLong("id",0);
     }
     public static JSONObject post_objct_connect(Context context,JSONObject jsonObject,String url){
+        single_resultat = new JSONObject();
         RequestQueue ExampleRequestQueue = Volley.newRequestQueue(context);
-        result = new JSONObject();volleyError= new VolleyError();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        result = response;
+                        single_resultat = response;
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                volleyError=error;
-            }
-        });
+                }, null);
         ExampleRequestQueue.add(jsonObjectRequest);
-        return result;
+        return single_resultat;
     }
     public static JSONArray  post_Array_connect(Context context,JSONObject jsonObject,String url){
         RequestQueue ExampleRequestQueue = Volley.newRequestQueue(context);
         JSONArray jsonArray=new JSONArray();jsonArray.put(jsonObject);
-        result = new JSONObject();volleyError= new VolleyError();
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.POST, url, jsonArray, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                resultat=response;
+                liste_resultat=response;
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                volleyError = error;
-            }
-        });
+        }, null);
         ExampleRequestQueue.add(jsonArrayRequest);
-        return resultat;
+        return liste_resultat;
     }
     public static JSONArray get_Array_connect(Context context,String url){
-        RequestQueue ExampleRequestQueue = Volley.newRequestQueue(context);
-        result = new JSONObject();volleyError= new VolleyError();
+        liste_resultat = new JSONArray();
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest( url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                resultat=response;
+                liste_resultat=response;
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                volleyError = error;
-            }
-        });
-        ExampleRequestQueue.add(jsonArrayRequest);
-        return resultat;
+        },null);
+        requestQueue.add(jsonArrayRequest);
+        return liste_resultat;
     }
 
 
