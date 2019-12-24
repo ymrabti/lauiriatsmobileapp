@@ -6,9 +6,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Path.Direction;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,6 +28,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.gallery.Laureat;
 import com.example.annuairelauriats.ui.gallery.LaureatAdapter;
@@ -31,6 +48,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,12 +57,15 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,13 +73,16 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_list;
+import static java.lang.Math.min;
 
 public class Classtest  extends AppCompatActivity {
-    public static int id_connected,id_selected;
+    public static int id_connected,id_selected;private static JSONObject result;
+    private static VolleyError volleyError;private static JSONArray resultat ;
     public static String laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
             provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
-            folder = "Annuaire",images_file="images.json",filiers="filieres.json",promotions="promotions.json";
+            folder = "Annuaire",images_file="images.json",filiers="filieres.json"
+            ,ip_server="http://192.168.137.1:3000";
     @SuppressLint("StaticFieldLeak")
     public static String loadJSONFromAsset(Context context,String fichier) {
         String json;
@@ -196,6 +221,45 @@ public class Classtest  extends AppCompatActivity {
     }
 
 
+    public static Bitmap get_Bitmap(Context context,int drawableRes) {
+        Drawable drawable = context.getDrawable(drawableRes);
+        Canvas canvas = new Canvas();int target=50;
+        Bitmap bitmap = Bitmap.createBitmap(target, target, Bitmap.Config.ARGB_8888);
+        canvas.setBitmap(bitmap);
+        drawable.setBounds(0, 0, target, target);
+        drawable.draw(canvas);
+        return bitmap;
+    }
+    public static Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
+        int minimum = min(scaleBitmapImage.getWidth(),scaleBitmapImage.getHeight());
+        Bitmap targetBitmap = Bitmap.createBitmap(minimum, minimum,Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(targetBitmap);
+        Path path = new Path();
+        path.addCircle(((float) minimum - 1) / 2, ((float) minimum - 1) / 2,
+                (min(((float) minimum), ((float) minimum)) / 2),
+                Path.Direction.CCW);
+
+
+        canvas.clipPath(path);
+        canvas.drawBitmap(scaleBitmapImage,
+                new Rect(0, 0, minimum, minimum),
+                new Rect(0, 0, minimum, minimum), null);
+        return targetBitmap;
+    }
+    public static Bitmap add_text(Bitmap icon,String textToDraw){
+        Bitmap newBitmap = icon.copy(icon.getConfig(), true);
+        Canvas newCanvas = new Canvas(newBitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.BLUE);float scale = (float)icon.getWidth()/textToDraw.length();
+        paint.setTextSize(scale);
+        Rect bounds = new Rect();
+        paint.getTextBounds(textToDraw, 0, textToDraw.length(), bounds);
+        int x = (icon.getWidth() - bounds.width())/2;
+        int y = (icon.getHeight() + bounds.height())/2;
+        newCanvas.drawText(textToDraw, x, y, paint);
+        return  newBitmap;
+    }
     public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
         final Dialog dialogFilter = new Dialog(context);
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
@@ -400,7 +464,8 @@ public class Classtest  extends AppCompatActivity {
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLngsIds.get(i).getLatLng());
             markerOptions.title(""+latLngsIds.get(i).getIden());
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            Bitmap icoon = getRoundedShape(get_Bitmap(context,R.drawable.circle_shape));
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(add_text(icoon,markerOptions.getTitle())));
             builder.include(latLngsIds.get(i).getLatLng());markerOptions.flat(true);
             gmap.addMarker(markerOptions);
         }
@@ -411,7 +476,8 @@ public class Classtest  extends AppCompatActivity {
          markerOptions.title(""+latLngListe.get(i).getIden());
              try {
                  JSONObject image= getJsonObjectBycle(context,"laureat",latLngListe.get(i).getIden(),images_file);
-                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resize_icon(base64toImage(image.getString("image")))));
+                 Bitmap icon =resize_icon(base64toImage(image.getString("image")));
+                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getRoundedShape(icon)));
              } catch (Exception e) {
                  e.printStackTrace();
                  Toast.makeText(context,e.toString(),Toast.LENGTH_LONG).show();
@@ -696,6 +762,61 @@ public class Classtest  extends AppCompatActivity {
         SharedPreferences sharedPreferences = context.getSharedPreferences(key, Context.MODE_PRIVATE);
         return sharedPreferences.getLong("id",0);
     }
+    public static JSONObject post_objct_connect(Context context,JSONObject jsonObject,String url){
+        RequestQueue ExampleRequestQueue = Volley.newRequestQueue(context);
+        result = new JSONObject();volleyError= new VolleyError();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        result = response;
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                volleyError=error;
+            }
+        });
+        ExampleRequestQueue.add(jsonObjectRequest);
+        return result;
+    }
+    public static JSONArray  post_Array_connect(Context context,JSONObject jsonObject,String url){
+        RequestQueue ExampleRequestQueue = Volley.newRequestQueue(context);
+        JSONArray jsonArray=new JSONArray();jsonArray.put(jsonObject);
+        result = new JSONObject();volleyError= new VolleyError();
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.POST, url, jsonArray, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                resultat=response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                volleyError = error;
+            }
+        });
+        ExampleRequestQueue.add(jsonArrayRequest);
+        return resultat;
+    }
+    public static JSONArray get_Array_connect(Context context,String url){
+        RequestQueue ExampleRequestQueue = Volley.newRequestQueue(context);
+        result = new JSONObject();volleyError= new VolleyError();
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest( url, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                resultat=response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                volleyError = error;
+            }
+        });
+        ExampleRequestQueue.add(jsonArrayRequest);
+        return resultat;
+    }
+
+
     /*private void read_json(){
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());
@@ -708,6 +829,7 @@ public class Classtest  extends AppCompatActivity {
         }
     }*/
     /*
+
 
     public void connecting_rest(final String url) {
         AsyncTask.execute(new Runnable() {
@@ -731,6 +853,5 @@ public class Classtest  extends AppCompatActivity {
 
             }
         });
-    }
-*/
+    }*/
 }
