@@ -66,6 +66,29 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
     long checked_radio;
     private int year, month, day;
     private RegisterViewModel registerViewModel;
+
+    private EditText nomEditText ;  // Laureat                               1       1
+    private EditText prenomEditText ;  // Laureat                         2       2
+    private Spinner gender ;  // Laureat                                   3       3
+    private EditText NumTeleEditText ;  // Laureat                     4       4
+    private EditText usernameEditText ;  // Laureat                                  5       5
+    private Spinner promotion ;  // Laureat                             6       6
+    private Spinner filiere ;  // filier get position put to  Laureat     7       7
+    private EditText passwordEditText ;  // Laureat                                  8       9
+    private RadioGroup radioOrgGroup ;  // system
+    private Spinner organisation ;  // org get id put to Laureat_Org                  10
+    private EditText nouveau_org_nom ;  // system                                  11
+    private Spinner organisation_secteur ;  // system                          12
+    private EditText date_debut_chez_org ;  // Laureat_Org                             13
+    private ImageView pick_date_debut_pop_up ;  // system
+    private EditText intitule_fonction_avec_org ;  // Laureat_Org              14
+    private EditText description_laureat ;  // Laureat_Org                    9       15
+    private Button registerButton ;
+    private ProgressBar loadingProgressBar;
+    private TextView go_to_login ;
+    private ConstraintLayout constraintLayout ;
+    private TextView org_select ;
+    private TextView secteur_select ;
     public static Context getContextext() {
         return context;
     }
@@ -81,30 +104,30 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         mapView = findViewById(R.id.map_put_org);
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
-        final EditText nomEditText = findViewById(R.id.register_nom_laureat);  // Laureat                               1       1
-        final EditText prenomEditText = findViewById(R.id.register_prenom_laureat);  // Laureat                         2       2
-        final Spinner gender = findViewById(R.id.snipper_gender_laureat);  // Laureat                                   3       3
-        final EditText NumTeleEditText = findViewById(R.id.register_telephone_laureat);  // Laureat                     4       4
-        final EditText usernameEditText = findViewById(R.id.usernamename);  // Laureat                                  5       5
-        final Spinner promotion = findViewById(R.id.snipper_promotion_laureat);  // Laureat                             6       6
-        final Spinner filiere = findViewById(R.id.snipper_filiere_laureat);  // filier get position put to  Laureat     7       7
-        base64TextView = findViewById(R.id.register_image_base_64_laureat);  // system                                          8
-        imageView = findViewById(R.id.selected_file_image8laureat);   // system
-        final EditText passwordEditText = findViewById(R.id.passwordword);  // Laureat                                  8       9
-        final RadioGroup radioOrgGroup = findViewById(R.id.radio_organisation);  // system
-        final Spinner organisation = findViewById(R.id.snipper_select_org);  // org get id put to Laureat_Org                  10
-        final EditText nouveau_org_nom = findViewById(R.id.snipper_ecrire_nom_org);  // system                                  11
-        final Spinner organisation_secteur = findViewById(R.id.snipper_select_secteur_org);  // system                          12
-        final EditText date_debut_chez_org = findViewById(R.id.date_pick_with_org);  // Laureat_Org                             13
-        final ImageView pick_date_debut_pop_up = findViewById(R.id.pick_date_button);  // system
-        final EditText intitule_fonction_avec_org = findViewById(R.id.intitule_fonction_with_org);  // Laureat_Org              14
-        final EditText description_laureat = findViewById(R.id.description_laureat);  // Laureat_Org                    9       15
-        final Button registerButton = findViewById(R.id.register);
-        final ProgressBar loadingProgressBar = findViewById(R.id.registering);
-        final TextView go_to_login = findViewById(R.id.go_to_login);
-        final ConstraintLayout constraintLayout = findViewById(R.id.constraint_layout);
-        final TextView org_select = findViewById(R.id.org_text_view_register);
-        final TextView secteur_select = findViewById(R.id.secteur_org_text_view_register);
+        base64TextView = findViewById(R.id.register_image_base_64_laureat);
+        imageView = findViewById(R.id.selected_file_image8laureat);
+        nomEditText = findViewById(R.id.register_nom_laureat);  // Laureat                               1       1
+        prenomEditText = findViewById(R.id.register_prenom_laureat);  // Laureat                         2       2
+        gender = findViewById(R.id.snipper_gender_laureat);  // Laureat                                   3       3
+        NumTeleEditText = findViewById(R.id.register_telephone_laureat);  // Laureat                     4       4
+        usernameEditText = findViewById(R.id.usernamename);  // Laureat                                  5       5
+        promotion = findViewById(R.id.snipper_promotion_laureat);  // Laureat                             6       6
+        filiere = findViewById(R.id.snipper_filiere_laureat);  // filier get position put to  Laureat     7       7
+        passwordEditText = findViewById(R.id.passwordword);  // Laureat                                  8       9
+        radioOrgGroup = findViewById(R.id.radio_organisation);  // system
+        organisation = findViewById(R.id.snipper_select_org);  // org get id put to Laureat_Org                  10
+        nouveau_org_nom = findViewById(R.id.snipper_ecrire_nom_org);  // system                                  11
+        organisation_secteur = findViewById(R.id.snipper_select_secteur_org);  // system                          12
+        date_debut_chez_org = findViewById(R.id.date_pick_with_org);  // Laureat_Org                             13
+        pick_date_debut_pop_up = findViewById(R.id.pick_date_button);  // system
+        intitule_fonction_avec_org = findViewById(R.id.intitule_fonction_with_org);  // Laureat_Org              14
+        description_laureat = findViewById(R.id.description_laureat);  // Laureat_Org                    9       15
+        registerButton = findViewById(R.id.register);
+        loadingProgressBar = findViewById(R.id.registering);
+        go_to_login = findViewById(R.id.go_to_login);
+        constraintLayout = findViewById(R.id.constraint_layout);
+        org_select = findViewById(R.id.org_text_view_register);
+        secteur_select = findViewById(R.id.secteur_org_text_view_register);
 
         top=findViewById(R.id.go_top_1);bottom=findViewById(R.id.go_bottom_1);
         right=findViewById(R.id.go_right_1);left=findViewById(R.id.go_left_1);

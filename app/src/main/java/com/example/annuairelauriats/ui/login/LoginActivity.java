@@ -19,46 +19,36 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.register.RegisterActivity;
 
-import static com.example.annuairelauriats.ui.home.Classtest.getPref;
-import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
-import static com.example.annuairelauriats.ui.home.Classtest.is_file_exists;
-import static com.example.annuairelauriats.ui.home.Classtest.laureats;
-import static com.example.annuairelauriats.ui.home.Classtest.raw_to_asset;
-import static com.example.annuairelauriats.ui.home.Classtest.setPref;
+import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.get0Pref;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+    private EditText usernameEditText,passwordEditText;private Button loginButton;
+    private ProgressBar loadingProgressBar;private TextView go_to_register;
 private static Context context ;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
-        int user = getPref(this);
-        if (user!=-1){
-            id_connected = user;
+        String user = get0Pref(this);
+        if (!user.equals("noreply")){
+            email_connected = user;
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);}
-            try {
-                if (!is_file_exists(getContexte(),laureats)){
-                        raw_to_asset(getContexte());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
-        final EditText usernameEditText = findViewById(R.id.username);usernameEditText.setText("younesmrabti50@gmail.com");
-        final EditText passwordEditText = findViewById(R.id.password);passwordEditText.setText("jfhdhhdhhdxbjj");
-        final Button loginButton = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
-        final TextView go_to_register = findViewById(R.id.go_to_register);
+        usernameEditText = findViewById(R.id.username);usernameEditText.setText("younesmrabti50@gmail.com");
+        passwordEditText = findViewById(R.id.password);passwordEditText.setText("vhhhhhhhjjjjhhv");
+        loginButton = findViewById(R.id.login);
+        loadingProgressBar = findViewById(R.id.loading);
+        go_to_register = findViewById(R.id.go_to_register);
         go_to_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,9 +108,9 @@ private static Context context ;
     @Override
     protected void onResume() {
         super.onResume();
-        int user = getPref(this);
-        if (user!=-1){
-            id_connected = user;
+        String user = get0Pref(this);
+        if (!user.equals("noreply")){
+            email_connected = user;
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);}
     }

@@ -10,9 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Path.Direction;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -24,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +37,7 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.gallery.Laureat;
 import com.example.annuairelauriats.ui.gallery.LaureatAdapter;
 import com.example.annuairelauriats.ui.login.LoginActivity;
+import com.example.annuairelauriats.ui.register.RegisterActivity;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -82,7 +81,7 @@ public class Classtest  extends AppCompatActivity {
             provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
             folder = "Annuaire",images_file="images.json",filiers="filieres.json"
-            ,ip_server="http://192.168.137.1:3000";
+            ,ip_server="http://192.168.137.1:3000",email_connected;
     private static JSONArray liste_resultat ;private static JSONObject single_resultat;
     @SuppressLint("StaticFieldLeak")
     public static String loadJSONFromAsset(Context context,String fichier) {
@@ -692,6 +691,15 @@ public class Classtest  extends AppCompatActivity {
 
 
     public static boolean is_email_exist(Context context,String email) throws Exception {
+        RequestQueue requestQueue = Volley.newRequestQueue(RegisterActivity.getContextext());
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest( Request.Method.GET
+                ,ip_server+"/laureat/email/"+email
+                ,null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+            }
+        },null);
+        requestQueue.add(jsonArrayRequest);
         return !getJsonObjectBykey(context,"email",email,laureats).isNull("id");
     }
     public static boolean is_password_correct(Context context,String email,String password) throws Exception {
@@ -758,10 +766,19 @@ public class Classtest  extends AppCompatActivity {
         SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         return sharedPreferences.getInt("id",-1);
     }
+    public static String get0Pref(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("email","noreply");
+    }
     public static void setPref(Context context,int user_id){
         SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("id",user_id);editor.apply();
+    }
+    public static void set0Pref(Context context,String user_email){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("email",user_email);editor.apply();
     }
     public static void set_pref(Context context,String cle,long id){
         SharedPreferences sharedPreferences = context.getSharedPreferences(cle, Context.MODE_PRIVATE);
@@ -787,6 +804,7 @@ public class Classtest  extends AppCompatActivity {
         return single_resultat;
     }
     public static JSONArray  post_Array_connect(Context context,JSONObject jsonObject,String url){
+        liste_resultat= new JSONArray();
         RequestQueue ExampleRequestQueue = Volley.newRequestQueue(context);
         JSONArray jsonArray=new JSONArray();jsonArray.put(jsonObject);
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.POST, url, jsonArray, new Response.Listener<JSONArray>() {
@@ -798,17 +816,16 @@ public class Classtest  extends AppCompatActivity {
         ExampleRequestQueue.add(jsonArrayRequest);
         return liste_resultat;
     }
-    public static JSONArray get_Array_connect(Context context,String url){
-        liste_resultat = new JSONArray();
+    public static void get_Array_connect(Context context, String url){
         RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest( url, new Response.Listener<JSONArray>() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest( Request.Method.GET,url,
+                null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                liste_resultat=response;
             }
         },null);
         requestQueue.add(jsonArrayRequest);
-        return liste_resultat;
+        //return liste_resultat;
     }
 
 
@@ -822,9 +839,7 @@ public class Classtest  extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }*/
-    /*
-
+    }
 
     public void connecting_rest(final String url) {
         AsyncTask.execute(new Runnable() {
