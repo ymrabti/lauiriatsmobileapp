@@ -235,10 +235,10 @@ public class RegisterViewModel extends ViewModel {
     private boolean isSelectDropDownValid(String selcected){
         return !selcected.equals("SELECTIONNER");
     }
-    private void signup(String emailUser, String Password, String LaureatNom, String LaureatPrenom, String LaureatNumTel,
+    private void signup(final String emailUser, String Password, String LaureatNom, String LaureatPrenom, String LaureatNumTel,
                         String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
-                        long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
-                        String date_debut_travail_chez_org_,String description){
+                        long org_selected, String nomOrgEdited, String secteurOrgEdited, String initulePost,
+                        String date_debut_travail_chez_org_, String description){
         try {
             Calendar rightNow = Calendar.getInstance();
             int seconde = rightNow.get(Calendar.SECOND);int minute = rightNow.get(Calendar.MINUTE);
@@ -303,10 +303,10 @@ public class RegisterViewModel extends ViewModel {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            //email_connected = emailUser;
-                            //set0Pref(RegisterActivity.getContextext(),emailUser);
+                            email_connected = emailUser;
+                            set0Pref(RegisterActivity.getContextext(),emailUser);
                             Toast.makeText(RegisterActivity.getContextext(),"success!!",Toast.LENGTH_LONG).show();
-                            //RegisterActivity.getContextext().startActivity(new Intent(RegisterActivity.getContextext(), MainActivity.class));
+                            RegisterActivity.getContextext().startActivity(new Intent(RegisterActivity.getContextext(), MainActivity.class));
                         }
                     }, null);
             JsonObjectRequest jsonStatutRequest = new JsonObjectRequest(

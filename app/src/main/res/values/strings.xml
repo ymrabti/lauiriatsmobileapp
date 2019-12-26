@@ -110,4 +110,5 @@
     <string name="afficher_dans_carte">Afficher le resultat dans la carte</string>
     <string name="invalid_position">selectionner une position</string>
     <string name="modifier_votre_profile">Modifier votre profile</string>
+    <string name="statut_de_profil">Statut de profil :</string>
 </resources>

@@ -3,6 +3,8 @@ package com.example.annuairelauriats.ui.login;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import android.content.Intent;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -11,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 
 import org.json.JSONArray;
@@ -92,9 +95,10 @@ public class LoginViewModel extends ViewModel {
                         loginFormState.setValue(new LoginFormState(null, R.string.wrong_password));
                     }
                     else{
-                        //email_connected = email;
-                        //set0Pref(LoginActivity.getContexte(),email);
+                        email_connected = email;
+                        set0Pref(LoginActivity.getContexte(),email);
                         Toast.makeText(LoginActivity.getContexte(),"success!!",Toast.LENGTH_LONG).show();
+                        LoginActivity.getContexte().startActivity(new Intent(LoginActivity.getContexte(), MainActivity.class));
                     }
                 }
             };

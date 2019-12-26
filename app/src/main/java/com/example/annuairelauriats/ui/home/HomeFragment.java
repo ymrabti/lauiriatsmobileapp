@@ -4,10 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.annuairelauriats.MainActivity;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
-import com.example.annuairelauriats.ui.gallery.GalleryFragment;
 import com.example.annuairelauriats.ui.signaler.SignalerFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,18 +21,19 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import android.content.Context;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -36,25 +41,23 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
-import static com.example.annuairelauriats.ui.home.Classtest.filiers;
-import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
-import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
-import static com.example.annuairelauriats.ui.home.Classtest.images_file;
-import static com.example.annuairelauriats.ui.home.Classtest.laureats;
-import static com.example.annuairelauriats.ui.home.Classtest.logout;
-import static com.example.annuairelauriats.ui.home.Classtest.org_en_attente;
-import static com.example.annuairelauriats.ui.home.Classtest.org_laureat;
-import static com.example.annuairelauriats.ui.home.Classtest.organismes;
+import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
-    private LatLng latLng;
-    private ImageView log_out;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private MapView mapView;private GoogleMap gmap;
     private float zoom ;
     private LatLng latLng_currennt;
     private Button top, bottom, right,left;
     private static FragmentTransaction fragmentTransaction;
+    private CircleImageView pdp_visit ;
+    private TextView NomPrenomUser;
+    private TextView email ;
+    private TextView tel ;
+    private TextView promotion ;
+    private TextView filiere ;private Dialog dialog;private LinearLayout linearLayout;
+    private TextView organisation ,status_profile;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_home, container, false);
         Bundle mapViewBundle = null;
@@ -67,40 +70,63 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         mapView = root.findViewById(R.id.map_laureat_profile_sssss) ;
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
-        //latLng = new LatLng(34.687529,1.926189);
-        CircleImageView pdp_visit = root.findViewById(R.id.pdp_laureat_profile_sssss);
-        TextView NomPrenomUser = root.findViewById(R.id.nom_laureat_profile_sssss);
-        TextView email = root.findViewById(R.id.email_laureat_profile_sssss);
-        TextView tel = root.findViewById(R.id.tel_laureat_profile_sssss);
-        TextView promotion = root.findViewById(R.id.promotion_laureat_profile_sssss);
-        TextView filiere = root.findViewById(R.id.filiere_laureat_profile_sssss);
-        TextView organisation = root.findViewById(R.id.organisation_laureat_profile_sssss);
-        try {
-            JSONObject laurat_visitee = getJsonObjectBycle(getActivity(),"id",id_connected,laureats);
-            JSONObject image= getJsonObjectBycle(getActivity(),"laureat",id_connected,images_file);
-            JSONObject filier= getJsonObjectBycle(getActivity(),"id",laurat_visitee.getInt("filiere"),filiers);
-            pdp_visit.setImageBitmap(base64toImage(image.getString("image")));
-            NomPrenomUser.setText(laurat_visitee.getString("nom"));NomPrenomUser.append(" ");
-            NomPrenomUser.append(laurat_visitee.getString("prenom"));
-            email.setText(laurat_visitee.getString("email"));
-            tel.setText(laurat_visitee.getString("telephone"));
-            promotion.setText(laurat_visitee.getString("promotion"));
-            filiere.setText(filier.getString("Nom"));
-            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
-                    .setTitle(laurat_visitee.getString("nom")+" "+laurat_visitee.getString("prenom"));
-            JSONObject org_lau= getJsonObjectBycle(getActivity(),"id_laureat",id_connected,org_laureat);
-            JSONObject org_lau_attente= getJsonObjectBycle(getActivity(),"laureat",id_connected,org_en_attente);
-            if (!org_lau.isNull("id_org")){
-                JSONObject org= getJsonObjectBycle(getActivity(),"id",org_lau.getInt("id_org"),organismes);
-                organisation.setText(org.getString("org"));
-                latLng = new LatLng(org.getDouble("latitude"),org.getDouble("longitude"));}
-            else{
-                organisation.setText(org_lau_attente.getString("org"));
-                latLng = new LatLng(org_lau_attente.getDouble("latitude"),org_lau_attente.getDouble("longitude"));}
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        pdp_visit = root.findViewById(R.id.pdp_laureat_profile_sssss);
+        NomPrenomUser = root.findViewById(R.id.nom_laureat_profile_sssss);
+        email = root.findViewById(R.id.email_laureat_profile_sssss);
+        tel = root.findViewById(R.id.tel_laureat_profile_sssss);
+        promotion = root.findViewById(R.id.promotion_laureat_profile_sssss);
+        filiere = root.findViewById(R.id.filiere_laureat_profile_sssss);
+        organisation = root.findViewById(R.id.organisation_laureat_profile_sssss);
+        status_profile= root.findViewById(R.id.status_profile);
+        linearLayout = root.findViewById(R.id.status_profile_linear);
+        dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.popup_wait);
+        dialog.show();
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try
+                {
+                    JSONObject laureat = response.getJSONObject(0);
+                    pdp_visit.setImageBitmap(base64toImage(laureat.getString("photo")));
+                    String nom_complet=laureat.getString("Nom")+" "+laureat.getString("Prenom");
+                    NomPrenomUser.setText(nom_complet);
+                    Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                            .setTitle(nom_complet);
+                    email.setText(laureat.getString("email"));
+                    tel.setText(laureat.getString("Telephone"));
+                    promotion.setText(laureat.getInt("Promotion")+"");
+                    filiere.setText(laureat.getString("Nom_filiere"));
+                    organisation.setText(laureat.getString("nom_org"));
+                    LatLng latLng = new LatLng(laureat.getDouble("Latitude"),laureat.getDouble("Longitude"));
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(latLng);
+                    gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+                    gmap.addMarker(markerOptions);
+                    status_profile.append(laureat.getString("status"));status_profile.append("\n");
+                    status_profile.append("motif : ");status_profile.append(laureat.getString("motif"));
+                    if (laureat.getInt("id_lesstatus")==1){
+                        linearLayout.setBackground(getActivity().getDrawable(R.drawable.colors_laureat_item));
+                    }
+                    dialog.dismiss();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(),e.toString(),Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        };
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                Request.Method.GET, ip_server + "/laureat/id/"+email_connected,
+                null, listener, errorListener);
+        requestQueue.add(jsonArrayRequest);
 
         top=root.findViewById(R.id.go_top);bottom=root.findViewById(R.id.go_bottom);
         right=root.findViewById(R.id.go_right);left=root.findViewById(R.id.go_left);
@@ -132,10 +158,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
-        gmap.addMarker(markerOptions);
         gmap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         left.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,32 +169,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             }
         });
         top.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 latLng_currennt = gmap.getCameraPosition().target;
-                 zoom = gmap.getCameraPosition().zoom;
-                 LatLng farLeft = gmap.getProjection().getVisibleRegion().farLeft;
-                 gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(farLeft.latitude,latLng_currennt.longitude), zoom));
-             }
-         });
+            @Override
+            public void onClick(View v) {
+                latLng_currennt = gmap.getCameraPosition().target;
+                zoom = gmap.getCameraPosition().zoom;
+                LatLng farLeft = gmap.getProjection().getVisibleRegion().farLeft;
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(farLeft.latitude,latLng_currennt.longitude), zoom));
+            }
+        });
         right.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 latLng_currennt = gmap.getCameraPosition().target;
-                 zoom = gmap.getCameraPosition().zoom;
-                 LatLng droit_bas = gmap.getProjection().getVisibleRegion().nearRight;
-                 gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng_currennt.latitude,droit_bas.longitude), zoom));
-             }
-         });
+            @Override
+            public void onClick(View v) {
+                latLng_currennt = gmap.getCameraPosition().target;
+                zoom = gmap.getCameraPosition().zoom;
+                LatLng droit_bas = gmap.getProjection().getVisibleRegion().nearRight;
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng_currennt.latitude,droit_bas.longitude), zoom));
+            }
+        });
         bottom.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 latLng_currennt = gmap.getCameraPosition().target;
-                 zoom = gmap.getCameraPosition().zoom;
-                 LatLng droit_bas = gmap.getProjection().getVisibleRegion().nearRight;
-                 gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droit_bas.latitude,latLng_currennt.longitude), zoom));
-             }
-         });
+            @Override
+            public void onClick(View v) {
+                latLng_currennt = gmap.getCameraPosition().target;
+                zoom = gmap.getCameraPosition().zoom;
+                LatLng droit_bas = gmap.getProjection().getVisibleRegion().nearRight;
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droit_bas.latitude,latLng_currennt.longitude), zoom));
+            }
+        });
     }
 
     @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
