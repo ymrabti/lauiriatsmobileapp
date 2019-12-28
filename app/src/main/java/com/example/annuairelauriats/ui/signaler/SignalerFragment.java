@@ -150,7 +150,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 try {
-                    Classtest.promotion_peuplement(getActivity(), id, promotion);
+                    Classtest.promotion_peuplement(getActivity(), position, promotion);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

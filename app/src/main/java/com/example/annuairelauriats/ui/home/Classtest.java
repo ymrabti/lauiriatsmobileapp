@@ -102,28 +102,12 @@ public class Classtest  extends AppCompatActivity {
         }
         return json;
     }         //LIRE CONTENUE D UN FICHIER
-    public static boolean is_file_exists(Context context,String fichier) {
-        File myExternalFile = new File(context.getExternalFilesDir(folder), fichier);
-        return myExternalFile.exists();
-    }         //LIRE CONTENUE D UN FICHIER
     public static String load_raw(Context context,int id) throws Exception {
         InputStream in_s = context.getResources().openRawResource(id);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in_s));
         String line ;StringBuilder result=new StringBuilder();
         while ((line = reader.readLine()) != null) { result.append(line); }
         return result.toString();
-    }
-    public static void raw_to_asset(Context context) throws Exception{
-        write_file_data(context,load_raw(context,R.raw.filieres),filiers);
-        write_file_data(context,load_raw(context,R.raw.filter),filter);
-        write_file_data(context,load_raw(context,R.raw.images),images_file);
-        write_file_data(context,load_raw(context,R.raw.laureats),laureats);
-        write_file_data(context,load_raw(context,R.raw.org_en_attente),org_en_attente);
-        write_file_data(context,load_raw(context,R.raw.org_laureat),org_laureat);
-        write_file_data(context,load_raw(context,R.raw.organismes),organismes);
-        write_file_data(context,load_raw(context,R.raw.posts),posts);
-        write_file_data(context,load_raw(context,R.raw.secteurs),secteurs);
-        write_file_data(context,load_raw(context,R.raw.genders),genders);
     }
     public static void write_file_data(Context context,String textToWrite,String filename) {
         try {
@@ -145,14 +129,7 @@ public class Classtest  extends AppCompatActivity {
         return jsonObject;
     }
 
-    public static JSONObject getJsonObjectByclee(String cle,long id,JSONArray m_jArray) throws Exception {
-        JSONObject jsonObject=new JSONObject();
-        for (int i = 0; i < m_jArray.length(); i++) {
-            JSONObject jo_inside = m_jArray.getJSONObject(i);
-            if(jo_inside.getInt(cle)==id){jsonObject=jo_inside;}
-        }
-        return jsonObject;
-    }
+
 
     public static JSONObject getJsonObjectBykey(Context context,String cle,String valeur,String filename) throws Exception {
         JSONArray m_jArray = new JSONArray(loadJSONFromAsset(context,filename)) ;
@@ -163,73 +140,6 @@ public class Classtest  extends AppCompatActivity {
         }
         return jsonObject;
     }
-    public static int getLastID(Context context,String filename) throws Exception {
-        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
-        int pa =0;
-        for (int i = 0; i < m_jArry.length(); i++) {
-            JSONObject jo_inside = m_jArry.getJSONObject(i);
-            pa = jo_inside.getInt("id")+1;
-        }
-        return pa;
-    }
-    public static void new_Laureat_Register(Context context,int id, String nom, String prenom, String gender, String promotion, long filiere, String email, String password, String tel, String dateNow, String description) throws Exception {
-        JSONObject new_Laureat = new JSONObject();
-        new_Laureat.put("id",id);
-        new_Laureat.put("nom",nom);
-        new_Laureat.put("prenom",prenom);
-        new_Laureat.put("genre",gender);
-        if (promotion.equals("SELECTIONNER")){new_Laureat.put("promotion","2020");}
-        else{new_Laureat.put("promotion",promotion);}
-        new_Laureat.put("filiere",filiere);
-        new_Laureat.put("email",email);
-        new_Laureat.put("password",password);
-        new_Laureat.put("telephone",tel);
-        new_Laureat.put("roleName",1);
-        new_Laureat.put("date_insc", dateNow);
-        new_Laureat.put("description",description);
-        new_Laureat.put("actif",true);
-        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,laureats));
-        m_jArry.put(new_Laureat);
-        write_file_data(context,m_jArry.toString(),laureats);
-    }
-    public static void setNewImgLaureat(Context context,String image,int laureat) throws Exception{
-        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,images_file));
-        JSONObject nouveau_image = new JSONObject();
-        nouveau_image.put("id",laureat);
-        nouveau_image.put("current",true);
-        nouveau_image.put("laureat",laureat);
-        nouveau_image.put("image",image);
-        /*JSONObject old_image = getJsonObjectBycle("laureat",laureat,m_jArry);
-        int id_old_image = old_image.getInt("id");old_image.put("current",false);
-        m_jArry.remove(id_old_image);m_jArry.put(old_image);*/
-        m_jArry.put(nouveau_image);
-        write_file_data(context,m_jArry.toString(),images_file);
-    }
-    public static void new_org_attente_admin(Context context, String nom,int laureat, double lat,double lon, String secteur,String datee,String intitule) throws Exception {
-        if (!nom.isEmpty()){
-            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_en_attente));
-            JSONObject nouveau_org = new JSONObject();
-            nouveau_org.put("id",getLastID(context,org_en_attente));
-            nouveau_org.put("org",nom);
-            nouveau_org.put("laureat",laureat);
-            nouveau_org.put("latitude",lat);
-            nouveau_org.put("longitude",lon);
-            nouveau_org.put("secteur",secteur);
-            nouveau_org.put("date_debut",datee);
-            nouveau_org.put("intitule",intitule);
-            m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_en_attente);}
-    }
-    public static void new_org_laureat(Context context,long id_org_selected,int laureat,String date_debut,String fonction) throws Exception {
-        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_laureat));
-        JSONObject nouveau_org = new JSONObject();
-        nouveau_org.put("id_laureat",laureat);
-        nouveau_org.put("id_org",id_org_selected);
-        nouveau_org.put("date_debut",date_debut);
-        nouveau_org.put("en_cours",true);
-        nouveau_org.put("intitule_fonction",fonction);
-        m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_laureat);
-    }
-
 
     public static Bitmap get_Bitmap(Context context,int drawableRes) {
         Drawable drawable = context.getDrawable(drawableRes);
@@ -284,11 +194,11 @@ public class Classtest  extends AppCompatActivity {
         spinner_list_adapt(context,findbyorganisation,"org",organismes,1);
 
         long filiere = get_filter_pref_long(context, "branch");
-        try {
+        /*try {
             promotion_peuplement(context,filiere,findbypromotion);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         long org = get_filter_pref_long(context, "organisation");
         String promo = get_filter_pref_string(context, "promotion");
         String secteur = get_filter_pref_string(context, "sector");
@@ -369,21 +279,18 @@ public class Classtest  extends AppCompatActivity {
         }
         return list_a_peupler;
     }   //RETOURNE UNE LIST PEUPLE PRET POUR DROP DOWN
-    public static void promotion_peuplement(Context context,long id,Spinner spinner) throws Exception {
+    public static void promotion_peuplement(Context context,int premier,Spinner spinner) throws Exception {
         ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
         Calendar rightNow = Calendar.getInstance();
-        if (id!=0){
-            JSONObject Filiere_Selected = getJsonObjectBycle(context,"id",id,filiers);
-            final int premier_promotion= Integer.parseInt(Filiere_Selected.getString("Date_Creation").substring(0,4).trim());
-            for (int i=premier_promotion;i<=rightNow.get(Calendar.YEAR)+1;i++){
+        if (premier!=0){
+            for (int i=premier;i<=rightNow.get(Calendar.YEAR)+1;i++){
                 promos_filier.add(i+"");
             }
         }
-        spinner.setSelection(1);
         ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
         list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(list_adapter);
-    } //AFFICHE POPUP POUR UN FILTRE
+    }
     public static int promotion_premier(Context context,long id,String actu) throws Exception {
         JSONObject Filiere_Selected = getJsonObjectBycle(context,"id",id,filiers);
         int premier_promotion= Integer.parseInt(Filiere_Selected.getString("Date_Creation").substring(0,4).trim());
@@ -392,9 +299,10 @@ public class Classtest  extends AppCompatActivity {
     } //AFFICHE POPUP POUR UN FILTRE
     public static void spinner_list_adapt(Context context, Spinner spinner, String champ, String fichier,int mark){
         List<String> list_items = peupler_list(context,champ,fichier,mark);
-        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,R.layout.spim,R.id.text_spinner,list_items);
+        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,list_items);
+        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(list_adapter);
-    }  //ADAPTER UNE LIST A UN SPINNER
+    }
     public static void peupler_array_list(Context context, long filiere, String promotion, String province, long organisation, String secteur, ListView malist){
         laureats_list = new ArrayList<>();
         try {
@@ -690,23 +598,8 @@ public class Classtest  extends AppCompatActivity {
 
 
 
-    public static boolean is_email_exist(Context context,String email) throws Exception {
-        RequestQueue requestQueue = Volley.newRequestQueue(RegisterActivity.getContextext());
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest( Request.Method.GET
-                ,ip_server+"/laureat/email/"+email
-                ,null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-            }
-        },null);
-        requestQueue.add(jsonArrayRequest);
-        return !getJsonObjectBykey(context,"email",email,laureats).isNull("id");
-    }
-    public static boolean is_password_correct(Context context,String email,String password) throws Exception {
-        return getJsonObjectBykey(context,"email",email,laureats).getString("password").equals(password);
-    }
     public static void logout(Context context){
-        setPref(context,-1);
+        set0Pref(context,"noreply");
         Intent intent = new Intent(context, LoginActivity.class);
         context.startActivity(intent);
     }
@@ -762,24 +655,16 @@ public class Classtest  extends AppCompatActivity {
         SharedPreferences sharedPreferences = context.getSharedPreferences("filter", Context.MODE_PRIVATE);
         return sharedPreferences.getString(key,"TOUT");
     }
-    public static int getPref(Context context){
-        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
-        return sharedPreferences.getInt("id",-1);
-    }
     public static String get0Pref(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         return sharedPreferences.getString("email","noreply");
-    }
-    public static void setPref(Context context,int user_id){
-        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("id",user_id);editor.apply();
     }
     public static void set0Pref(Context context,String user_email){
         SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("email",user_email);editor.apply();
     }
+
     public static void set_pref(Context context,String cle,long id){
         SharedPreferences sharedPreferences = context.getSharedPreferences(cle, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -789,6 +674,54 @@ public class Classtest  extends AppCompatActivity {
     public static long get_pref(Context context,String key){
         SharedPreferences sharedPreferences = context.getSharedPreferences(key, Context.MODE_PRIVATE);
         return sharedPreferences.getLong("id",0);
+    }
+    public static JSONObject getJsonObjectByclee(String cle,long id,JSONArray m_jArray) throws Exception {
+        JSONObject jsonObject=new JSONObject();
+        for (int i = 0; i < m_jArray.length(); i++) {
+            JSONObject jo_inside = m_jArray.getJSONObject(i);
+            if(jo_inside.getInt(cle)==id){jsonObject=jo_inside;}
+        }
+        return jsonObject;
+    }
+    public static boolean is_file_exists(Context context,String fichier) {
+        File myExternalFile = new File(context.getExternalFilesDir(folder), fichier);
+        return myExternalFile.exists();
+    }
+    public static void raw_to_asset(Context context) throws Exception{
+        write_file_data(context,load_raw(context,R.raw.filieres),filiers);
+        write_file_data(context,load_raw(context,R.raw.filter),filter);
+        write_file_data(context,load_raw(context,R.raw.images),images_file);
+        write_file_data(context,load_raw(context,R.raw.laureats),laureats);
+        write_file_data(context,load_raw(context,R.raw.org_en_attente),org_en_attente);
+        write_file_data(context,load_raw(context,R.raw.org_laureat),org_laureat);
+        write_file_data(context,load_raw(context,R.raw.organismes),organismes);
+        write_file_data(context,load_raw(context,R.raw.posts),posts);
+        write_file_data(context,load_raw(context,R.raw.secteurs),secteurs);
+        write_file_data(context,load_raw(context,R.raw.genders),genders);
+    }
+    public static boolean is_email_exist(Context context,String email) throws Exception {
+        //RequestQueue requestQueue = Volley.newRequestQueue(RegisterActivity.getContextext());
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest( Request.Method.GET
+                ,ip_server+"/laureat/email/"+email
+                ,null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+            }
+        },null);
+        //requestQueue.add(jsonArrayRequest);
+        return !getJsonObjectBykey(context,"email",email,laureats).isNull("id");
+    }
+    public static boolean is_password_correct(Context context,String email,String password) throws Exception {
+        return getJsonObjectBykey(context,"email",email,laureats).getString("password").equals(password);
+    }
+    public static int getPref(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt("id",-1);
+    }
+    public static void setPref(Context context,int user_id){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("id",user_id);editor.apply();
     }
     public static JSONObject post_objct_connect(Context context,JSONObject jsonObject,String url){
         single_resultat = new JSONObject();
@@ -826,6 +759,72 @@ public class Classtest  extends AppCompatActivity {
         },null);
         requestQueue.add(jsonArrayRequest);
         //return liste_resultat;
+    }
+    public static int getLastID(Context context,String filename) throws Exception {
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,filename));
+        int pa =0;
+        for (int i = 0; i < m_jArry.length(); i++) {
+            JSONObject jo_inside = m_jArry.getJSONObject(i);
+            pa = jo_inside.getInt("id")+1;
+        }
+        return pa;
+    }
+    public static void new_Laureat_Register(Context context,int id, String nom, String prenom, String gender, String promotion, long filiere, String email, String password, String tel, String dateNow, String description) throws Exception {
+        JSONObject new_Laureat = new JSONObject();
+        new_Laureat.put("id",id);
+        new_Laureat.put("nom",nom);
+        new_Laureat.put("prenom",prenom);
+        new_Laureat.put("genre",gender);
+        if (promotion.equals("SELECTIONNER")){new_Laureat.put("promotion","2020");}
+        else{new_Laureat.put("promotion",promotion);}
+        new_Laureat.put("filiere",filiere);
+        new_Laureat.put("email",email);
+        new_Laureat.put("password",password);
+        new_Laureat.put("telephone",tel);
+        new_Laureat.put("roleName",1);
+        new_Laureat.put("date_insc", dateNow);
+        new_Laureat.put("description",description);
+        new_Laureat.put("actif",true);
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,laureats));
+        m_jArry.put(new_Laureat);
+        write_file_data(context,m_jArry.toString(),laureats);
+    }
+    public static void setNewImgLaureat(Context context,String image,int laureat) throws Exception{
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,images_file));
+        JSONObject nouveau_image = new JSONObject();
+        nouveau_image.put("id",laureat);
+        nouveau_image.put("current",true);
+        nouveau_image.put("laureat",laureat);
+        nouveau_image.put("image",image);
+        /*JSONObject old_image = getJsonObjectBycle("laureat",laureat,m_jArry);
+        int id_old_image = old_image.getInt("id");old_image.put("current",false);
+        m_jArry.remove(id_old_image);m_jArry.put(old_image);*/
+        m_jArry.put(nouveau_image);
+        write_file_data(context,m_jArry.toString(),images_file);
+    }
+    public static void new_org_attente_admin(Context context, String nom,int laureat, double lat,double lon, String secteur,String datee,String intitule) throws Exception {
+        if (!nom.isEmpty()){
+            JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_en_attente));
+            JSONObject nouveau_org = new JSONObject();
+            //nouveau_org.put("id",getLastID(context,org_en_attente));
+            nouveau_org.put("org",nom);
+            nouveau_org.put("laureat",laureat);
+            nouveau_org.put("latitude",lat);
+            nouveau_org.put("longitude",lon);
+            nouveau_org.put("secteur",secteur);
+            nouveau_org.put("date_debut",datee);
+            nouveau_org.put("intitule",intitule);
+            m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_en_attente);}
+    }
+    public static void new_org_laureat(Context context,long id_org_selected,int laureat,String date_debut,String fonction) throws Exception {
+        JSONArray m_jArry = new JSONArray(loadJSONFromAsset(context,org_laureat));
+        JSONObject nouveau_org = new JSONObject();
+        nouveau_org.put("id_laureat",laureat);
+        nouveau_org.put("id_org",id_org_selected);
+        nouveau_org.put("date_debut",date_debut);
+        nouveau_org.put("en_cours",true);
+        nouveau_org.put("intitule_fonction",fonction);
+        m_jArry.put(nouveau_org);write_file_data(context,m_jArry.toString(),org_laureat);
     }
 
 

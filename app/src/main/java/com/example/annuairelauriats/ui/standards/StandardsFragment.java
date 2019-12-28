@@ -32,7 +32,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.ui.home.DatabaseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;

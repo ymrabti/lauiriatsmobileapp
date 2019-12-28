@@ -6,7 +6,6 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.register.RegisterActivity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static com.example.annuairelauriats.ui.home.Classtest.is_email_exist;
 
 public class SignalerViewModel extends ViewModel {
 
@@ -21,15 +20,7 @@ public class SignalerViewModel extends ViewModel {
             long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
             String date_debut_travail_chez_org_,String description,long radio,double lat,double lon) {
         try {
-            if (is_email_exist(RegisterActivity.getContextext(),emailUser)){
-                signalerFormState.setValue(new SignalerFormState(
-                        null,
-                        null, null,R.string.email_taken,
-                        null,null,null,null,
-                        null,null,null,null,null,
-                        null,null,null,null));
-            }
-            else if (radio==2131296409 && !isSelectDropDownValid(org_selected)) {
+            if (radio==2131296409 && !isSelectDropDownValid(org_selected)) {
                 signalerFormState.setValue(new SignalerFormState(
                         null,
                         null, null,null,

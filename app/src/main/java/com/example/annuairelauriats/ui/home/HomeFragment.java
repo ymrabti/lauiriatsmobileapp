@@ -30,10 +30,12 @@ import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -57,7 +59,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private TextView tel ;
     private TextView promotion ;
     private TextView filiere ;private Dialog dialog;private LinearLayout linearLayout;
-    private TextView organisation ,status_profile;
+    private TextView organisation ,status_profile;private ScrollView scrollView;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_home, container, false);
         Bundle mapViewBundle = null;
@@ -67,6 +69,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         setHasOptionsMenu(true);
         assert getFragmentManager() != null;
         fragmentTransaction = getFragmentManager().beginTransaction();
+        scrollView= root.findViewById(R.id.scroll_home);
+        scrollView.setVisibility(View.GONE);
         mapView = root.findViewById(R.id.map_laureat_profile_sssss) ;
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
@@ -81,6 +85,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         linearLayout = root.findViewById(R.id.status_profile_linear);
         dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.popup_wait);
+        //dialog.setCancelable(false);
         dialog.show();
 
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
@@ -89,6 +94,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             public void onResponse(JSONArray response) {
                 try
                 {
+                    scrollView.setVisibility(View.VISIBLE);
                     JSONObject laureat = response.getJSONObject(0);
                     pdp_visit.setImageBitmap(base64toImage(laureat.getString("photo")));
                     String nom_complet=laureat.getString("Nom")+" "+laureat.getString("Prenom");
@@ -99,16 +105,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     tel.setText(laureat.getString("Telephone"));
                     promotion.setText(laureat.getInt("Promotion")+"");
                     filiere.setText(laureat.getString("Nom_filiere"));
-                    organisation.setText(laureat.getString("nom_org"));
-                    LatLng latLng = new LatLng(laureat.getDouble("Latitude"),laureat.getDouble("Longitude"));
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(latLng);
-                    gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
-                    gmap.addMarker(markerOptions);
-                    status_profile.append(laureat.getString("status"));status_profile.append("\n");
-                    status_profile.append("motif : ");status_profile.append(laureat.getString("motif"));
-                    if (laureat.getInt("id_lesstatus")==1){
-                        linearLayout.setBackground(getActivity().getDrawable(R.drawable.colors_laureat_item));
+                    status_profile.append(laureat.getString("status"));
+                    status_profile.append("\n");
+                    status_profile.append("motif : ");
+                    status_profile.append(laureat.getString("motif"));
+                    if (laureat.getInt("org")==0){
+                        orgnaisation_attente();
+                    }
+                    else{
+                        orgnaisation_(laureat.getInt("org"));
                     }
                     dialog.dismiss();
                 }
@@ -132,6 +137,64 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         right=root.findViewById(R.id.go_right);left=root.findViewById(R.id.go_left);
 
         return root;
+    }
+    private void orgnaisation_(int _id_org)  {
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    JSONObject laureat = response.getJSONObject(0);
+                    organisation.setText(laureat.getString("Nom"));
+                    LatLng latLng = new LatLng(laureat.getDouble("Latitude"),laureat.getDouble("Longitude"));
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(latLng);
+                    gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+                    gmap.addMarker(markerOptions);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(),"org  "+e.toString(),Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        };
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                Request.Method.GET, ip_server + "/laureat/org/"+_id_org,
+                null, listener, errorListener);
+        requestQueue.add(jsonArrayRequest);
+    }
+    private void orgnaisation_attente()  {
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+                    JSONObject laureat = response.getJSONObject(0);
+                    organisation.setText(laureat.getString("Nom"));
+                    LatLng latLng = new LatLng(laureat.getDouble("Latitude"),laureat.getDouble("Longitude"));
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(latLng);
+                    gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
+                    gmap.addMarker(markerOptions);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(),"attente "+e.toString(),Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        };
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                Request.Method.GET, ip_server + "/autres/org/"+email_connected,
+                null, listener, errorListener);
+        requestQueue.add(jsonArrayRequest);
     }
     @Override public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -196,7 +259,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             }
         });
     }
-
     @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.findItem(R.id.action_edit_profile).setVisible(true);
         super.onCreateOptionsMenu(menu, inflater);
@@ -205,5 +267,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
         fragmentTransaction.replace(R.id.nav_host_fragment, new SignalerFragment());
         fragmentTransaction.commit();
+    }
+    private void statusise(int id_statut){
+        if (id_statut==1){
+            linearLayout.setBackground(getActivity().getDrawable(R.drawable.colors_laureat_item));
+        }
     }
 }
