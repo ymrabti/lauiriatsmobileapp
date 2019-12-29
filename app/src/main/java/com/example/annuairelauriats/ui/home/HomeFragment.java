@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.signaler.SignalerFragment;
@@ -22,6 +23,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,6 +45,7 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.example.annuairelauriats.MainActivity.navigationView;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
@@ -54,9 +58,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private Button top, bottom, right,left;
     private static FragmentTransaction fragmentTransaction;
     private CircleImageView pdp_visit ;
-    private TextView NomPrenomUser;
     private TextView email ;
-    private TextView tel ;
+    private TextView tel ;private int statut;
     private TextView promotion ;
     private TextView filiere ;private Dialog dialog;private LinearLayout linearLayout;
     private TextView organisation ,status_profile;private ScrollView scrollView;
@@ -75,7 +78,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
         pdp_visit = root.findViewById(R.id.pdp_laureat_profile_sssss);
-        NomPrenomUser = root.findViewById(R.id.nom_laureat_profile_sssss);
         email = root.findViewById(R.id.email_laureat_profile_sssss);
         tel = root.findViewById(R.id.tel_laureat_profile_sssss);
         promotion = root.findViewById(R.id.promotion_laureat_profile_sssss);
@@ -98,17 +100,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     JSONObject laureat = response.getJSONObject(0);
                     pdp_visit.setImageBitmap(base64toImage(laureat.getString("photo")));
                     String nom_complet=laureat.getString("Nom")+" "+laureat.getString("Prenom");
-                    NomPrenomUser.setText(nom_complet);
                     Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
                             .setTitle(nom_complet);
                     email.setText(laureat.getString("email"));
+
+                    View headerLayout = navigationView.getHeaderView(0);
+                    CircleImageView image_main = headerLayout.findViewById(R.id.pdp_show);
+                    TextView nom_prenom = headerLayout.findViewById(R.id.usernameclc);
+                    TextView email = headerLayout.findViewById(R.id.email_top_navheader);
+
+                    image_main.setImageBitmap(base64toImage(laureat.getString("photo")));
+                    nom_prenom.setText(nom_complet);email.setText(email_connected);
+
                     tel.setText(laureat.getString("Telephone"));
                     promotion.setText(laureat.getInt("Promotion")+"");
                     filiere.setText(laureat.getString("Nom_filiere"));
-                    status_profile.append(laureat.getString("status"));
-                    status_profile.append("\n");
-                    status_profile.append("motif : ");
-                    status_profile.append(laureat.getString("motif"));
+                    statut=laureat.getInt("id_lesstatus");
+                    statusise(laureat.getString("status"),laureat.getString("motif"));
                     if (laureat.getInt("org")==0){
                         orgnaisation_attente();
                     }
@@ -268,9 +276,25 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         fragmentTransaction.replace(R.id.nav_host_fragment, new SignalerFragment());
         fragmentTransaction.commit();
     }
-    private void statusise(int id_statut){
-        if (id_statut==1){
-            linearLayout.setBackground(getActivity().getDrawable(R.drawable.colors_laureat_item));
+    private void statusise(String status,String motif){
+        status_profile.append(status);status_profile.append("\n");
+        if (statut==1){
+            linearLayout.setBackgroundColor(Color.argb(100,75,200,75));
+            status_profile.append("votre demande de joindre notre communaute est en cours de traitement");
+        }
+        else if (statut==2){
+            linearLayout.setBackgroundColor(Color.RED);
+            status_profile.append(motif+"\n");
+            status_profile.append("nous vous invitons a modifier vos information pour une autre reinscription");
+        }
+        else if (statut==3){
+            linearLayout.setBackgroundColor(Color.argb(100,255,75,60));
+            status_profile.append(motif+"\n");
+            status_profile.append("votre demande en cours de traitement");
+        }
+        else if (statut==4){
+            linearLayout.setBackgroundColor(Color.GREEN);
         }
     }
+
 }

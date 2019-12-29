@@ -31,12 +31,14 @@ import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
 import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
+import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_map;
 
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;
      private static GoogleMap gmap;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private static FragmentTransaction fragmentTransaction;private static Context context;
+    private static FragmentTransaction fragmentTransaction;
+    private static Context context;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
@@ -79,11 +81,12 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
+        /*
         long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
         String promo = get_filter_pref_string(getActivity(), "promotion");
         long org = get_filter_pref_long(getActivity(), "organisation");
         String secteur = get_filter_pref_string(getActivity(), "sector");
-        Classtest.show_laureats_on_map(getActivity(), filiere, promo,"TOUT", org, secteur,gmap);
+        show_laureats_on_map(getActivity(), filiere, promo,"TOUT", org, secteur,gmap);
         gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -106,7 +109,7 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
                 }
                 return true;
             }
-        });
+        });*/
     }
     @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.findItem(R.id.action_filter_new_map).setVisible(true);
