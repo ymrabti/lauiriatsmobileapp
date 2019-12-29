@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -80,7 +82,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
     public static double lat, lon;private MapView mapView;private static Context context;
     private ImageView imageView;private TextView base64TextView;private long checked_radio;
     private int year, month, day;private RegisterViewModel registerViewModel;
-    private List<Filiere> dates ;
+    private List<Filiere> dates ;private Dialog dialog;
+    private ScrollView scroll_register;
     private EditText nomEditText , prenomEditText , NumTeleEditText, usernameEditText , passwordEditText
     , nouveau_org_nom , date_debut_chez_org , intitule_fonction_avec_org , description_laureat ;
     private Spinner gender , promotion , filiere , organisation , organisation_secteur ;
@@ -187,6 +190,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
+        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28,-9), 4.0f));
         gmap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -332,13 +336,9 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                         gender.getSelectedItem().toString() + "",
                         promotion.getSelectedItem().toString() + "",
                         filiere.getSelectedItemId(),
-                        organisation.getSelectedItemId(),
-                        nouveau_org_nom.getText().toString() + "",
-                        organisation_secteur.getSelectedItem().toString() + "",
                         intitule_fonction_avec_org.getText().toString() + "",
                         date_debut_chez_org.getText().toString() + "",
-                        description_laureat.getText().toString() + "",
-                        checked_radio);
+                        description_laureat.getText().toString() + "");
             }
         };
         nomEditText.addTextChangedListener(afterTextChangedListener);
@@ -370,6 +370,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
             Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
+                    dialog.dismiss();
+                    scroll_register.setVisibility(View.VISIBLE);
                     List<String> filieres = new ArrayList<>();filieres.add("SELECTIONNER");
                     for (int i=0;i<response.length();i++){
                         try {
@@ -457,6 +459,10 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         secteur_select = findViewById(R.id.secteur_org_text_view_register);
         top=findViewById(R.id.go_top_1);bottom=findViewById(R.id.go_bottom_1);
         right=findViewById(R.id.go_right_1);left=findViewById(R.id.go_left_1);
+        scroll_register= findViewById(R.id.scroll_register);
+        dialog = new AppCompatDialog(this);
+        dialog.setContentView(R.layout.popup_wait);
+        dialog.setCancelable(false);dialog.show();
     }
     private void Others(){
         Drawable drawable = getDrawable(R.drawable.ing);
@@ -529,6 +535,9 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                 }
                 else if (checked_radio==1  && !isSelectDropDownValid(organisation_secteur.getSelectedItem().toString())){
                     Toast.makeText(RegisterActivity.getContextext(),"selectionner un secteur svp!"
+                            ,Toast.LENGTH_LONG).show();}
+                else if (checked_radio==1  && lat==0 && lon==0){
+                    Toast.makeText(RegisterActivity.getContextext(),"positionner sur la carte svp!"
                             ,Toast.LENGTH_LONG).show();}
                 else{
 

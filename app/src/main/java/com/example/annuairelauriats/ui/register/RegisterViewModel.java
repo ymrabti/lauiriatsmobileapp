@@ -65,9 +65,6 @@ public class RegisterViewModel extends ViewModel {
                         laureat_nouveau.put("Description",description);laureat_nouveau.put("Telephone",LaureatNumTel);
                         laureat_nouveau.put("email",emailUser);laureat_nouveau.put("Pass_word",Password);
                         laureat_nouveau.put("photo",LaureatImageBase64);
-                        if (radio==0){
-                            laureat_nouveau.put("org",org_selected);}
-
                         JSONObject statut_laureat = new JSONObject();
                         statut_laureat.put("id_statut",1);
                         statut_laureat.put("id_laureat",emailUser);
@@ -87,7 +84,15 @@ public class RegisterViewModel extends ViewModel {
                         org_laureat_new.put("org",org_selected);org_laureat_new.put("laureat",emailUser);
                         org_laureat_new.put("date_debut",date_debut_travail_chez_org_);
                         org_laureat_new.put("fonction",initulePost);
-                        signup(emailUser,radio,laureat_nouveau,statut_laureat,org_laureat_new,new_org_attentente);
+
+                        if (radio==0){
+                            laureat_nouveau.put("org",org_selected);
+                            signup(emailUser,laureat_nouveau,statut_laureat,org_laureat_new,null);
+                        }
+                        else{
+                            signup(emailUser,laureat_nouveau,statut_laureat,null,new_org_attentente);
+                        }
+
                     }
                     catch(Exception e){
                         Toast.makeText(RegisterActivity.getContextext(),"hna  hh ",Toast.LENGTH_LONG).show();
@@ -106,7 +111,7 @@ public class RegisterViewModel extends ViewModel {
         requestQueue.add(jsonArrayRequest);
     }
 
-    private void signup(final String emailUser,long radio, JSONObject laureat_nouveau,JSONObject statut_laureat
+    private void signup(final String emailUser, JSONObject laureat_nouveau,JSONObject statut_laureat
             ,JSONObject org_laureat_new,JSONObject new_org_attentente){
         RequestQueue requestQueue = Volley.newRequestQueue(RegisterActivity.getContextext());
 
@@ -116,81 +121,81 @@ public class RegisterViewModel extends ViewModel {
                 , new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-
+                Toast.makeText(RegisterActivity.getContextext(),"approbation",Toast.LENGTH_LONG).show();
             }
-        },null);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        });
+
+
         JsonObjectRequest jsonOrgAscRequest = new JsonObjectRequest(
                 Request.Method.POST
                 , ip_server + "/laureat/new_row_org_laureat", org_laureat_new
                 , new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                Toast.makeText(RegisterActivity.getContextext(),"add association",Toast.LENGTH_LONG).show();
 
             }
-        },null);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        });
 
-        JsonObjectRequest jsonLaureatRequest = new JsonObjectRequest(
-                Request.Method.POST
-                , ip_server+"/laureat", laureat_nouveau,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        email_connected = emailUser;
-                        set0Pref(RegisterActivity.getContextext(),emailUser);
-                        Toast.makeText(RegisterActivity.getContextext(),"success!!",Toast.LENGTH_LONG).show();
-                        RegisterActivity.getContextext().startActivity(
-                                new Intent(RegisterActivity.getContextext()
-                                        , MainActivity.class));
-                    }
-                }, null);
+
+        if(org_laureat_new==null){
+            requestQueue.add(jsonNvOrgRequest);
+        }
+        else if (new_org_attentente==null){
+            requestQueue.add(jsonOrgAscRequest);
+        }
+
         JsonObjectRequest jsonStatutRequest = new JsonObjectRequest(
                 Request.Method.POST, ip_server + "/laureat/new_row_statut_laureat", statut_laureat
                 , new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
             }
-        },null);
-        requestQueue.add(jsonLaureatRequest);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(RegisterActivity.getContextext(),"error statut!!\n"+error.toString(),Toast.LENGTH_LONG).show();
+            }
+        });
         requestQueue.add(jsonStatutRequest);
-        if(radio==1){
-            Toast.makeText(RegisterActivity.getContextext(),"add approbation",Toast.LENGTH_LONG).show();
-            requestQueue.add(jsonNvOrgRequest);
-        }
-        else{
-            Toast.makeText(RegisterActivity.getContextext(),"add association",Toast.LENGTH_LONG).show();
-            requestQueue.add(jsonOrgAscRequest);
-        }
+
+        JsonObjectRequest jsonLaureatRequest = new JsonObjectRequest(
+                Request.Method.POST
+                , ip_server + "/laureat", laureat_nouveau,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        email_connected = emailUser;
+                        set0Pref(RegisterActivity.getContextext(), emailUser);
+                        Toast.makeText(RegisterActivity.getContextext(), "success!!", Toast.LENGTH_LONG).show();
+                        RegisterActivity.getContextext().startActivity(
+                                new Intent(RegisterActivity.getContextext()
+                                        , MainActivity.class));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(RegisterActivity.getContextext(),"error laureat!!\n"+error.toString(),Toast.LENGTH_LONG).show();
+            }
+        });
+
+        requestQueue.add(jsonLaureatRequest);
         //requestQueue.start();
 
-    }
-    private boolean isEmailValid(String username) {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
-    }
-    private boolean isLegalDate(String s) {
-        Matcher m = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}$", Pattern.CASE_INSENSITIVE).matcher(s);
-        return m.matches();
-    }
-    private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 5;
-    }
-    static boolean isNomValid(String Nom) {
-        return Nom != null && Nom.trim().length() > 3;
-    }
-    private boolean isNumtelValid(String tel){
-        Matcher m = Pattern.compile("\\d{5,16}$", Pattern.CASE_INSENSITIVE).matcher(tel);
-        return m.matches();
-    }
-    static boolean isSelectDropDownValid(long selcected_id){
-        return selcected_id!=0;
-    }
-    static boolean isSelectDropDownValid(String selcected){
-        return !selcected.equals("SELECTIONNER");
     }
     void loginDataChanged(
             String LaureatNom,String LaureatPrenom,  String LaureatNumTel,String emailUser, String Password,
             String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
-            long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
-            String date_debut_travail_chez_org_,String description,long radio) {
+            String initulePost,
+            String date_debut_travail_chez_org_,String description) {
         if (!isNomValid(LaureatNom)) {
             registerFormState.setValue(new RegisterFormState(
                     R.string.invalid_Nom,
@@ -261,11 +266,11 @@ public class RegisterViewModel extends ViewModel {
         else if (!isPasswordValid(Password)) {
 
             registerFormState.setValue(new RegisterFormState(
-                    null,
-                    null, null,null,
-                    null,R.string.invalid_password,null,null,
-                    null,null,null,null,null,
-                    null,null,null,null));
+            null,
+            null, null,null,
+            null,R.string.invalid_password,null,null,
+            null,null,null,null,null,
+            null,null,null,null));
         }
 
 
@@ -296,6 +301,29 @@ public class RegisterViewModel extends ViewModel {
         else {
             registerFormState.setValue(new RegisterFormState(true));
         }
+    }
+    private boolean isEmailValid(String username) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
+    }
+    private boolean isLegalDate(String s) {
+        Matcher m = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}$", Pattern.CASE_INSENSITIVE).matcher(s);
+        return m.matches();
+    }
+    private boolean isPasswordValid(String password) {
+        return password != null && password.trim().length() > 5;
+    }
+    static boolean isNomValid(String Nom) {
+        return Nom != null && Nom.trim().length() > 3;
+    }
+    private boolean isNumtelValid(String tel){
+        Matcher m = Pattern.compile("\\d{5,16}$", Pattern.CASE_INSENSITIVE).matcher(tel);
+        return m.matches();
+    }
+    static boolean isSelectDropDownValid(long selcected_id){
+        return selcected_id!=0;
+    }
+    static boolean isSelectDropDownValid(String selcected){
+        return !selcected.equals("SELECTIONNER");
     }
 
 }

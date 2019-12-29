@@ -85,7 +85,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         linearLayout = root.findViewById(R.id.status_profile_linear);
         dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.popup_wait);
-        //dialog.setCancelable(false);
+        dialog.setCancelable(false);
         dialog.show();
 
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
