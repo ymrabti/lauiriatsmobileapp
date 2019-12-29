@@ -1,7 +1,6 @@
 package com.example.annuairelauriats.ui.register;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,7 +16,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -41,10 +39,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.home.Classtest;
 import com.example.annuairelauriats.ui.home.Filiere;
@@ -68,7 +63,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.promotion_peuplement;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
@@ -82,8 +77,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
     public static double lat, lon;private MapView mapView;private static Context context;
     private ImageView imageView;private TextView base64TextView;private long checked_radio;
     private int year, month, day;private RegisterViewModel registerViewModel;
-    private List<Filiere> dates ;private Dialog dialog;
-    private ScrollView scroll_register;
+    private List<Filiere> dates ;private Dialog dialog;private int org_selected;private int filiere_selected;
+    private ScrollView scroll_register;private List<Integer> ids_organisations ;
     private EditText nomEditText , prenomEditText , NumTeleEditText, usernameEditText , passwordEditText
     , nouveau_org_nom , date_debut_chez_org , intitule_fonction_avec_org , description_laureat ;
     private Spinner gender , promotion , filiere , organisation , organisation_secteur ;
@@ -364,9 +359,10 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         ArrayAdapter<String> list_org_adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_item,secteurs);
         list_org_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         organisation_secteur.setAdapter(list_org_adapter);
-        dates = new ArrayList<>();
+
+
+        dates = new ArrayList<>();ids_organisations= new ArrayList<>();
         try {
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
             Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
@@ -380,7 +376,9 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                             ArrayAdapter<String> list_adapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_item,filieres);
                             list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                             filiere.setAdapter(list_adapter);
-                            dates.add(new Filiere(Integer.parseInt(filiere_actuelle.getString("Date_Creation").substring(0,4).trim())
+
+                            dates.add(new Filiere(Integer.parseInt(
+                                    filiere_actuelle.getString("Date_Creation").substring(0,4).trim())
                                     ,filiere_actuelle.getInt("id_filieres")));
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -388,8 +386,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     }
                 }
             };
-            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                    Request.Method.GET, ip_server + "/autres/filieres",
+            connect_to_backend_array(this, Request.Method.GET,"/autres/filieres",
                     null, listener, null);
 
             Response.Listener<JSONArray> listener_org = new Response.Listener<JSONArray>() {
@@ -403,6 +400,7 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                             ArrayAdapter<String> list_adapter =
                                     new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_item,organismes);
                             list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            ids_organisations.add(filiere_actuelle.getInt("id_org"));
                             organisation.setAdapter(list_adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -410,13 +408,10 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                     }
                 }
             };
-            JsonArrayRequest jsonOrgRequest = new JsonArrayRequest(
-                    Request.Method.GET, ip_server + "/autres/organismes",
+            connect_to_backend_array(this,Request.Method.GET,  "/autres/organismes",
                     null, listener_org, null);
-            requestQueue.add(jsonArrayRequest);requestQueue.add(jsonOrgRequest);
         }
-        catch (Exception ec){
-            Toast.makeText(this,R.string.afficher_dans_carte,Toast.LENGTH_LONG).show();
+        catch (Exception ec){ec.printStackTrace();
         }
         filiere.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -425,12 +420,26 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                         promotion_peuplement(getApplicationContext(), Calendar.getInstance().get(Calendar.YEAR)+2, promotion);
                     }
                     else {
+                        filiere_selected=dates.get(position-1).get_Id();
                         promotion_peuplement(getApplicationContext(), dates.get(position-1).getPrimier_promo(), promotion);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } }
             @Override public void onNothingSelected(AdapterView<?> parentView) { }});
+        organisation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position!=0){
+                    org_selected=ids_organisations.get(position-1);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
     private void findViewbyid(){
         base64TextView = findViewById(R.id.register_image_base_64_laureat);
@@ -554,8 +563,8 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
                             Classtest.encodeImage(icon) + "",
                             gender.getSelectedItem().toString() + "",
                             promotion.getSelectedItem().toString() + "",
-                            filiere.getSelectedItemId(),
-                            organisation.getSelectedItemId(),
+                            filiere_selected,
+                            org_selected,
                             nouveau_org_nom.getText().toString() + "",
                             organisation_secteur.getSelectedItem().toString() + "",
                             intitule_fonction_avec_org.getText().toString() + "",

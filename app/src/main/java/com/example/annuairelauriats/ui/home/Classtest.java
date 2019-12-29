@@ -829,6 +829,24 @@ public class Classtest  extends AppCompatActivity {
     }
 
 
+    public static void connect_to_backend(Context context, int method, String url, JSONObject jsonObject
+            , Response.Listener<JSONObject> listener, Response.ErrorListener errorListener){
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                method
+                , ip_server + url, jsonObject
+                , listener, errorListener);
+        requestQueue.add(jsonObjectRequest);
+    }
+    public static void connect_to_backend_array(Context context, int method, String url, JSONArray jsonArray
+            , Response.Listener<JSONArray> listener, Response.ErrorListener errorListener){
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                method
+                , ip_server + url, jsonArray
+                , listener, errorListener);
+        requestQueue.add(jsonArrayRequest);
+    }
     /*private void read_json(){
         try {
             JSONObject obj = new JSONObject(loadJSONFromAsset());

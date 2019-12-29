@@ -22,6 +22,9 @@ import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend;
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 import static com.example.annuairelauriats.ui.home.Classtest.set0Pref;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
@@ -118,7 +121,6 @@ public class RegisterViewModel extends ViewModel {
                     , new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Toast.makeText(RegisterActivity.getContextext(),"approbation",Toast.LENGTH_LONG).show();
                         }
                     },null);
         }
@@ -127,8 +129,6 @@ public class RegisterViewModel extends ViewModel {
                     ,new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Toast.makeText(RegisterActivity.getContextext(),"add association",Toast.LENGTH_LONG).show();
-
                         }
                     }, null);
         }
@@ -137,7 +137,6 @@ public class RegisterViewModel extends ViewModel {
                 , new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-
                     }
                 },null);
 
@@ -155,28 +154,9 @@ public class RegisterViewModel extends ViewModel {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(RegisterActivity.getContextext(),"error laureat!!\n"+error.toString(),Toast.LENGTH_LONG).show();
                     }
                 });
 
-    }
-    public static void connect_to_backend(Context context, int method, String url, JSONObject jsonObject
-            , Response.Listener<JSONObject> listener, Response.ErrorListener errorListener){
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                method
-                , ip_server + url, jsonObject
-                , listener, errorListener);
-        requestQueue.add(jsonObjectRequest);
-    }
-    public static void connect_to_backend_array(Context context, int method, String url, JSONArray jsonArray
-            , Response.Listener<JSONArray> listener, Response.ErrorListener errorListener){
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                method
-                , ip_server + url, jsonArray
-                , listener, errorListener);
-        requestQueue.add(jsonArrayRequest);
     }
 
     void loginDataChanged(
