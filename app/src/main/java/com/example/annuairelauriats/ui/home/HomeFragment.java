@@ -47,6 +47,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.annuairelauriats.MainActivity.navigationView;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 
@@ -90,7 +91,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         dialog.setCancelable(false);
         dialog.show();
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -136,10 +136,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             public void onErrorResponse(VolleyError error) {
             }
         };
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                Request.Method.GET, ip_server + "/laureat/id/"+email_connected,
+        connect_to_backend_array(getContext(),Request.Method.GET, "/laureat/id/"+email_connected,
                 null, listener, errorListener);
-        requestQueue.add(jsonArrayRequest);
 
         top=root.findViewById(R.id.go_top);bottom=root.findViewById(R.id.go_bottom);
         right=root.findViewById(R.id.go_right);left=root.findViewById(R.id.go_left);
