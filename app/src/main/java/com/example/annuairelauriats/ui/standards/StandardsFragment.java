@@ -1,19 +1,30 @@
 package com.example.annuairelauriats.ui.standards;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
@@ -44,29 +56,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 
 import static android.app.Activity.RESULT_OK;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
+import static com.example.annuairelauriats.ui.home.Classtest.ip_serverIP;
+import static com.example.annuairelauriats.ui.home.Classtest.portBackend;
 import static com.example.annuairelauriats.ui.home.Classtest.write_file_data;
 import static java.lang.Math.random;
 import static java.lang.Math.round;
 
 public class StandardsFragment extends Fragment {
     private TextView result_http_client,textView;private VideoView videoView;private EditText url;
-    private ImageView imageView,imageViewm;private EditText password;
-    private static Context context;
-    private JSONArray wlahmaeearfuhhh;
-    @Nullable
-    public static Context getContexte() {
-        return context;
-    }
+    private ImageView imageView,imageViewm;private EditText password;boolean connexion ;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.standardscommunute, container, false);
-        context=getActivity();
         url = root.findViewById(R.id.editText1);password=root.findViewById(R.id.pssssss);
         url.setText(ip_server+"/laureat/id/8");password.setText("hyouri sama");
         videoView = root.findViewById(R.id.videoView);
@@ -88,52 +101,207 @@ public class StandardsFragment extends Fragment {
             }
         });
         Button but_connect = root.findViewById(R.id.buttonSend);
+
+
+
+
+
+        //result_http_client.append(connexion+" con");
+        /*if (!connexion){
+            CountDownTimer countDownTimer = new CountDownTimer(5000,500) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    show_exitPopup();
+                }
+            };
+            countDownTimer.start();
+        }*/
         but_connect.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
         try {
-            //connecting_reste(ip_server+"/laureat/id/8");
-            //result_http_client.append(get_Array_connect(getActivity(),ip_server+"/laureat/id/8"));
-            RequestQueue requestQueue = Volley.newRequestQueue(context);
-            Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
-                @Override
-                public void onResponse(JSONArray response) {
-                    wlahmaeearfuhhh=new JSONArray();wlahmaeearfuhhh=response;
-                    textView.setText(response.toString());
-                    //result_http_client.append(response.toString());
-                }
-            };
-            Response.ErrorListener errorListener = new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("err",error.toString());
-                        wlahmaeearfuhhh= new JSONArray();wlahmaeearfuhhh.put(jsonObject);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                    Request.Method.GET, ip_server + "/laureat/id/8",
-                    null, listener, errorListener);
-            requestQueue.add(jsonArrayRequest);
-            result_http_client.append(textView.getText().toString());
+            isPortOpen();
         } catch (Exception e) {
             e.printStackTrace();
-            result_http_client.append(e.toString());
+            result_http_client.append("ici"+e.toString());
         }
             }
         });
         return root;
     }
+    private void show_exitPopup(){
+        Dialog dialog = new AppCompatDialog(getActivity());
+        dialog.setCancelable(false);dialog.setContentView(R.layout.popup_error_connection);
+        dialog.findViewById(R.id.exit_app).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().moveTaskToBack(true);
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(1);
+            }
+        });
+        dialog.show();
+    }
+    private void isPortOpen() {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Socket socket = new Socket();
+                    InetSocketAddress intent= new InetSocketAddress(ip_serverIP,portBackend);
+                    socket.connect(intent);
+                    result_http_client.append("true\n");
+                    socket.close();
+                } catch(Exception ce){
+                    ce.printStackTrace();
+                    result_http_client.append("false\n");
+                }
+            }
+        });
+    }
+    private void executeCommand(){
+        Runtime runtime = Runtime.getRuntime();
+        try
+        {
+            Process  mIpAddrProcess = runtime.exec("ping -c 5 "+ip_serverIP);
+            int mExitValue = mIpAddrProcess.waitFor();
+            result_http_client.append(mExitValue+" mExit\n");
+            connexion= (mExitValue == 0);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();result_http_client.append(e.toString());
+        }
+        connexion= false;
+    }
+    private Boolean getLatency(){
+        String pingCommand = "/system/bin/ping -c 5 "+ip_serverIP;
+        String inputLine = "";
+        try {
+            Process process = Runtime.getRuntime().exec(pingCommand);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            inputLine = bufferedReader.readLine();
+            while ((inputLine != null))
+            {
+                if (inputLine.contains("5 received")) {
+                    break;
+                }
+                inputLine = bufferedReader.readLine();
+            }
+        }
+        catch (Exception e){ e.printStackTrace(); }
+        if (inputLine != null) {
+            return inputLine.contains("5 received");
+        }
+        else{return false;}
+    }
+
+
 
 
     private void OpenGallery(){
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         this.startActivityForResult(gallery,100);
+    }
+    @Override public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if(resultCode==RESULT_OK && requestCode==100){
+            final Uri imageUriii = data.getData();
+            assert imageUriii != null;
+            String uriString = imageUriii.toString();
+            File myFile = new File(uriString);
+            String path = myFile.getAbsolutePath();
+            String displayName = null;
+            if (uriString.startsWith("content://")) {
+                try (
+                        Cursor cursor = getActivity().getContentResolver().query(imageUriii,
+                                null, null,
+                                null, null)) {
+                    if (cursor != null && cursor.moveToFirst())
+                    {
+                        displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        result_http_client.setText(displayName);
+                    }
+                }
+            }
+            else if (uriString.startsWith("file://"))
+            {
+                displayName = myFile.getName();
+                result_http_client.setText(displayName);
+            }
+            try {
+                final InputStream imageStream;
+                imageStream = getActivity().getContentResolver().openInputStream(imageUriii);
+                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                imageView.setImageBitmap(selectedImage);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            imageView.setImageResource(R.drawable.errorimage);
+            result_http_client.setText("please select img\n");
+        }
+    }
+    /*private static String isNetworkAvailable(Context context) {
+        if(context == null)  return "context null";
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                if (capabilities != null) {
+                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                        return "cellulaire";
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                        return "wifi";
+                    }  else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)){
+                        return "ethernet";
+                    }
+                }
+            }
+
+            else {
+
+                try {
+                    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+                    if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+                        return "network";
+                    }
+                } catch (Exception e) {e.printStackTrace();
+                }
+            }
+        }
+        return "manager null";
+    }
+    public void registerNetworkCallback() {
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkRequest.Builder builder = new NetworkRequest.Builder();
+
+            if (connectivityManager != null) {
+                connectivityManager.registerNetworkCallback(builder.build(),new ConnectivityManager.NetworkCallback() {
+                            @Override
+                            public void onAvailable(Network network) {
+                                result_http_client.append("connected\n");
+                            }
+                            @Override
+                            public void onLost(Network network) {
+                                result_http_client.append("lost\n");
+                            }
+                        }
+
+                );
+            }
+            result_http_client.append("manager null\n");
+        }catch (Exception e){
+            result_http_client.append("sorry\n");
+        }
     }
     private void sendPost() {
         AsyncTask.execute(new Runnable()  {
@@ -189,46 +357,6 @@ public class StandardsFragment extends Fragment {
                 }
             }
         });
-    }
-    @Override public void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
-        if(resultCode==RESULT_OK && requestCode==100){
-            final Uri imageUriii = data.getData();
-            assert imageUriii != null;
-            String uriString = imageUriii.toString();
-            File myFile = new File(uriString);
-            String path = myFile.getAbsolutePath();
-            String displayName = null;
-            if (uriString.startsWith("content://")) {
-                try (
-                        Cursor cursor = getActivity().getContentResolver().query(imageUriii,
-                                null, null,
-                                null, null)) {
-                    if (cursor != null && cursor.moveToFirst())
-                    {
-                        displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                        result_http_client.setText(displayName);
-                    }
-                }
-            }
-            else if (uriString.startsWith("file://"))
-            {
-                displayName = myFile.getName();
-                result_http_client.setText(displayName);
-            }
-            try {
-                final InputStream imageStream;
-                imageStream = getActivity().getContentResolver().openInputStream(imageUriii);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                imageView.setImageBitmap(selectedImage);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            imageView.setImageResource(R.drawable.errorimage);
-            result_http_client.setText("please select img\n");
-        }
     }
     private String nom(){
         String list="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -301,10 +429,9 @@ public class StandardsFragment extends Fragment {
             sql.append("UPDATE public.laureats\n" + "\tSET  status=").append(num(1, 4))
                     .append("\n").append("\tWHERE id=").append(i).append(";");
         }
-        write_file_data(getContexte(),sql.toString(),"sqloo.sql");
+        //write_file_data(getContexte(),sql.toString(),"sqloo.sql");
     }
-
-    /*sql.append("INSERT INTO public.laureat_org(\n" + "\torg, laureat, en_cours, date_debut, fonction)\n" + "\tVALUES (")
+    sql.append("INSERT INTO public.laureat_org(\n" + "\torg, laureat, en_cours, date_debut, fonction)\n" + "\tVALUES (")
                     .append(num(2, 5)).append(", ").append(i).append(", ").append(true).append(", ")
                     .append(date()).append(", ").append(nom()).append(");");
 

@@ -76,12 +76,13 @@ import static java.lang.Math.min;
 
 public class Classtest  extends AppCompatActivity {
     public static int id_connected,id_selected;
-    private static VolleyError volleyError;
+    private static VolleyError volleyError;public static int portBackend=3000;
     public static String laureats="laureats.json",filter="filter.json",genders ="genders.json",posts="posts.json",
             provinces="provinces.json",roles="roles.json",secteurs="secteurs.json",organismes="organismes.json",
             org_en_attente="org_en_attente.json",org_laureat="org_laureat.json",
             folder = "Annuaire",images_file="images.json",filiers="filieres.json"
-            ,ip_server="http://192.168.137.1:3000",email_connected;
+            ,ip_serverIP="192.168.137.1"
+            ,ip_server="http://"+ip_serverIP+":"+portBackend,email_connected;
     private static JSONArray liste_resultat ;private static JSONObject single_resultat;
     @SuppressLint("StaticFieldLeak")
     public static String loadJSONFromAsset(Context context,String fichier) {

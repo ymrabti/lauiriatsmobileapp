@@ -111,4 +111,7 @@
     <string name="invalid_position">selectionner une position</string>
     <string name="modifier_votre_profile">Modifier votre profile</string>
     <string name="statut_de_profil">Statut de profil :</string>
+    <string name="serveur_injoignable">serveur injoignable!</string>
+    <string name="verifier_votre_connexion_internet_et_reessayer">verifier votre connexion internet et reessayer</string>
+    <string name="ok_ok">OK</string>
 </resources>

@@ -70,6 +70,8 @@ import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 import static com.example.annuairelauriats.ui.home.Classtest.promotion_peuplement;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
+import static com.example.annuairelauriats.ui.register.RegisterViewModel.isNomValid;
+import static com.example.annuairelauriats.ui.register.RegisterViewModel.isSelectDropDownValid;
 
 
 public class RegisterActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -517,25 +519,40 @@ public class RegisterActivity extends AppCompatActivity implements OnMapReadyCal
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
-                registerButton.setBackgroundResource(R.drawable.register);
-                Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                registerViewModel.register(
-                        usernameEditText.getText().toString() + "",
-                        passwordEditText.getText().toString() + "",
-                        nomEditText.getText().toString() + "",
-                        prenomEditText.getText().toString() + "",
-                        NumTeleEditText.getText().toString() + "",
-                        Classtest.encodeImage(icon) + "",
-                        gender.getSelectedItem().toString() + "",
-                        promotion.getSelectedItem().toString() + "",
-                        filiere.getSelectedItemId(),
-                        organisation.getSelectedItemId(),
-                        nouveau_org_nom.getText().toString() + "",
-                        organisation_secteur.getSelectedItem().toString() + "",
-                        intitule_fonction_avec_org.getText().toString() + "",
-                        date_debut_chez_org.getText().toString() + "",
-                        description_laureat.getText().toString() + "",checked_radio);
+                if (checked_radio==0 && !isSelectDropDownValid(organisation.getSelectedItemId())) {
+                    Toast.makeText(RegisterActivity.getContextext(),"selectionner une organisation svp!"
+                            ,Toast.LENGTH_LONG).show();
+                }
+                else if (checked_radio==1  && !isNomValid(nouveau_org_nom.getText().toString() )){
+                    Toast.makeText(RegisterActivity.getContextext(),"veillez saisir le nom svp!"
+                            ,Toast.LENGTH_LONG).show();
+                }
+                else if (checked_radio==1  && !isSelectDropDownValid(organisation_secteur.getSelectedItem().toString())){
+                    Toast.makeText(RegisterActivity.getContextext(),"selectionner un secteur svp!"
+                            ,Toast.LENGTH_LONG).show();}
+                else{
+
+                    loadingProgressBar.setVisibility(View.VISIBLE);
+                    registerButton.setBackgroundResource(R.drawable.register_disabled);
+                    Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+
+                    registerViewModel.register(
+                            usernameEditText.getText().toString() + "",
+                            passwordEditText.getText().toString() + "",
+                            nomEditText.getText().toString() + "",
+                            prenomEditText.getText().toString() + "",
+                            NumTeleEditText.getText().toString() + "",
+                            Classtest.encodeImage(icon) + "",
+                            gender.getSelectedItem().toString() + "",
+                            promotion.getSelectedItem().toString() + "",
+                            filiere.getSelectedItemId(),
+                            organisation.getSelectedItemId(),
+                            nouveau_org_nom.getText().toString() + "",
+                            organisation_secteur.getSelectedItem().toString() + "",
+                            intitule_fonction_avec_org.getText().toString() + "",
+                            date_debut_chez_org.getText().toString() + "",
+                            description_laureat.getText().toString() + "",checked_radio);
+                }
             }
         });
     }

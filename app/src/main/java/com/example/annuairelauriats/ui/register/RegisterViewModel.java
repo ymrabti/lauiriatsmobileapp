@@ -48,28 +48,51 @@ public class RegisterViewModel extends ViewModel {
                             null,null,null,null,
                             null,null,null,null,null,
                             null,null,null,null));
+                    Toast.makeText(RegisterActivity.getContextext(),R.string.email_taken,Toast.LENGTH_LONG).show();
                 }
-                else if (radio==0 ) {
-                    if (!isSelectDropDownValid(org_selected)){
-                        Toast.makeText(RegisterActivity.getContextext(),"selectionner une organisation svp!"
-                                ,Toast.LENGTH_LONG).show();}
+                else{
+                    try{
+                        Calendar rightNow = Calendar.getInstance();
+                        int seconde = rightNow.get(Calendar.SECOND);int minute = rightNow.get(Calendar.MINUTE);
+                        int heur = rightNow.get(Calendar.HOUR_OF_DAY);
+                        int jour = rightNow.get(Calendar.DAY_OF_MONTH);int mois = rightNow.get(Calendar.MONTH)+1;
+                        int annee = rightNow.get(Calendar.YEAR);
+                        String dateNow = annee+"-"+mois+"-"+jour+" "+heur+":"+minute+":"+seconde;
+                        JSONObject laureat_nouveau = new JSONObject();
+                        laureat_nouveau.put("Nom",LaureatNom);laureat_nouveau.put("Prenom",LaureatPrenom);
+                        laureat_nouveau.put("Gender",LaureatGender);laureat_nouveau.put("Promotion",LaureatPromotion);
+                        laureat_nouveau.put("Filiere",LaureatFiliere);laureat_nouveau.put("DATE_INSCRIPTION",dateNow);
+                        laureat_nouveau.put("Description",description);laureat_nouveau.put("Telephone",LaureatNumTel);
+                        laureat_nouveau.put("email",emailUser);laureat_nouveau.put("Pass_word",Password);
+                        laureat_nouveau.put("photo",LaureatImageBase64);
+                        if (radio==0){
+                            laureat_nouveau.put("org",org_selected);}
+
+                        JSONObject statut_laureat = new JSONObject();
+                        statut_laureat.put("id_statut",1);
+                        statut_laureat.put("id_laureat",emailUser);
+                        statut_laureat.put("motif","nouveau");
+
+                        JSONObject new_org_attentente = new JSONObject();
+                        new_org_attentente.put("Nom",nomOrgEdited);
+                        new_org_attentente.put("Latitude",lat);
+                        new_org_attentente.put("Longitude",lon);
+                        new_org_attentente.put("laureat",emailUser);
+                        new_org_attentente.put("intitule",initulePost);
+                        new_org_attentente.put("secteur",secteurOrgEdited);
+                        new_org_attentente.put("date_debut",date_debut_travail_chez_org_);
+
+
+                        JSONObject org_laureat_new = new JSONObject();
+                        org_laureat_new.put("org",org_selected);org_laureat_new.put("laureat",emailUser);
+                        org_laureat_new.put("date_debut",date_debut_travail_chez_org_);
+                        org_laureat_new.put("fonction",initulePost);
+                        signup(emailUser,radio,laureat_nouveau,statut_laureat,org_laureat_new,new_org_attentente);
+                    }
+                    catch(Exception e){
+                        Toast.makeText(RegisterActivity.getContextext(),"hna  hh ",Toast.LENGTH_LONG).show();
+                    }
                 }
-                else if (radio==1 ) {
-                    if (!isNomValid(nomOrgEdited)){
-                        registerFormState.setValue(new RegisterFormState(
-                                null,
-                                null, null,null,
-                                null,null,null,R.string.invalid_Nom,
-                                null,null,null,null,null,
-                                null,null,null,null));}
-                    else if (!isSelectDropDownValid(secteurOrgEdited)){
-                        Toast.makeText(RegisterActivity.getContextext(),"selectionner une organisation svp!"
-                                ,Toast.LENGTH_LONG).show();}
-                }
-                else{ signup(emailUser, Password, LaureatNom, LaureatPrenom, LaureatNumTel,
-                        LaureatImageBase64, LaureatGender, LaureatPromotion, LaureatFiliere,
-                    org_selected,  nomOrgEdited, secteurOrgEdited,initulePost,
-                            date_debut_travail_chez_org_,description);}
             }
         };
         Response.ErrorListener errorListener = new Response.ErrorListener() {
@@ -83,6 +106,86 @@ public class RegisterViewModel extends ViewModel {
         requestQueue.add(jsonArrayRequest);
     }
 
+    private void signup(final String emailUser,long radio, JSONObject laureat_nouveau,JSONObject statut_laureat
+            ,JSONObject org_laureat_new,JSONObject new_org_attentente){
+        RequestQueue requestQueue = Volley.newRequestQueue(RegisterActivity.getContextext());
+
+        JsonObjectRequest jsonNvOrgRequest = new JsonObjectRequest(
+                Request.Method.POST
+                , ip_server + "/autres/insert_org_attente", new_org_attentente
+                , new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        },null);
+        JsonObjectRequest jsonOrgAscRequest = new JsonObjectRequest(
+                Request.Method.POST
+                , ip_server + "/laureat/new_row_org_laureat", org_laureat_new
+                , new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        },null);
+
+        JsonObjectRequest jsonLaureatRequest = new JsonObjectRequest(
+                Request.Method.POST
+                , ip_server+"/laureat", laureat_nouveau,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        email_connected = emailUser;
+                        set0Pref(RegisterActivity.getContextext(),emailUser);
+                        Toast.makeText(RegisterActivity.getContextext(),"success!!",Toast.LENGTH_LONG).show();
+                        RegisterActivity.getContextext().startActivity(
+                                new Intent(RegisterActivity.getContextext()
+                                        , MainActivity.class));
+                    }
+                }, null);
+        JsonObjectRequest jsonStatutRequest = new JsonObjectRequest(
+                Request.Method.POST, ip_server + "/laureat/new_row_statut_laureat", statut_laureat
+                , new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+            }
+        },null);
+        requestQueue.add(jsonLaureatRequest);
+        requestQueue.add(jsonStatutRequest);
+        if(radio==1){
+            Toast.makeText(RegisterActivity.getContextext(),"add approbation",Toast.LENGTH_LONG).show();
+            requestQueue.add(jsonNvOrgRequest);
+        }
+        else{
+            Toast.makeText(RegisterActivity.getContextext(),"add association",Toast.LENGTH_LONG).show();
+            requestQueue.add(jsonOrgAscRequest);
+        }
+        //requestQueue.start();
+
+    }
+    private boolean isEmailValid(String username) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
+    }
+    private boolean isLegalDate(String s) {
+        Matcher m = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}$", Pattern.CASE_INSENSITIVE).matcher(s);
+        return m.matches();
+    }
+    private boolean isPasswordValid(String password) {
+        return password != null && password.trim().length() > 5;
+    }
+    static boolean isNomValid(String Nom) {
+        return Nom != null && Nom.trim().length() > 3;
+    }
+    private boolean isNumtelValid(String tel){
+        Matcher m = Pattern.compile("\\d{5,16}$", Pattern.CASE_INSENSITIVE).matcher(tel);
+        return m.matches();
+    }
+    static boolean isSelectDropDownValid(long selcected_id){
+        return selcected_id!=0;
+    }
+    static boolean isSelectDropDownValid(String selcected){
+        return !selcected.equals("SELECTIONNER");
+    }
     void loginDataChanged(
             String LaureatNom,String LaureatPrenom,  String LaureatNumTel,String emailUser, String Password,
             String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
@@ -156,6 +259,7 @@ public class RegisterViewModel extends ViewModel {
                     null,null,null,null));
         }
         else if (!isPasswordValid(Password)) {
+
             registerFormState.setValue(new RegisterFormState(
                     null,
                     null, null,null,
@@ -163,6 +267,8 @@ public class RegisterViewModel extends ViewModel {
                     null,null,null,null,null,
                     null,null,null,null));
         }
+
+
         else if (!isLegalDate(date_debut_travail_chez_org_)) {
             registerFormState.setValue(new RegisterFormState(
                     null,
@@ -190,113 +296,6 @@ public class RegisterViewModel extends ViewModel {
         else {
             registerFormState.setValue(new RegisterFormState(true));
         }
-    }
-    private boolean isEmailValid(String username) {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
-    }
-    boolean isLegalDate(String s) {
-        Matcher m = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}$", Pattern.CASE_INSENSITIVE).matcher(s);
-        return m.matches();
-    }
-    private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 5;
-    }
-    private boolean isNomValid(String Nom) {
-        return Nom != null && Nom.trim().length() > 3;
-    }
-    private boolean isNumtelValid(String tel){
-        Matcher m = Pattern.compile("\\d{5,16}$", Pattern.CASE_INSENSITIVE).matcher(tel);
-        return m.matches();
-    }
-    private boolean isSelectDropDownValid(long selcected_id){
-        return selcected_id!=0;
-    }
-    private boolean isSelectDropDownValid(String selcected){
-        return !selcected.equals("SELECTIONNER");
-    }
-    private void signup(final String emailUser, String Password, String LaureatNom, String LaureatPrenom, String LaureatNumTel,
-                        String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
-                        long org_selected, String nomOrgEdited, String secteurOrgEdited, String initulePost,
-                        String date_debut_travail_chez_org_, String description){
-        try {
-            Calendar rightNow = Calendar.getInstance();
-            int seconde = rightNow.get(Calendar.SECOND);int minute = rightNow.get(Calendar.MINUTE);
-            int heur = rightNow.get(Calendar.HOUR_OF_DAY);
-            int jour = rightNow.get(Calendar.DAY_OF_MONTH);int mois = rightNow.get(Calendar.MONTH)+1;
-            int annee = rightNow.get(Calendar.YEAR);
-            String dateNow = annee+"-"+mois+"-"+jour+" "+heur+":"+minute+":"+seconde;
-            JSONObject laureat_nouveau = new JSONObject();
-            laureat_nouveau.put("Nom",LaureatNom);laureat_nouveau.put("Prenom",LaureatPrenom);
-            laureat_nouveau.put("Gender",LaureatGender);laureat_nouveau.put("Promotion",LaureatPromotion);
-            laureat_nouveau.put("Filiere",LaureatFiliere);laureat_nouveau.put("DATE_INSCRIPTION",dateNow);
-            laureat_nouveau.put("Description",description);laureat_nouveau.put("Telephone",LaureatNumTel);
-            laureat_nouveau.put("email",emailUser);laureat_nouveau.put("Pass_word",Password);
-            laureat_nouveau.put("photo",LaureatImageBase64);
-            JSONObject statut_laureat = new JSONObject();
-            statut_laureat.put("id_statut",1);
-            statut_laureat.put("id_laureat",emailUser);
-            statut_laureat.put("motif","nouveau");
-
-            RequestQueue requestQueue = Volley.newRequestQueue(RegisterActivity.getContextext());
-
-            if(!nomOrgEdited.isEmpty()){
-                JSONObject new_org_attentente = new JSONObject();
-                new_org_attentente.put("Nom",nomOrgEdited);
-                new_org_attentente.put("Latitude",lat);
-                new_org_attentente.put("Longitude",lon);
-                new_org_attentente.put("laureat",emailUser);
-                new_org_attentente.put("intitule",initulePost);
-                new_org_attentente.put("secteur",secteurOrgEdited);
-                new_org_attentente.put("date_debut",date_debut_travail_chez_org_);
-                JsonObjectRequest jsonNvOrgRequest = new JsonObjectRequest(
-                        Request.Method.POST
-                        , ip_server + "/autres/insert_org_attente", new_org_attentente
-                        , new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                    }
-                },null);
-                requestQueue.add(jsonNvOrgRequest);
-            }
-            else{
-                JSONObject org_laureat_new = new JSONObject();
-                org_laureat_new.put("org",org_selected);org_laureat_new.put("laureat",emailUser);
-                org_laureat_new.put("date_debut",date_debut_travail_chez_org_);
-                org_laureat_new.put("fonction",initulePost);
-                laureat_nouveau.put("org",org_selected);
-                JsonObjectRequest jsonNvOrgRequest = new JsonObjectRequest(
-                        Request.Method.POST
-                        , ip_server + "/laureat/new_row_org_laureat", org_laureat_new
-                        , new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                    }
-                },null);
-                requestQueue.add(jsonNvOrgRequest);
-            }
-            JsonObjectRequest jsonLaureatRequest = new JsonObjectRequest(
-                    Request.Method.POST
-                    , ip_server+"/laureat", laureat_nouveau,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            email_connected = emailUser;
-                            set0Pref(RegisterActivity.getContextext(),emailUser);
-                            Toast.makeText(RegisterActivity.getContextext(),"success!!",Toast.LENGTH_LONG).show();
-                            RegisterActivity.getContextext().startActivity(new Intent(RegisterActivity.getContextext(), MainActivity.class));
-                        }
-                    }, null);
-            JsonObjectRequest jsonStatutRequest = new JsonObjectRequest(
-                    Request.Method.POST, ip_server + "/laureat/new_row_statut_laureat", statut_laureat
-                    , new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                }
-            },null);
-            requestQueue.add(jsonLaureatRequest);requestQueue.add(jsonStatutRequest);
-        } catch (Exception e){}
     }
 
 }
