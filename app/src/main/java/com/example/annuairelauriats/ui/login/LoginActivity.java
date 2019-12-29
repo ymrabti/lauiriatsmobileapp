@@ -3,6 +3,7 @@ package com.example.annuairelauriats.ui.login;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,8 +32,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     private EditText usernameEditText,passwordEditText;private Button loginButton;
-    private ProgressBar loadingProgressBar;private TextView go_to_register;
+    public static ProgressBar loadingProgressBar;private TextView go_to_register;
 private static Context context ;
+    @SuppressLint("SetTextI18n")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +46,8 @@ private static Context context ;
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);}
 
-        usernameEditText = findViewById(R.id.username);usernameEditText.setText("younesmrabti50@gmail.com");
-        passwordEditText = findViewById(R.id.password);passwordEditText.setText("vhhhhhhhjjjjhhv");
+        usernameEditText = findViewById(R.id.username);usernameEditText.setText("younes.mrabti50@gmail.com");
+        passwordEditText = findViewById(R.id.password);passwordEditText.setText("123123");
         loginButton = findViewById(R.id.login);
         loadingProgressBar = findViewById(R.id.loading);
         go_to_register = findViewById(R.id.go_to_register);
@@ -88,19 +90,8 @@ private static Context context ;
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CountDownTimer c = new CountDownTimer(500,50) {
-                    @Override public void onTick(long millisUntilFinished) {
-                        loadingProgressBar.setVisibility(View.VISIBLE);}
-                    @Override public void onFinish() {
-                        try {
-                            loginViewModel.login(usernameEditText.getText().toString(),passwordEditText.getText().toString());
-                        }
-                        catch(Exception error){
-
-                        }
-                        loadingProgressBar.setVisibility(View.GONE);
-                    }
-                };c.start();
+                loginViewModel.login(usernameEditText.getText().toString(),passwordEditText.getText().toString());
+                loadingProgressBar.setVisibility(View.VISIBLE);
             }
         });
     }
