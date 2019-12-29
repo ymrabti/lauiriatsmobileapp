@@ -1,6 +1,7 @@
 package com.example.annuairelauriats.ui.register;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
@@ -37,7 +38,6 @@ public class RegisterViewModel extends ViewModel {
             final String LaureatImageBase64, final String LaureatGender, final String LaureatPromotion, final long LaureatFiliere,
             final long org_selected, final String nomOrgEdited, final String secteurOrgEdited, final String initulePost,
             final String date_debut_travail_chez_org_, final String description, final long radio) {
-        RequestQueue requestQueue = Volley.newRequestQueue(RegisterActivity.getContextext());
         Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -90,6 +90,7 @@ public class RegisterViewModel extends ViewModel {
                             signup(emailUser,laureat_nouveau,statut_laureat,org_laureat_new,null);
                         }
                         else{
+                            laureat_nouveau.put("org",0);
                             signup(emailUser,laureat_nouveau,statut_laureat,null,new_org_attentente);
                         }
 
@@ -105,71 +106,42 @@ public class RegisterViewModel extends ViewModel {
             public void onErrorResponse(VolleyError error) {
             }
         };
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                Request.Method.GET, ip_server + "/laureat/email/"+emailUser,
-                null, listener, errorListener);
-        requestQueue.add(jsonArrayRequest);
+        connect_to_backend_array(RegisterActivity.getContextext(), Request.Method.GET,"/laureat/email/"+emailUser,null
+                ,listener,errorListener);
     }
 
     private void signup(final String emailUser, JSONObject laureat_nouveau,JSONObject statut_laureat
             ,JSONObject org_laureat_new,JSONObject new_org_attentente){
-        RequestQueue requestQueue = Volley.newRequestQueue(RegisterActivity.getContextext());
-
-        JsonObjectRequest jsonNvOrgRequest = new JsonObjectRequest(
-                Request.Method.POST
-                , ip_server + "/autres/insert_org_attente", new_org_attentente
-                , new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Toast.makeText(RegisterActivity.getContextext(),"approbation",Toast.LENGTH_LONG).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
-        });
-
-
-        JsonObjectRequest jsonOrgAscRequest = new JsonObjectRequest(
-                Request.Method.POST
-                , ip_server + "/laureat/new_row_org_laureat", org_laureat_new
-                , new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Toast.makeText(RegisterActivity.getContextext(),"add association",Toast.LENGTH_LONG).show();
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
-        });
-
 
         if(org_laureat_new==null){
-            requestQueue.add(jsonNvOrgRequest);
+            connect_to_backend(RegisterActivity.getContextext(),Request.Method.POST, "/autres/insert_org_attente", new_org_attentente
+                    , new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Toast.makeText(RegisterActivity.getContextext(),"approbation",Toast.LENGTH_LONG).show();
+                        }
+                    },null);
         }
         else if (new_org_attentente==null){
-            requestQueue.add(jsonOrgAscRequest);
+            connect_to_backend(RegisterActivity.getContextext(),Request.Method.POST,"/laureat/new_row_org_laureat",org_laureat_new
+                    ,new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Toast.makeText(RegisterActivity.getContextext(),"add association",Toast.LENGTH_LONG).show();
+
+                        }
+                    }, null);
         }
 
-        JsonObjectRequest jsonStatutRequest = new JsonObjectRequest(
-                Request.Method.POST, ip_server + "/laureat/new_row_statut_laureat", statut_laureat
+        connect_to_backend(RegisterActivity.getContextext(),Request.Method.POST, "/laureat/new_row_statut_laureat", statut_laureat
                 , new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(RegisterActivity.getContextext(),"error statut!!\n"+error.toString(),Toast.LENGTH_LONG).show();
-            }
-        });
-        requestQueue.add(jsonStatutRequest);
+                    @Override
+                    public void onResponse(JSONObject response) {
 
-        JsonObjectRequest jsonLaureatRequest = new JsonObjectRequest(
-                Request.Method.POST
-                , ip_server + "/laureat", laureat_nouveau,
+                    }
+                },null);
+
+        connect_to_backend(RegisterActivity.getContextext(),Request.Method.POST,"/laureat", laureat_nouveau,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -181,16 +153,32 @@ public class RegisterViewModel extends ViewModel {
                                         , MainActivity.class));
                     }
                 }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(RegisterActivity.getContextext(),"error laureat!!\n"+error.toString(),Toast.LENGTH_LONG).show();
-            }
-        });
-
-        requestQueue.add(jsonLaureatRequest);
-        //requestQueue.start();
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(RegisterActivity.getContextext(),"error laureat!!\n"+error.toString(),Toast.LENGTH_LONG).show();
+                    }
+                });
 
     }
+    public static void connect_to_backend(Context context, int method, String url, JSONObject jsonObject
+            , Response.Listener<JSONObject> listener, Response.ErrorListener errorListener){
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                method
+                , ip_server + url, jsonObject
+                , listener, errorListener);
+        requestQueue.add(jsonObjectRequest);
+    }
+    public static void connect_to_backend_array(Context context, int method, String url, JSONArray jsonArray
+            , Response.Listener<JSONArray> listener, Response.ErrorListener errorListener){
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                method
+                , ip_server + url, jsonArray
+                , listener, errorListener);
+        requestQueue.add(jsonArrayRequest);
+    }
+
     void loginDataChanged(
             String LaureatNom,String LaureatPrenom,  String LaureatNumTel,String emailUser, String Password,
             String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
