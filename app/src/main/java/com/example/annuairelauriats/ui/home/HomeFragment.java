@@ -60,7 +60,9 @@ import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     private MapView mapView;private GoogleMap gmap;
-    private float zoom ;
+    private float zoom ;public static String Orgedited,secteuuur
+            ,daaateee_deeebbuuuu,intiiiitullee;
+    public static LatLng laatloong;
     private LatLng latLng_currennt;
     private Button top, bottom, right,left;
     private static FragmentTransaction fragmentTransaction;
@@ -135,6 +137,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     }
                     else{
                         orgnaisation_(laureat.getInt("org"));
+                        JSONArray jsonArray = new JSONArray();
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("laureat",email_connected);
+                        jsonObject.put("org",laureat.getInt("org"));
+                        jsonArray.put(jsonObject);
+                        connect_to_backend_array(getActivity(), Request.Method.POST
+                                , "/autres/org_laureat", jsonArray, new Response.Listener<JSONArray>() {
+                                    @Override
+                                    public void onResponse(JSONArray response) {
+                                        if (response.length()!=0){
+                                            try {
+                                                JSONObject jsonObject1=response.getJSONObject(0);
+                                                daaateee_deeebbuuuu=jsonObject1.getString("date_debut").substring(0,10);
+                                                intiiiitullee=jsonObject1.getString("fonction");
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                daaateee_deeebbuuuu="0000-00-00";
+                                                intiiiitullee="koko";
+                                            }
+                                        }
+                                        else{
+                                            daaateee_deeebbuuuu="0000-00-00";
+                                            intiiiitullee="ici";
+                                        }
+                                    }
+                                },null);
                     }
                     for (int i= 0;i<list_parcours.size();i++){
                         etapes_parcours actuelle = list_parcours.get(i);
@@ -204,8 +232,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             public void onResponse(JSONArray response) {
                 try {
                     JSONObject laureat = response.getJSONObject(0);
-                    organisation.setText(laureat.getString("Nom"));
+                    organisation.setText(laureat.getString("Nom"));Orgedited=laureat.getString("Nom");
                     LatLng latLng = new LatLng(laureat.getDouble("Latitude"),laureat.getDouble("Longitude"));
+                    laatloong= latLng;secteuuur=laureat.getString("secteur");
+                    daaateee_deeebbuuuu=laureat.getString("date_debut").substring(0,10);
+                    intiiiitullee=laureat.getString("intitule");
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
                     gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));

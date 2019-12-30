@@ -87,15 +87,20 @@ import static com.example.annuairelauriats.ui.home.Classtest.promotion_peuplemen
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
 import static com.example.annuairelauriats.ui.home.Classtest.spinner_list_adapt;
+import static com.example.annuairelauriats.ui.home.HomeFragment.Orgedited;
+import static com.example.annuairelauriats.ui.home.HomeFragment.daaateee_deeebbuuuu;
+import static com.example.annuairelauriats.ui.home.HomeFragment.intiiiitullee;
+import static com.example.annuairelauriats.ui.home.HomeFragment.laatloong;
+import static com.example.annuairelauriats.ui.home.HomeFragment.secteuuur;
 
 public class SignalerFragment extends Fragment implements OnMapReadyCallback {
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private LatLng latLng_currennt;
+    private LatLng latLng_currennt;GoogleMap gmap;
     private float zoom ;
     private Button top, bottom, right,left;
     private double lat, lon;
     private MapView mapView;private int differc;public static int statut;
-    private List<Filiere> dates ;
+    private List<Filiere> dates ;private List<Integer> organs;
     private SignalerViewModel signalerViewModel;
     private EditText nomEditText,prenomEditText,NumTeleEditText,usernameEditText ,passwordEditText 
     ,nouveau_org_nom ,date_debut_chez_org ,intitule_fonction_avec_org ,description_laureat ;
@@ -104,7 +109,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
     private TextView base64TextView ,org_select ,secteur_select;
     private RadioGroup radioOrgGroup ;private RadioButton org_deja,nvorg;
     private Button registerButton ;private int filiere_selected;
-    private ProgressBar loadingProgressBar ;
+    private ProgressBar loadingProgressBar ;RadioButton organis_selected_radio,organis_edited_radio;
     private ConstraintLayout constraintLayout ;
     private int year, month, day;
     long checked_radio;
@@ -145,7 +150,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         });
         dialog.show();
     }
-    public void OpenGallery() {
+    private void OpenGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         this.startActivityForResult(gallery, 100);
     }
@@ -218,7 +223,6 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
     @Override public void onDestroy() { mapView.onDestroy();super.onDestroy(); }
     @Override public void onLowMemory() { super.onLowMemory();mapView.onLowMemory(); }
     @Override public void onMapReady(GoogleMap googleMap) {
-        final GoogleMap gmap;
         gmap = googleMap;
         gmap.setMinZoomPreference(1);
         gmap.setIndoorEnabled(true);
@@ -228,10 +232,6 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(new LatLng(lat,lon));
-        gmap.addMarker(markerOptions);
-        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat,lon), 12.0f));
         gmap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -309,6 +309,8 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         org_deja=root.findViewById(R.id.radio_organisation_existe);nvorg=root.findViewById(R.id.radio_organisation_non_existe);
         top=root.findViewById(R.id.edit_infos_go_top_1);bottom=root.findViewById(R.id.edit_infos_go_bottom_1);
         right=root.findViewById(R.id.edit_infos_go_right_1);left=root.findViewById(R.id.edit_infos_go_left_1);
+        organis_selected_radio = root.findViewById(R.id.edit_infos_radio_organisation_existe);
+        organis_edited_radio = root.findViewById(R.id.edit_infos_radio_organisation_non_existe);
 
 
         List<String> secteurs = new ArrayList<>();
@@ -317,7 +319,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         list_org_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         organisation_secteur.setAdapter(list_org_adapter);
 
-        dates = new ArrayList<>();
+        dates = new ArrayList<>();organs = new ArrayList<>();
         try {
             Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
                 @Override
@@ -348,8 +350,9 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                     List<String> organismes = new ArrayList<>();organismes.add("SELECTIONNER");
                     for (int i=0;i<response.length();i++){
                         try {
-                            JSONObject filiere_actuelle= response.getJSONObject(i);
-                            organismes.add(filiere_actuelle.getString("Nom"));
+                            JSONObject organisme_actuelle= response.getJSONObject(i);
+                            organismes.add(organisme_actuelle.getString("Nom"));
+                            organs.add(organisme_actuelle.getInt("id_org"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -583,6 +586,15 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         }
         return position+1;
     }
+    private int getpositionfromIdOrg(int id){
+        int position=0;
+        for (int i=0;i<organs.size();i++){
+            if (organs.get(i)==id){
+                position=i;
+            }
+        }
+        return position+1;
+    }
     private void remplir() {
 
         Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
@@ -610,13 +622,25 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                     statut=laureat.getInt("id_lesstatus");
                     promotion.setSelection(promo-prm+1);
                     Toast.makeText(getActivity(),(promo-prm+1)+"        "+statut,Toast.LENGTH_LONG).show();
-                    text_watcher();
                     if (laureat.getInt("org")==0){
-                        //orgnaisation_attente();
+                        organis_edited_radio.setChecked(true);organis_selected_radio.setChecked(false);
+                        nouveau_org_nom.setText(Orgedited);
+                        if (secteuuur.equals("public")){organisation_secteur.setSelection(1);}
+                        else if (secteuuur.equals("prive")){organisation_secteur.setSelection(2);}
+                        else {organisation_secteur.setSelection(0);}
+
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(laatloong);
+                        gmap.addMarker(markerOptions);
+                        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(laatloong, 12.0f));
                     }
                     else{
-                        ///orgnaisation_(laureat.getInt("org"));
+                        organis_selected_radio.setChecked(true);organis_edited_radio.setChecked(false);
+                        organisation.setSelection(getpositionfromIdOrg(laureat.getInt("org")));
                     }
+                    date_debut_chez_org.setText(daaateee_deeebbuuuu);
+                    intitule_fonction_avec_org.setText(intiiiitullee);
+                    text_watcher();
                     //dialog.dismiss();
                 }
                 catch (Exception e) {
