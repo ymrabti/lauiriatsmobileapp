@@ -28,6 +28,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
@@ -60,7 +61,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private static FragmentTransaction fragmentTransaction;
     private CircleImageView pdp_visit ;
     private TextView email ;
-    private TextView tel ;private int statut;
+    private TextView tel ;public static int statut;
     private TextView promotion ;
     private TextView filiere ;private Dialog dialog;private LinearLayout linearLayout;
     private TextView organisation ,status_profile;private ScrollView scrollView;
@@ -116,6 +117,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     promotion.setText(laureat.getInt("Promotion")+"");
                     filiere.setText(laureat.getString("Nom_filiere"));
                     statut=laureat.getInt("id_lesstatus");
+                    Menu menuNav=navigationView.getMenu();
+                    MenuItem nav_slideshow = menuNav.findItem(R.id.nav_slideshow);
+                    MenuItem nav_gallery = menuNav.findItem(R.id.nav_gallery);
+                    if (statut==4){
+                        nav_slideshow.setVisible(true);nav_gallery.setVisible(true);
+                    }
                     statusise(laureat.getString("status"),laureat.getString("motif"));
                     if (laureat.getInt("org")==0){
                         orgnaisation_attente();

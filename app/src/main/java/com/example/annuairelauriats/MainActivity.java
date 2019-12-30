@@ -1,7 +1,6 @@
 package com.example.annuairelauriats;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -15,22 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONObject;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.annuairelauriats.ui.gallery.GalleryFragment.to_map;
-import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
-import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
-import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
-import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
-import static com.example.annuairelauriats.ui.home.Classtest.images_file;
-import static com.example.annuairelauriats.ui.home.Classtest.laureats;
 import static com.example.annuairelauriats.ui.home.HomeFragment.edit_profile;
+import static com.example.annuairelauriats.ui.home.HomeFragment.statut;
 import static com.example.annuairelauriats.ui.slideshow.SlideshowFragment.popup;
 import static com.example.annuairelauriats.ui.slideshow.SlideshowFragment.to_list;
 
