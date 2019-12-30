@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -120,6 +121,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     Menu menuNav=navigationView.getMenu();
                     MenuItem nav_slideshow = menuNav.findItem(R.id.nav_slideshow);
                     MenuItem nav_gallery = menuNav.findItem(R.id.nav_gallery);
+                    parcours();
                     if (statut==4){
                         nav_slideshow.setVisible(true);nav_gallery.setVisible(true);
                     }
@@ -208,6 +210,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 Request.Method.GET, ip_server + "/autres/org/"+email_connected,
                 null, listener, errorListener);
         requestQueue.add(jsonArrayRequest);
+    }
+    private void parcours(){
+        RelativeLayout mRlayout = getView().findViewById(R.id.parcours_professionnelle);
+        RelativeLayout.LayoutParams mRparams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        TextView myEditText = new TextView(getContext());
+        myEditText.setLayoutParams(mRparams);myEditText.setText("test test");
+        mRlayout.addView(myEditText);
     }
     @Override public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
