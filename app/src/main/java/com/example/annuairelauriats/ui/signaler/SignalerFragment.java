@@ -101,6 +101,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
             ,base64_laureat_static,password_laureat_static,description_laureat_static
             ,nomorgedit_laureat_static,secteurorg_laureat_static;
     private int filiere_laureat_static,orgselected_laureat_static,checked_native;
+    private LatLng latitudelongitude;
     long checked_radio;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         signalerViewModel = ViewModelProviders.of(this).get(SignalerViewModel.class);
@@ -577,12 +578,16 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                         if (statut!=4){
                             if (!nom_laureat_static.equals(nomEditText.getText().toString())){}
                             if (!prenom_laureat_static.equals(prenomEditText.getText().toString())){}
-                            if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){}
                             if (filiere_selected!=filiere_laureat_static){}
                             if (!promotion_laureat_static.equals(promotion.getSelectedItem().toString())){}
+
+                            if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){}
                             if (!base64_laureat_static.equals("initialised from web")){}
                             if (!email_connected.equals(usernameEditText.getText().toString())){}
                             if (!password_laureat_static.equals(passwordEditText.getText().toString())){}
+                            if (!description_laureat_static.equals(description_laureat.getText().toString())){}
+
+
                             if (checked_radio==0){
                                 if (checked_native==1){
 
@@ -597,9 +602,9 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
 
                                 }
                                 else{
-                                    /*if (!nomorgedit_laureat_static.equals(Orgedited)){}
-                                    if (!secteurorg_laureat_static.equals(secteuuur)){}
-                                    if (lat != laatloong.latitude && lon!=laatloong.longitude){}*/
+                                    if (!secteuuur.equals(organisation_secteur.getSelectedItem().toString())){}
+                                    if (!Orgedited.equals(nouveau_org_nom.getText().toString())){}
+                                    if (lat != laatloong.latitude && lon!=laatloong.longitude){}
                                 }
                             }
                             if (!daaateee_deeebbuuuu.equals(date_debut_chez_org.getText().toString())){}
