@@ -45,6 +45,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -65,7 +67,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private CircleImageView pdp_visit ;
     private TextView email ;
     private TextView tel ;public static int statut;
-    private TextView promotion ;
+    private TextView promotion ;private List<etapes_parcours> list_parcours;
     private TextView filiere ;private Dialog dialog;private LinearLayout linearLayout;
     private TextView organisation ,status_profile;private ScrollView scrollView;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -90,12 +92,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         organisation = root.findViewById(R.id.organisation_laureat_profile_sssss);
         status_profile= root.findViewById(R.id.status_profile);
         linearLayout = root.findViewById(R.id.status_profile_linear);
+        parcours_pro_data();
         dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.popup_wait);
         dialog.setCancelable(false);
         dialog.show();
 
-        Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+        final Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 try
@@ -123,7 +126,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     Menu menuNav=navigationView.getMenu();
                     MenuItem nav_slideshow = menuNav.findItem(R.id.nav_slideshow);
                     MenuItem nav_gallery = menuNav.findItem(R.id.nav_gallery);
-                    parcours();
                     if (statut==4){
                         nav_slideshow.setVisible(true);nav_gallery.setVisible(true);
                     }
@@ -133,6 +135,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     }
                     else{
                         orgnaisation_(laureat.getInt("org"));
+                    }
+                    for (int i= 0;i<list_parcours.size();i++){
+                        etapes_parcours actuelle = list_parcours.get(i);
+                        if (actuelle.getType()==0){
+                            parcours(Color.argb(100,2,255,200)
+                                    ,actuelle.getDate_debut(),actuelle.getOrganisme(),actuelle.getFonction());
+                        }
+                        else if (actuelle.getType()==1){
+                            parcours(Color.argb(100,187,83,84)
+                                    ,actuelle.getDate_debut(),actuelle.getOrganisme(),actuelle.getFonction());
+                        }
                     }
                     dialog.dismiss();
                 }
@@ -213,19 +226,22 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 null, listener, errorListener);
         requestQueue.add(jsonArrayRequest);
     }
-    private void parcours(){
-        LinearLayout linearLayout = getView().findViewById(R.id.parcours_professionnelle);
+    private void parcours(int color,String date_debut,String nom,String intitule){
+        LinearLayout parcours_prof = getView().findViewById(R.id.parcours_professionnelle);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        linearLayout.setLayoutParams(layoutParams);
-        linearLayout.setGravity(Gravity.CENTER);
+        parcours_prof.setLayoutParams(layoutParams);
+        parcours_prof.setGravity(Gravity.CENTER);
 
-        TextView editText = new TextView (getContext());
-        editText .setTextSize(18);
-        editText .setLayoutParams(layoutParams);
-        editText .setText(Html.fromHtml("message"));
-        editText.setTextColor(Color.argb(100,128,128,128));
-        linearLayout.addView(editText );
+        TextView textView = new TextView (getContext());
+        textView.setTextSize(18);
+        textView.setLayoutParams(layoutParams);
+        textView.setText(Html.fromHtml(date_debut));textView.append("     ");
+        textView.append(nom+"\n");textView.append(intitule);
+        textView.setPadding(10,10,10,10);
+        textView.setBackgroundColor(color);
+        textView.setTextColor(Color.argb(100,88,88,88));
+        parcours_prof.addView(textView );
     }
     @Override public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -317,6 +333,73 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
         else if (statut==4){
             linearLayout.setBackgroundColor(Color.GREEN);
+        }
+    }
+    private void parcours_pro_data(){
+        list_parcours = new ArrayList<>();
+        connect_to_backend_array(getContext(), Request.Method.GET
+                , "/autres/orgs_laureat/" + email_connected, null
+                , new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            if (response.length()!=0){
+                                for (int i=0;i<response.length();i++){
+                                    JSONObject jsonObject = response.getJSONObject(i);
+                                    list_parcours.add(new etapes_parcours(
+                                            jsonObject.getString("date_debut").substring(0,10)
+                                            ,jsonObject.getString("Nom")
+                                            ,jsonObject.getString("fonction"),0
+                                    ));
+                                }
+                            }
+                        }
+                        catch (Exception e){e.printStackTrace();}
+
+                    }
+                },null );
+        connect_to_backend_array(getContext(), Request.Method.GET
+                , "/autres/org/" + email_connected, null
+                , new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            if (response.length()!=0){
+                                for (int i=0;i<response.length();i++){
+                                    JSONObject jsonObject = response.getJSONObject(i);
+                                    list_parcours.add(new etapes_parcours(
+                                            jsonObject.getString("date_debut").substring(0,10)
+                                            ,jsonObject.getString("Nom")
+                                            ,jsonObject.getString("intitule"),1
+                                    ));
+                                }
+                            }
+                        }
+                        catch (Exception e){e.printStackTrace();}
+
+                    }
+                },null );
+    }
+    private class etapes_parcours{
+        private String date_debut,Organisme,fonction;int type;
+        etapes_parcours(String date_debut,String organisme,String fonction,int type){
+            this.date_debut=date_debut;this .Organisme=organisme;this.fonction=fonction;this.type=type;
+        }
+
+        private String getDate_debut() {
+            return date_debut;
+        }
+
+        private String getFonction() {
+            return fonction;
+        }
+
+        private String getOrganisme() {
+            return Organisme;
+        }
+
+        public int getType() {
+            return type;
         }
     }
 
