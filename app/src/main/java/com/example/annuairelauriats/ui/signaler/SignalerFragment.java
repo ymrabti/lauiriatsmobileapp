@@ -3,21 +3,17 @@ package com.example.annuairelauriats.ui.signaler;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -34,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,12 +42,9 @@ import androidx.lifecycle.ViewModelProviders;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.example.annuairelauriats.BuildConfig;
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.ui.home.Classtest;
 import com.example.annuairelauriats.ui.home.Filiere;
 import com.example.annuairelauriats.ui.register.RegisterActivity;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -63,8 +57,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,18 +67,9 @@ import static android.app.Activity.RESULT_OK;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
-import static com.example.annuairelauriats.ui.home.Classtest.filiers;
-import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
-import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
-import static com.example.annuairelauriats.ui.home.Classtest.images_file;
-import static com.example.annuairelauriats.ui.home.Classtest.laureats;
-import static com.example.annuairelauriats.ui.home.Classtest.org_en_attente;
-import static com.example.annuairelauriats.ui.home.Classtest.org_laureat;
-import static com.example.annuairelauriats.ui.home.Classtest.organismes;
 import static com.example.annuairelauriats.ui.home.Classtest.promotion_peuplement;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
-import static com.example.annuairelauriats.ui.home.Classtest.spinner_list_adapt;
 import static com.example.annuairelauriats.ui.home.HomeFragment.Orgedited;
 import static com.example.annuairelauriats.ui.home.HomeFragment.daaateee_deeebbuuuu;
 import static com.example.annuairelauriats.ui.home.HomeFragment.intiiiitullee;
@@ -106,12 +89,13 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
     ,nouveau_org_nom ,date_debut_chez_org ,intitule_fonction_avec_org ,description_laureat ;
     private Spinner promotion ,filiere ,organisation ,organisation_secteur ;
     private ImageView imageView ,pick_date_debut_pop_up ;
-    private TextView base64TextView ,org_select ,secteur_select;
+    private TextView base64TextView ,org_select ,secteur_select,parameter_filiere,parametre_promotion;
     private RadioGroup radioOrgGroup ;private RadioButton org_deja,nvorg;
     private Button registerButton ;private int filiere_selected;
     private ProgressBar loadingProgressBar ;RadioButton organis_selected_radio,organis_edited_radio;
     private ConstraintLayout constraintLayout ;
     private int year, month, day;
+    private ScrollView scrollView;
     long checked_radio;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         signalerViewModel = ViewModelProviders.of(this).get(SignalerViewModel.class);
@@ -293,6 +277,8 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         base64TextView = root.findViewById(R.id.edit_infos_register_image_base_64_laureat);
         imageView = root.findViewById(R.id.edit_infos_selected_file_image8laureat);
         passwordEditText = root.findViewById(R.id.edit_infos_passwordword);
+        parameter_filiere = root.findViewById(R.id.edit_infos_filiere_text_view_register);
+        parametre_promotion = root.findViewById(R.id.edit_infos_promotion_text_view_register);
         radioOrgGroup = root.findViewById(R.id.edit_infos_radio_organisation);
         organisation = root.findViewById(R.id.edit_infos_snipper_select_org);
         nouveau_org_nom = root.findViewById(R.id.edit_infos_snipper_ecrire_nom_org);
@@ -311,6 +297,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         right=root.findViewById(R.id.edit_infos_go_right_1);left=root.findViewById(R.id.edit_infos_go_left_1);
         organis_selected_radio = root.findViewById(R.id.edit_infos_radio_organisation_existe);
         organis_edited_radio = root.findViewById(R.id.edit_infos_radio_organisation_non_existe);
+        scrollView = root.findViewById(R.id.scrooool);
 
 
         List<String> secteurs = new ArrayList<>();
@@ -554,11 +541,29 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
-                Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                registerButton.setShadowLayer(45,10,10,R.color.colorPrimary);
-                Toast.makeText(getActivity(),statut+"",Toast.LENGTH_LONG).show();
-                /*signalerViewModel.update_data(
+                if (checked_radio==0 && !isSelectDropDownValid(organisation.getSelectedItemId())) {
+                    Toast.makeText(RegisterActivity.getContextext(),"selectionner une organisation svp!"
+                            ,Toast.LENGTH_LONG).show();
+                }
+                else if (checked_radio==1  && !isNomValid(nouveau_org_nom.getText().toString() )){
+                    Toast.makeText(RegisterActivity.getContextext(),"veillez saisir le nom svp!"
+                            ,Toast.LENGTH_LONG).show();
+                }
+                else if (checked_radio==1  && !isSelectDropDownValid(organisation_secteur.getSelectedItem().toString())){
+                    Toast.makeText(RegisterActivity.getContextext(),"selectionner un secteur svp!"
+                            ,Toast.LENGTH_LONG).show();}
+                else if (checked_radio==1  && lat==0 && lon==0){
+                    Toast.makeText(RegisterActivity.getContextext(),"positionner sur la carte svp!"
+                            ,Toast.LENGTH_LONG).show();}
+                else{
+                    Toast.makeText(RegisterActivity.getContextext(),"tous marche bien"
+                            ,Toast.LENGTH_LONG).show();
+                    /*
+                    loadingProgressBar.setVisibility(View.VISIBLE);
+                    Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                    registerButton.setShadowLayer(45,10,10,R.color.colorPrimary);
+                    Toast.makeText(getActivity(),statut+"",Toast.LENGTH_LONG).show();
+                signalerViewModel.update_data(
                         usernameEditText.getText().toString() + "",
                         passwordEditText.getText().toString() + "",
                         nomEditText.getText().toString() + "",
@@ -574,8 +579,19 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                         intitule_fonction_avec_org.getText().toString() + "",
                         date_debut_chez_org.getText().toString() + "",
                         description_laureat.getText().toString() + "",checked_radio,lat,lon);*/
+                }
             }
         });
+    }
+
+    private boolean isNomValid(String Nom) {
+        return Nom != null && Nom.trim().length() > 3;
+    }
+    private boolean isSelectDropDownValid(long selcected_id){
+        return selcected_id!=0;
+    }
+    private boolean isSelectDropDownValid(String selcected){
+        return !selcected.equals("SELECTIONNER");
     }
     private int getpositionfromId(int id){
         int position=0;
@@ -620,8 +636,13 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                     passwordEditText.setText(laureat.getString("Pass_word"));
                     description_laureat.setText(laureat.getString("Description"));
                     statut=laureat.getInt("id_lesstatus");
+                    if (statut==4){
+                        nomEditText.setVisibility(View.GONE);prenomEditText.setVisibility(View.GONE);
+                        filiere.setVisibility(View.GONE);promotion.setVisibility(View.GONE);
+                        parameter_filiere.setVisibility(View.GONE);
+                        parametre_promotion.setVisibility(View.GONE);
+                    }
                     promotion.setSelection(promo-prm+1);
-                    Toast.makeText(getActivity(),(promo-prm+1)+"        "+statut,Toast.LENGTH_LONG).show();
                     if (laureat.getInt("org")==0){
                         organis_edited_radio.setChecked(true);organis_selected_radio.setChecked(false);
                         nouveau_org_nom.setText(Orgedited);
@@ -630,16 +651,17 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                         else {organisation_secteur.setSelection(0);}
 
                         MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(laatloong);
+                        markerOptions.position(laatloong);checked_radio=1;
                         gmap.addMarker(markerOptions);
                         gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(laatloong, 12.0f));
                     }
                     else{
                         organis_selected_radio.setChecked(true);organis_edited_radio.setChecked(false);
-                        organisation.setSelection(getpositionfromIdOrg(laureat.getInt("org")));
+                        organisation.setSelection(getpositionfromIdOrg(laureat.getInt("org")));checked_radio=0;
                     }
                     date_debut_chez_org.setText(daaateee_deeebbuuuu);
                     intitule_fonction_avec_org.setText(intiiiitullee);
+                    scrollView.setVisibility(View.VISIBLE);
                     text_watcher();
                     //dialog.dismiss();
                 }

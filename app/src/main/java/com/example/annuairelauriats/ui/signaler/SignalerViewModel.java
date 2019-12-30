@@ -182,15 +182,15 @@ public class SignalerViewModel extends ViewModel {
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
     }
-    private boolean isNomValid(String Nom) {
-        return Nom != null && Nom.trim().length() > 3;
-    }
     private boolean isNumtelValid(String tel){
         Matcher m = Pattern.compile("\\d{5,16}$", Pattern.CASE_INSENSITIVE).matcher(tel);
         return m.matches();
     }
 
 
+    private boolean isNomValid(String Nom) {
+        return Nom != null && Nom.trim().length() > 3;
+    }
     private boolean isSelectDropDownValid(long selcected_id){
         return selcected_id!=0;
     }
