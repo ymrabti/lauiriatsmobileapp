@@ -582,12 +582,21 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                     Toast.makeText(getActivity(),"positionner sur la carte svp!"
                             ,Toast.LENGTH_LONG).show();}
                 else{
-                    try {
-                        generate_sql();
-                    }
-                    catch(Exception exception){
-                        Toast.makeText(getActivity(),exception.toString(),Toast.LENGTH_LONG).show();
-                    }
+
+                    Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            if (response.length()!=0){
+                                usernameEditText.setError(getString(R.string.email_taken));
+                            }
+                            else{
+                                generate_sql();
+                            }
+                        }
+                    };
+                    connect_to_backend_array(getActivity(), Request.Method.GET
+                            ,"/laureat/email/"+usernameEditText.getText().toString(),null
+                            ,listener,null);
                     /*
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
