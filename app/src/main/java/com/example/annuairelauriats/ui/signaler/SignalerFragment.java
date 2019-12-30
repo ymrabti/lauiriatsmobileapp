@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -47,7 +48,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.home.Filiere;
+import com.example.annuairelauriats.ui.home.HomeFragment;
 import com.example.annuairelauriats.ui.register.RegisterActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -75,6 +78,7 @@ import static com.example.annuairelauriats.ui.home.Classtest.encodeImage;
 import static com.example.annuairelauriats.ui.home.Classtest.promotion_peuplement;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
+import static com.example.annuairelauriats.ui.home.Classtest.set0Pref;
 import static com.example.annuairelauriats.ui.home.Classtest.write_file_data;
 import static com.example.annuairelauriats.ui.home.HomeFragment.Orgedited;
 import static com.example.annuairelauriats.ui.home.HomeFragment.daaateee_deeebbuuuu;
@@ -104,10 +108,8 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
     private ScrollView scrollView;
 
     private String nom_laureat_static,prenom_laureat_static,numtel_laureat_static,promotion_laureat_static
-            ,base64_laureat_static,password_laureat_static,description_laureat_static
-            ,nomorgedit_laureat_static,secteurorg_laureat_static;
+            ,password_laureat_static,description_laureat_static;
     private int filiere_laureat_static,orgselected_laureat_static,checked_native;
-    private LatLng latitudelongitude;
     long checked_radio;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         signalerViewModel = ViewModelProviders.of(this).get(SignalerViewModel.class);
@@ -665,7 +667,6 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                     promotion_peuplement(getActivity()
                             ,prm , promotion);
                     base64TextView.setText("initialised from web");
-                    base64_laureat_static="initialised from web";
                     imageView.setImageBitmap(base64toImage(laureat.getString("photo")));
                     Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
                             .setTitle("Modifier vos informations");
@@ -831,6 +832,8 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         if (!email_connected.equals(usernameEditText.getText().toString())){
             sql_laureat.append(",email= ").append( "\"").append(usernameEditText.getText().toString()).append( "\"  ");
             modifications_laureat+=1;
+            email_connected = usernameEditText.getText().toString();
+            set0Pref(getActivity(),usernameEditText.getText().toString());
         }
         else{}
         if (!password_laureat_static.equals(passwordEditText.getText().toString())){
@@ -846,14 +849,23 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         sql_laureat.append(" WHERE email= ").append( "\"").append(email_connected).append( "\" ");
         sql_laureat.replace(19,20," ");
 
-        if (modifications_laureat!=0){}
-
-        ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData cData = ClipData.newPlainText("text", sql_laureat+"");
-        if (cManager != null) {
-            cManager.setPrimaryClip(cData);
-            Toast.makeText(getActivity(),"copied to clipboard",Toast.LENGTH_LONG).show();
+        if (modifications_laureat!=0){
+            ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData cData = ClipData.newPlainText("text", sql_laureat+"");
+            if (cManager != null) {
+                cManager.setPrimaryClip(cData);
+                Toast.makeText(getActivity(),"copied to clipboard",Toast.LENGTH_LONG).show();
+            }
+            else{}
         }
-        else{}
+        else{Toast.makeText(getActivity(),"nothing changed",Toast.LENGTH_LONG).show();}
+
+    }
+
+    private void save_edits(){
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+        fragmentTransaction.replace(R.id.nav_host_fragment, new HomeFragment());
+        fragmentTransaction.commit();
     }
 }
