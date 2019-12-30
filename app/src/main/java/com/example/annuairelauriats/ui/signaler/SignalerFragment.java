@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,6 +71,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
+import static com.example.annuairelauriats.ui.home.Classtest.encodeImage;
 import static com.example.annuairelauriats.ui.home.Classtest.promotion_peuplement;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
@@ -584,7 +586,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                     catch(Exception exception){
                         Toast.makeText(getActivity(),exception.toString(),Toast.LENGTH_LONG).show();
                     }
-/*
+                    /*
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     registerButton.setShadowLayer(45,10,10,R.color.colorPrimary);
@@ -720,46 +722,31 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                 null, listener, errorListener);
     }
     private void generate_sql(){
+        int modifications_laureat=0;
+        StringBuilder sql_laureat= new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
+        sql_laureat.append("UPDATE laureats SET");
         if (statut!=4){
-            int modifications=0;StringBuilder stringBuilder= new StringBuilder();
-            stringBuilder.append("text");
             if (!nom_laureat_static.equals(nomEditText.getText().toString())){
-                stringBuilder.append("nom  changed\n");
+                modifications_laureat+=1;
+                sql_laureat.append(" Nom= \"").append(nomEditText.getText().toString()).append( "\"  ");
             }
             else{}
-
             if (!prenom_laureat_static.equals(prenomEditText.getText().toString())){
-                stringBuilder.append("prenom  changed\n");
-
+                modifications_laureat+=1;
+                sql_laureat.append(",Prenom= \"").append(prenomEditText.getText().toString()).append( "\"  ");
             }
             else{}
-
             if (filiere_selected!=filiere_laureat_static){
-                stringBuilder.append("filiere  changed\n");}
+                sql_laureat.append(",Filiere= ").append(filiere_selected);
+                modifications_laureat+=1;
+            }
             else{}
-
             if (!promotion_laureat_static.equals(promotion.getSelectedItem().toString())){
-                stringBuilder.append("promotion  changed\n");}
+                sql_laureat.append(" ,Promotion= ").append(promotion.getSelectedItem().toString());
+                modifications_laureat+=1;
+            }
             else{}
-
-
-            if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){
-                stringBuilder.append("num tel  changed\n");}
-            else{}
-            if (!base64_laureat_static.equals("initialised from web")){
-                stringBuilder.append(" image changed\n");}
-            else{}
-            if (!email_connected.equals(usernameEditText.getText().toString())){
-                stringBuilder.append("email  changed\n");}
-            else{}
-            if (!password_laureat_static.equals(passwordEditText.getText().toString())){
-                stringBuilder.append("mdp  changed\n");}
-            else{}
-            if (!description_laureat_static.equals(description_laureat.getText().toString())){
-                stringBuilder.append("description  changed\n");}
-            else{}
-
-
             if (checked_radio==0){
                 if (checked_native==1){
 
@@ -793,15 +780,80 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
             if (!intiiiitullee.equals(intitule_fonction_avec_org.getText().toString())){
                 stringBuilder.append("intitule  changed\n");}
             else{}
-            ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData cData = ClipData.newPlainText("text",stringBuilder.toString()+" sql");
-            if (cManager != null) {
-                cManager.setPrimaryClip(cData);
-            }
-            else{}
-        }//Toast.makeText(getActivity(),"nothing changed",Toast.LENGTH_LONG).show();
-        else{
 
         }
+        else{
+            if (checked_radio==0){
+                if (checked_native==1){
+
+                }
+                else{
+                    if (orgselected_laureat_static!=organisation_selected){
+                        stringBuilder.append("org selected  changed\n");}
+                }
+            }
+            else{}
+            if (checked_radio==1){
+
+                if (checked_native==0){
+
+                }
+                else{
+                    if (!secteuuur.equals(organisation_secteur.getSelectedItem().toString())){
+                        stringBuilder.append("secteur  changed\n");}
+                    if (!Orgedited.equals(nouveau_org_nom.getText().toString())){
+                        stringBuilder.append("nom org  changed\n");}
+                    if (lat != laatloong.latitude && lon!=laatloong.longitude){
+
+                        stringBuilder.append("position  changed\n");
+                    }
+                }
+            }
+            else{}
+            if (!daaateee_deeebbuuuu.equals(date_debut_chez_org.getText().toString())){
+                stringBuilder.append("date debut  changed\n");}
+            else{}
+            if (!intiiiitullee.equals(intitule_fonction_avec_org.getText().toString())){
+                stringBuilder.append("intitule  changed\n");}
+            else{}
+        }
+        if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){
+            sql_laureat.append(",Telephone= \"").append(NumTeleEditText.getText().toString()).append( "\"  ");
+            modifications_laureat+=1;
+        }
+        else{}
+        if (!base64TextView.getText().toString().equals("initialised from web")){
+            Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+            sql_laureat.append(",photo= ").append( "\"").append(encodeImage(icon)).append( "\"  ");
+            modifications_laureat+=1;
+        }
+        else{}
+        if (!email_connected.equals(usernameEditText.getText().toString())){
+            sql_laureat.append(",email= ").append( "\"").append(usernameEditText.getText().toString()).append( "\"  ");
+            modifications_laureat+=1;
+        }
+        else{}
+        if (!password_laureat_static.equals(passwordEditText.getText().toString())){
+            sql_laureat.append(",Pass_word= ").append( "\"").append(passwordEditText.getText().toString()).append( "\"  ");
+            modifications_laureat+=1;
+        }
+        else{}
+        if (!description_laureat_static.equals(description_laureat.getText().toString())){
+            sql_laureat.append(",Description= ").append( "\"").append(description_laureat.getText().toString()).append( "\"  ");
+            modifications_laureat+=1;
+        }
+        else{}
+        sql_laureat.append(" WHERE email= ").append( "\"").append(email_connected).append( "\" ");
+        sql_laureat.replace(19,20," ");
+
+        if (modifications_laureat!=0){}
+
+        ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData cData = ClipData.newPlainText("text", sql_laureat+"");
+        if (cManager != null) {
+            cManager.setPrimaryClip(cData);
+            Toast.makeText(getActivity(),"copied to clipboard",Toast.LENGTH_LONG).show();
+        }
+        else{}
     }
 }
