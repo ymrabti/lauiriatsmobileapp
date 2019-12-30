@@ -51,7 +51,6 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.home.Filiere;
 import com.example.annuairelauriats.ui.home.HomeFragment;
-import com.example.annuairelauriats.ui.register.RegisterActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -72,6 +71,7 @@ import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend;
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.encodeImage;
@@ -723,142 +723,156 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                 null, listener, errorListener);
     }
     private void generate_sql(){
+        set0Pref(getActivity(),usernameEditText.getText().toString());
         int modifications_laureat=0;
         StringBuilder sql_laureat= new StringBuilder();
-        StringBuilder stringBuilder = new StringBuilder();
         sql_laureat.append("UPDATE laureats SET");
         if (statut!=4){
             if (!nom_laureat_static.equals(nomEditText.getText().toString())){
                 modifications_laureat+=1;
                 sql_laureat.append(" Nom= \"").append(nomEditText.getText().toString()).append( "\"  ");
             }
-            else{}
             if (!prenom_laureat_static.equals(prenomEditText.getText().toString())){
                 modifications_laureat+=1;
                 sql_laureat.append(",Prenom= \"").append(prenomEditText.getText().toString()).append( "\"  ");
             }
-            else{}
             if (filiere_selected!=filiere_laureat_static){
-                sql_laureat.append(",Filiere= ").append(filiere_selected);
+                sql_laureat.append(",Filiere= ").append(filiere_selected).append("  ");
                 modifications_laureat+=1;
             }
-            else{}
             if (!promotion_laureat_static.equals(promotion.getSelectedItem().toString())){
-                sql_laureat.append(" ,Promotion= ").append(promotion.getSelectedItem().toString());
+                sql_laureat.append(",Promotion= ").append(promotion.getSelectedItem().toString()).append(" ");
                 modifications_laureat+=1;
             }
-            else{}
-            if (checked_radio==0){
-                if (checked_native==1){
-
-                }
-                else{
-                    if (orgselected_laureat_static!=organisation_selected){
-                        stringBuilder.append("org selected  changed\n");}
-                }
-            }
-            else{}
-            if (checked_radio==1){
-
-                if (checked_native==0){
-
-                }
-                else{
-                    if (!secteuuur.equals(organisation_secteur.getSelectedItem().toString())){
-                        stringBuilder.append("secteur  changed\n");}
-                    if (!Orgedited.equals(nouveau_org_nom.getText().toString())){
-                        stringBuilder.append("nom org  changed\n");}
-                    if (lat != laatloong.latitude && lon!=laatloong.longitude){
-
-                        stringBuilder.append("position  changed\n");
-                    }
-                }
-            }
-            else{}
-            if (!daaateee_deeebbuuuu.equals(date_debut_chez_org.getText().toString())){
-                stringBuilder.append("date debut  changed\n");}
-            else{}
-            if (!intiiiitullee.equals(intitule_fonction_avec_org.getText().toString())){
-                stringBuilder.append("intitule  changed\n");}
-            else{}
-
-        }
-        else{
-            if (checked_radio==0){
-                if (checked_native==1){
-
-                }
-                else{
-                    if (orgselected_laureat_static!=organisation_selected){
-                        stringBuilder.append("org selected  changed\n");}
-                }
-            }
-            else{}
-            if (checked_radio==1){
-
-                if (checked_native==0){
-
-                }
-                else{
-                    if (!secteuuur.equals(organisation_secteur.getSelectedItem().toString())){
-                        stringBuilder.append("secteur  changed\n");}
-                    if (!Orgedited.equals(nouveau_org_nom.getText().toString())){
-                        stringBuilder.append("nom org  changed\n");}
-                    if (lat != laatloong.latitude && lon!=laatloong.longitude){
-
-                        stringBuilder.append("position  changed\n");
-                    }
-                }
-            }
-            else{}
-            if (!daaateee_deeebbuuuu.equals(date_debut_chez_org.getText().toString())){
-                stringBuilder.append("date debut  changed\n");}
-            else{}
-            if (!intiiiitullee.equals(intitule_fonction_avec_org.getText().toString())){
-                stringBuilder.append("intitule  changed\n");}
-            else{}
         }
         if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){
             sql_laureat.append(",Telephone= \"").append(NumTeleEditText.getText().toString()).append( "\"  ");
             modifications_laureat+=1;
         }
-        else{}
         if (!base64TextView.getText().toString().equals("initialised from web")){
             Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
             sql_laureat.append(",photo= ").append( "\"").append(encodeImage(icon)).append( "\"  ");
             modifications_laureat+=1;
         }
-        else{}
         if (!email_connected.equals(usernameEditText.getText().toString())){
             sql_laureat.append(",email= ").append( "\"").append(usernameEditText.getText().toString()).append( "\"  ");
             modifications_laureat+=1;
-            email_connected = usernameEditText.getText().toString();
-            set0Pref(getActivity(),usernameEditText.getText().toString());
+            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/"
+                            + "UPDATE laureat_org_association SET laureat=\""+usernameEditText.getText().toString()
+                            +"\" WHERE laureat=\""+email_connected
+                            +"\""
+                    , null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    },null);
+            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/"
+                            + "UPDATE organisme_en_attente SET laureat=\""+usernameEditText.getText().toString()
+                            +"\" WHERE laureat=\""+email_connected
+                            +"\""
+                    , null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    },null);
+            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/"
+                            + "UPDATE posts SET laureat=\""+usernameEditText.getText().toString()
+                            +"\" WHERE laureat=\""+email_connected
+                            +"\""
+                    , null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    },null);
+            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/"
+                            + "UPDATE laureat_statut SET id_laureat=\""+usernameEditText.getText().toString()
+                            +"\" WHERE id_laureat=\""+email_connected
+                            +"\""
+                    , null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    },null);
         }
-        else{}
         if (!password_laureat_static.equals(passwordEditText.getText().toString())){
             sql_laureat.append(",Pass_word= ").append( "\"").append(passwordEditText.getText().toString()).append( "\"  ");
             modifications_laureat+=1;
         }
-        else{}
         if (!description_laureat_static.equals(description_laureat.getText().toString())){
             sql_laureat.append(",Description= ").append( "\"").append(description_laureat.getText().toString()).append( "\"  ");
             modifications_laureat+=1;
         }
-        else{}
-        sql_laureat.append(" WHERE email= ").append( "\"").append(email_connected).append( "\" ");
-        sql_laureat.replace(19,20," ");
-
-        if (modifications_laureat!=0){
-            ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData cData = ClipData.newPlainText("text", sql_laureat+"");
-            if (cManager != null) {
-                cManager.setPrimaryClip(cData);
-                Toast.makeText(getActivity(),"copied to clipboard",Toast.LENGTH_LONG).show();
+        if (checked_radio==0){
+            sql_laureat.append(",org= ").append(organisation_selected).append(" ");
+            try {
+                JSONObject org_laureat_new = new JSONObject();
+                org_laureat_new.put("org",organisation_selected);
+                org_laureat_new.put("laureat",usernameEditText.getText().toString());
+                org_laureat_new.put("date_debut",date_debut_chez_org.getText().toString());
+                org_laureat_new.put("fonction",intitule_fonction_avec_org.getText().toString());
+                connect_to_backend(getActivity(),Request.Method.POST,"/laureat/new_row_org_laureat",org_laureat_new
+                        ,new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                            }
+                        }, null);
             }
-            else{}
+            catch (Exception e){e.printStackTrace();}
         }
-        else{Toast.makeText(getActivity(),"nothing changed",Toast.LENGTH_LONG).show();}
+        if (checked_radio==1){
+            sql_laureat.append(",org = 0 ");
+            try {
+                JSONObject new_org_attentente = new JSONObject();
+                new_org_attentente.put("Nom",nouveau_org_nom.getText().toString());
+                new_org_attentente.put("Latitude",lat);
+                new_org_attentente.put("Longitude",lon);
+                new_org_attentente.put("laureat",usernameEditText.getText().toString());
+                new_org_attentente.put("intitule",intitule_fonction_avec_org.getText().toString());
+                new_org_attentente.put("secteur",organisation_secteur.getSelectedItem().toString());
+                new_org_attentente.put("date_debut",date_debut_chez_org.getText().toString());
+
+                connect_to_backend(getActivity(),Request.Method.POST, "/autres/insert_org_attente", new_org_attentente
+                        , new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                            }
+                        },null);
+            }
+            catch (Exception e){e.printStackTrace();}
+        }
+        try {
+            JSONObject statut_laureat= new JSONObject();
+            statut_laureat.put("id_statut",3);
+            statut_laureat.put("motif","re-inscrit");
+            statut_laureat.put("id_laureat",usernameEditText.getText().toString());
+            connect_to_backend(getActivity(),Request.Method.POST,
+                    "/laureat/update_row_statut_laureat", statut_laureat
+                    , new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    },null);
+        }
+        catch (JSONException e) { e.printStackTrace(); }
+
+        sql_laureat.append(" WHERE email= ").append( "\"").append(email_connected).append("\" ");
+        sql_laureat.replace(19,20," ");
+        ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData cData = ClipData.newPlainText("text", sql_laureat+"");
+        if (cManager != null) {
+            cManager.setPrimaryClip(cData);
+            Toast.makeText(getActivity(),"copied to clipboard",Toast.LENGTH_LONG).show();
+        }
+        if (modifications_laureat!=0){
+            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/" + sql_laureat
+                    , null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    },null);
+        }
+        save_edits();
+        email_connected = usernameEditText.getText().toString();
 
     }
 

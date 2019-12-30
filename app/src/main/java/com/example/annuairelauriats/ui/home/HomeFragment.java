@@ -98,84 +98,86 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.popup_wait);
         dialog.setCancelable(false);
-        dialog.show();
+        dialog.show();Toast.makeText(getContext(),email_connected,Toast.LENGTH_LONG).show();
 
         final Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 try
                 {
-                    scrollView.setVisibility(View.VISIBLE);
-                    JSONObject laureat = response.getJSONObject(0);
-                    pdp_visit.setImageBitmap(base64toImage(laureat.getString("photo")));
-                    String nom_complet=laureat.getString("Nom")+" "+laureat.getString("Prenom");
-                    Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
-                            .setTitle(nom_complet);
-                    email.setText(laureat.getString("email"));
+                    if (response.length()!=0){
+                        scrollView.setVisibility(View.VISIBLE);
+                        JSONObject laureat = response.getJSONObject(response.length()-1);
+                        pdp_visit.setImageBitmap(base64toImage(laureat.getString("photo")));
+                        String nom_complet=laureat.getString("Nom")+" "+laureat.getString("Prenom");
+                        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                                .setTitle(nom_complet);
+                        email.setText(laureat.getString("email"));
 
-                    View headerLayout = navigationView.getHeaderView(0);
-                    CircleImageView image_main = headerLayout.findViewById(R.id.pdp_show);
-                    TextView nom_prenom = headerLayout.findViewById(R.id.usernameclc);
-                    TextView email = headerLayout.findViewById(R.id.email_top_navheader);
+                        View headerLayout = navigationView.getHeaderView(0);
+                        CircleImageView image_main = headerLayout.findViewById(R.id.pdp_show);
+                        TextView nom_prenom = headerLayout.findViewById(R.id.usernameclc);
+                        TextView email = headerLayout.findViewById(R.id.email_top_navheader);
 
-                    image_main.setImageBitmap(base64toImage(laureat.getString("photo")));
-                    nom_prenom.setText(nom_complet);email.setText(email_connected);
+                        image_main.setImageBitmap(base64toImage(laureat.getString("photo")));
+                        nom_prenom.setText(nom_complet);email.setText(email_connected);
 
-                    tel.setText(laureat.getString("Telephone"));
-                    promotion.setText(laureat.getInt("Promotion")+"");
-                    filiere.setText(laureat.getString("Nom_filiere"));
-                    statut=laureat.getInt("id_lesstatus");
-                    Menu menuNav=navigationView.getMenu();
-                    MenuItem nav_slideshow = menuNav.findItem(R.id.nav_slideshow);
-                    MenuItem nav_gallery = menuNav.findItem(R.id.nav_gallery);
-                    if (statut==4){
-                        nav_slideshow.setVisible(true);nav_gallery.setVisible(true);
-                    }
-                    statusise(laureat.getString("status"),laureat.getString("motif"));
-                    if (laureat.getInt("org")==0){
-                        orgnaisation_attente();
-                    }
-                    else{
-                        orgnaisation_(laureat.getInt("org"));
-                        JSONArray jsonArray = new JSONArray();
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("laureat",email_connected);
-                        jsonObject.put("org",laureat.getInt("org"));
-                        jsonArray.put(jsonObject);
-                        connect_to_backend_array(getActivity(), Request.Method.POST
-                                , "/autres/org_laureat", jsonArray, new Response.Listener<JSONArray>() {
-                                    @Override
-                                    public void onResponse(JSONArray response) {
-                                        if (response.length()!=0){
-                                            try {
-                                                JSONObject jsonObject1=response.getJSONObject(0);
-                                                daaateee_deeebbuuuu=jsonObject1.getString("date_debut").substring(0,10);
-                                                intiiiitullee=jsonObject1.getString("fonction");
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
+                        tel.setText(laureat.getString("Telephone"));
+                        promotion.setText(laureat.getInt("Promotion")+"");
+                        filiere.setText(laureat.getString("Nom_filiere"));
+                        statut=laureat.getInt("id_lesstatus");
+                        Menu menuNav=navigationView.getMenu();
+                        MenuItem nav_slideshow = menuNav.findItem(R.id.nav_slideshow);
+                        MenuItem nav_gallery = menuNav.findItem(R.id.nav_gallery);
+                        if (statut==4){
+                            nav_slideshow.setVisible(true);nav_gallery.setVisible(true);
+                        }
+                        statusise(laureat.getString("status"),laureat.getString("motif"));
+                        if (laureat.getInt("org")==0){
+                            orgnaisation_attente();
+                        }
+                        else{
+                            orgnaisation_(laureat.getInt("org"));
+                            JSONArray jsonArray = new JSONArray();
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("laureat",email_connected);
+                            jsonObject.put("org",laureat.getInt("org"));
+                            jsonArray.put(jsonObject);
+                            connect_to_backend_array(getActivity(), Request.Method.POST
+                                    , "/autres/org_laureat", jsonArray, new Response.Listener<JSONArray>() {
+                                        @Override
+                                        public void onResponse(JSONArray response) {
+                                            if (response.length()!=0){
+                                                try {
+                                                    JSONObject jsonObject1=response.getJSONObject(0);
+                                                    daaateee_deeebbuuuu=jsonObject1.getString("date_debut").substring(0,10);
+                                                    intiiiitullee=jsonObject1.getString("fonction");
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                    daaateee_deeebbuuuu="0000-00-00";
+                                                    intiiiitullee="koko";
+                                                }
+                                            }
+                                            else{
                                                 daaateee_deeebbuuuu="0000-00-00";
-                                                intiiiitullee="koko";
+                                                intiiiitullee="ici";
                                             }
                                         }
-                                        else{
-                                            daaateee_deeebbuuuu="0000-00-00";
-                                            intiiiitullee="ici";
-                                        }
-                                    }
-                                },null);
-                    }
-                    for (int i= 0;i<list_parcours.size();i++){
-                        etapes_parcours actuelle = list_parcours.get(i);
-                        if (actuelle.getType()==0){
-                            parcours(Color.argb(100,2,255,200)
-                                    ,actuelle.getDate_debut(),actuelle.getOrganisme(),actuelle.getFonction());
+                                    },null);
                         }
-                        else if (actuelle.getType()==1){
-                            parcours(Color.argb(100,187,83,84)
-                                    ,actuelle.getDate_debut(),actuelle.getOrganisme(),actuelle.getFonction());
+                        for (int i= 0;i<list_parcours.size();i++){
+                            etapes_parcours actuelle = list_parcours.get(i);
+                            if (actuelle.getType()==0){
+                                parcours(Color.argb(100,2,255,200)
+                                        ,actuelle.getDate_debut(),actuelle.getOrganisme(),actuelle.getFonction());
+                            }
+                            else if (actuelle.getType()==1){
+                                parcours(Color.argb(100,187,83,84)
+                                        ,actuelle.getDate_debut(),actuelle.getOrganisme(),actuelle.getFonction());
+                            }
                         }
+                        dialog.dismiss();
                     }
-                    dialog.dismiss();
                 }
                 catch (Exception e) {
                     e.printStackTrace();
