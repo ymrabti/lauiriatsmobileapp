@@ -8,6 +8,9 @@ import androidx.fragment.app.Fragment;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -70,6 +73,7 @@ import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.promotion_peuplement;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
+import static com.example.annuairelauriats.ui.home.Classtest.write_file_data;
 import static com.example.annuairelauriats.ui.home.HomeFragment.Orgedited;
 import static com.example.annuairelauriats.ui.home.HomeFragment.daaateee_deeebbuuuu;
 import static com.example.annuairelauriats.ui.home.HomeFragment.intiiiitullee;
@@ -575,45 +579,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                             ,Toast.LENGTH_LONG).show();}
                 else{
                     try {
-                        if (statut!=4){
-                            if (!nom_laureat_static.equals(nomEditText.getText().toString())){}
-                            if (!prenom_laureat_static.equals(prenomEditText.getText().toString())){}
-                            if (filiere_selected!=filiere_laureat_static){}
-                            if (!promotion_laureat_static.equals(promotion.getSelectedItem().toString())){}
-
-                            if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){}
-                            if (!base64_laureat_static.equals("initialised from web")){}
-                            if (!email_connected.equals(usernameEditText.getText().toString())){}
-                            if (!password_laureat_static.equals(passwordEditText.getText().toString())){}
-                            if (!description_laureat_static.equals(description_laureat.getText().toString())){}
-
-
-                            if (checked_radio==0){
-                                if (checked_native==1){
-
-                                }
-                                else{
-                                    if (orgselected_laureat_static!=organisation_selected){}
-                                }
-                            }
-                            if (checked_radio==1){
-
-                                if (checked_native==0){
-
-                                }
-                                else{
-                                    if (!secteuuur.equals(organisation_secteur.getSelectedItem().toString())){}
-                                    if (!Orgedited.equals(nouveau_org_nom.getText().toString())){}
-                                    if (lat != laatloong.latitude && lon!=laatloong.longitude){}
-                                }
-                            }
-                            if (!daaateee_deeebbuuuu.equals(date_debut_chez_org.getText().toString())){}
-                            if (!intiiiitullee.equals(intitule_fonction_avec_org.getText().toString())){}
-                            else{Toast.makeText(getActivity(),"nothing changed",Toast.LENGTH_LONG).show();}
-                        }
-                        else{
-
-                        }
+                        generate_sql();
                     }
                     catch(Exception exception){
                         Toast.makeText(getActivity(),exception.toString(),Toast.LENGTH_LONG).show();
@@ -752,5 +718,90 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         };
         connect_to_backend_array(getContext(), Request.Method.GET,  "/laureat/id/"+email_connected,
                 null, listener, errorListener);
+    }
+    private void generate_sql(){
+        if (statut!=4){
+            int modifications=0;StringBuilder stringBuilder= new StringBuilder();
+            stringBuilder.append("text");
+            if (!nom_laureat_static.equals(nomEditText.getText().toString())){
+                stringBuilder.append("nom  changed\n");
+            }
+            else{}
+
+            if (!prenom_laureat_static.equals(prenomEditText.getText().toString())){
+                stringBuilder.append("prenom  changed\n");
+
+            }
+            else{}
+
+            if (filiere_selected!=filiere_laureat_static){
+                stringBuilder.append("filiere  changed\n");}
+            else{}
+
+            if (!promotion_laureat_static.equals(promotion.getSelectedItem().toString())){
+                stringBuilder.append("promotion  changed\n");}
+            else{}
+
+
+            if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){
+                stringBuilder.append("num tel  changed\n");}
+            else{}
+            if (!base64_laureat_static.equals("initialised from web")){
+                stringBuilder.append(" image changed\n");}
+            else{}
+            if (!email_connected.equals(usernameEditText.getText().toString())){
+                stringBuilder.append("email  changed\n");}
+            else{}
+            if (!password_laureat_static.equals(passwordEditText.getText().toString())){
+                stringBuilder.append("mdp  changed\n");}
+            else{}
+            if (!description_laureat_static.equals(description_laureat.getText().toString())){
+                stringBuilder.append("description  changed\n");}
+            else{}
+
+
+            if (checked_radio==0){
+                if (checked_native==1){
+
+                }
+                else{
+                    if (orgselected_laureat_static!=organisation_selected){
+                        stringBuilder.append("org selected  changed\n");}
+                }
+            }
+            else{}
+            if (checked_radio==1){
+
+                if (checked_native==0){
+
+                }
+                else{
+                    if (!secteuuur.equals(organisation_secteur.getSelectedItem().toString())){
+                        stringBuilder.append("secteur  changed\n");}
+                    if (!Orgedited.equals(nouveau_org_nom.getText().toString())){
+                        stringBuilder.append("nom org  changed\n");}
+                    if (lat != laatloong.latitude && lon!=laatloong.longitude){
+
+                        stringBuilder.append("position  changed\n");
+                    }
+                }
+            }
+            else{}
+            if (!daaateee_deeebbuuuu.equals(date_debut_chez_org.getText().toString())){
+                stringBuilder.append("date debut  changed\n");}
+            else{}
+            if (!intiiiitullee.equals(intitule_fonction_avec_org.getText().toString())){
+                stringBuilder.append("intitule  changed\n");}
+            else{}
+            ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData cData = ClipData.newPlainText("text",stringBuilder.toString()+" sql");
+            if (cManager != null) {
+                cManager.setPrimaryClip(cData);
+            }
+            else{}
+        }//Toast.makeText(getActivity(),"nothing changed",Toast.LENGTH_LONG).show();
+        else{
+
+        }
     }
 }
