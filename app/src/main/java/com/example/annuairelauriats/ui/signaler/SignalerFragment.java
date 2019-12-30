@@ -78,7 +78,7 @@ import static com.example.annuairelauriats.ui.home.HomeFragment.secteuuur;
 
 public class SignalerFragment extends Fragment implements OnMapReadyCallback {
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-    private LatLng latLng_currennt;GoogleMap gmap;
+    private LatLng latLng_currennt;private GoogleMap gmap;
     private float zoom ;
     private Button top, bottom, right,left;
     private double lat, lon;
@@ -90,12 +90,17 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
     private Spinner promotion ,filiere ,organisation ,organisation_secteur ;
     private ImageView imageView ,pick_date_debut_pop_up ;
     private TextView base64TextView ,org_select ,secteur_select,parameter_filiere,parametre_promotion;
-    private RadioGroup radioOrgGroup ;private RadioButton org_deja,nvorg;
+    private RadioGroup radioOrgGroup ;private RadioButton org_deja,nvorg;private int organisation_selected;
     private Button registerButton ;private int filiere_selected;
     private ProgressBar loadingProgressBar ;RadioButton organis_selected_radio,organis_edited_radio;
     private ConstraintLayout constraintLayout ;
     private int year, month, day;
     private ScrollView scrollView;
+
+    private String nom_laureat_static,prenom_laureat_static,numtel_laureat_static,promotion_laureat_static
+            ,base64_laureat_static,password_laureat_static,description_laureat_static
+            ,nomorgedit_laureat_static,secteurorg_laureat_static;
+    private int filiere_laureat_static,orgselected_laureat_static,checked_native;
     long checked_radio;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         signalerViewModel = ViewModelProviders.of(this).get(SignalerViewModel.class);
@@ -111,8 +116,6 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         mapView.getMapAsync(this);
         finds(root);
         others();
-        //text_watcher();
-        promotion.setSelection(5);
         return root;
     }
     private void show_popup() {
@@ -498,6 +501,20 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
             public void onNothingSelected(AdapterView<?> parentView) {
             }
         });
+        /**/organisation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position!=0){
+                    organisation_selected=organs.get(position-1);
+                }
+                else{organisation_selected=0;}
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         pick_date_debut_pop_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -541,26 +558,62 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(RegisterActivity.getContextext(),"tous marche bien"
-                        ,Toast.LENGTH_LONG).show();
-                /*if (checked_radio==0 && !isSelectDropDownValid(organisation.getSelectedItemId())) {
-                    Toast.makeText(RegisterActivity.getContextext(),"selectionner une organisation svp!"
+                if (checked_radio==0 && !isSelectDropDownValid(organisation.getSelectedItemId())) {
+                    Toast.makeText(getActivity(),"selectionner une organisation svp!"
                             ,Toast.LENGTH_LONG).show();
                 }
                 else if (checked_radio==1  && !isNomValid(nouveau_org_nom.getText().toString() )){
-                    Toast.makeText(RegisterActivity.getContextext(),"veillez saisir le nom svp!"
+                    Toast.makeText(getActivity(),"veillez saisir le nom svp!"
                             ,Toast.LENGTH_LONG).show();
                 }
                 else if (checked_radio==1  && !isSelectDropDownValid(organisation_secteur.getSelectedItem().toString())){
-                    Toast.makeText(RegisterActivity.getContextext(),"selectionner un secteur svp!"
+                    Toast.makeText(getActivity(),"selectionner un secteur svp!"
                             ,Toast.LENGTH_LONG).show();}
                 else if (checked_radio==1  && lat==0 && lon==0){
-                    Toast.makeText(RegisterActivity.getContextext(),"positionner sur la carte svp!"
+                    Toast.makeText(getActivity(),"positionner sur la carte svp!"
                             ,Toast.LENGTH_LONG).show();}
                 else{
-                    Toast.makeText(RegisterActivity.getContextext(),"tous marche bien"
-                            ,Toast.LENGTH_LONG).show();
+                    try {
+                        if (statut!=4){
+                            if (!nom_laureat_static.equals(nomEditText.getText().toString())){}
+                            if (!prenom_laureat_static.equals(prenomEditText.getText().toString())){}
+                            if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){}
+                            if (filiere_selected!=filiere_laureat_static){}
+                            if (!promotion_laureat_static.equals(promotion.getSelectedItem().toString())){}
+                            if (!base64_laureat_static.equals("initialised from web")){}
+                            if (!email_connected.equals(usernameEditText.getText().toString())){}
+                            if (!password_laureat_static.equals(passwordEditText.getText().toString())){}
+                            if (checked_radio==0){
+                                if (checked_native==1){
 
+                                }
+                                else{
+                                    if (orgselected_laureat_static!=organisation_selected){}
+                                }
+                            }
+                            if (checked_radio==1){
+
+                                if (checked_native==0){
+
+                                }
+                                else{
+                                    /*if (!nomorgedit_laureat_static.equals(Orgedited)){}
+                                    if (!secteurorg_laureat_static.equals(secteuuur)){}
+                                    if (lat != laatloong.latitude && lon!=laatloong.longitude){}*/
+                                }
+                            }
+                            if (!daaateee_deeebbuuuu.equals(date_debut_chez_org.getText().toString())){}
+                            if (!intiiiitullee.equals(intitule_fonction_avec_org.getText().toString())){}
+                            else{Toast.makeText(getActivity(),"nothing changed",Toast.LENGTH_LONG).show();}
+                        }
+                        else{
+
+                        }
+                    }
+                    catch(Exception exception){
+                        Toast.makeText(getActivity(),exception.toString(),Toast.LENGTH_LONG).show();
+                    }
+/*
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     registerButton.setShadowLayer(45,10,10,R.color.colorPrimary);
@@ -580,12 +633,11 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                         organisation_secteur.getSelectedItem().toString() + "",
                         intitule_fonction_avec_org.getText().toString() + "",
                         date_debut_chez_org.getText().toString() + "",
-                        description_laureat.getText().toString() + "",checked_radio,lat,lon);
-                }*/
+                        description_laureat.getText().toString() + "",checked_radio,lat,lon);*/
+                }
             }
         });
     }
-
     private boolean isNomValid(String Nom) {
         return Nom != null && Nom.trim().length() > 3;
     }
@@ -623,20 +675,32 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                 {
                     JSONObject laureat = response.getJSONObject(0);
                     nomEditText.setText(laureat.getString("Nom"));
+                    nom_laureat_static=laureat.getString("Nom");
+
                     prenomEditText.setText(laureat.getString("Prenom"));
+                    prenom_laureat_static=laureat.getString("Prenom");
+
                     NumTeleEditText.setText(laureat.getString("Telephone"));
+                    numtel_laureat_static=laureat.getString("Telephone");
+
+
                     filiere.setSelection(getpositionfromId(laureat.getInt("Filiere")));
+                    filiere_laureat_static=laureat.getInt("Filiere");
                     int prm=dates.get(getpositionfromId(laureat.getInt("Filiere"))-1).getPrimier_promo()
                             ,promo= laureat.getInt("Promotion");
+                    promotion_laureat_static=laureat.getInt("Promotion")+"";
                     promotion_peuplement(getActivity()
                             ,prm , promotion);
                     base64TextView.setText("initialised from web");
+                    base64_laureat_static="initialised from web";
                     imageView.setImageBitmap(base64toImage(laureat.getString("photo")));
                     Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
                             .setTitle("Modifier vos informations");
                     usernameEditText.setText(laureat.getString("email"));
                     passwordEditText.setText(laureat.getString("Pass_word"));
+                    password_laureat_static=laureat.getString("Pass_word");
                     description_laureat.setText(laureat.getString("Description"));
+                    description_laureat_static=laureat.getString("Description");
                     statut=laureat.getInt("id_lesstatus");
                     if (statut==4){
                         nomEditText.setVisibility(View.GONE);prenomEditText.setVisibility(View.GONE);
@@ -645,6 +709,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                         parametre_promotion.setVisibility(View.GONE);
                     }
                     promotion.setSelection(promo-prm+1);
+                    orgselected_laureat_static=laureat.getInt("org");
                     if (laureat.getInt("org")==0){
                         organis_edited_radio.setChecked(true);organis_selected_radio.setChecked(false);
                         nouveau_org_nom.setText(Orgedited);
@@ -653,13 +718,15 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                         else {organisation_secteur.setSelection(0);}
 
                         MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(laatloong);checked_radio=1;
+                        markerOptions.position(laatloong);checked_radio=1;checked_native=1;
                         gmap.addMarker(markerOptions);
                         gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(laatloong, 12.0f));
+                        lat=laatloong.latitude;lon=laatloong.longitude;
                     }
                     else{
                         organis_selected_radio.setChecked(true);organis_edited_radio.setChecked(false);
-                        organisation.setSelection(getpositionfromIdOrg(laureat.getInt("org")));checked_radio=0;
+                        organisation.setSelection(getpositionfromIdOrg(laureat.getInt("org")));
+                        checked_radio=0;checked_native=0;
                     }
                     date_debut_chez_org.setText(daaateee_deeebbuuuu);
                     intitule_fonction_avec_org.setText(intiiiitullee);
