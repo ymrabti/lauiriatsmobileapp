@@ -26,6 +26,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Html;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -212,12 +214,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         requestQueue.add(jsonArrayRequest);
     }
     private void parcours(){
-        RelativeLayout mRlayout = getView().findViewById(R.id.parcours_professionnelle);
-        RelativeLayout.LayoutParams mRparams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        TextView myEditText = new TextView(getContext());
-        myEditText.setLayoutParams(mRparams);myEditText.setText("test test");
-        mRlayout.addView(myEditText);
+        LinearLayout linearLayout = getView().findViewById(R.id.parcours_professionnelle);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        linearLayout.setLayoutParams(layoutParams);
+        linearLayout.setGravity(Gravity.CENTER);
+
+        TextView editText = new TextView (getContext());
+        editText .setTextSize(18);
+        editText .setLayoutParams(layoutParams);
+        editText .setText(Html.fromHtml("message"));
+        editText.setTextColor(Color.argb(100,128,128,128));
+        linearLayout.addView(editText );
     }
     @Override public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
