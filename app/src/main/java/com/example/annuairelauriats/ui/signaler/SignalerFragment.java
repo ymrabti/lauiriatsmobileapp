@@ -541,7 +541,9 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checked_radio==0 && !isSelectDropDownValid(organisation.getSelectedItemId())) {
+                Toast.makeText(RegisterActivity.getContextext(),"tous marche bien"
+                        ,Toast.LENGTH_LONG).show();
+                /*if (checked_radio==0 && !isSelectDropDownValid(organisation.getSelectedItemId())) {
                     Toast.makeText(RegisterActivity.getContextext(),"selectionner une organisation svp!"
                             ,Toast.LENGTH_LONG).show();
                 }
@@ -558,7 +560,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                 else{
                     Toast.makeText(RegisterActivity.getContextext(),"tous marche bien"
                             ,Toast.LENGTH_LONG).show();
-                    /*
+
                     loadingProgressBar.setVisibility(View.VISIBLE);
                     Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     registerButton.setShadowLayer(45,10,10,R.color.colorPrimary);
@@ -578,8 +580,8 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                         organisation_secteur.getSelectedItem().toString() + "",
                         intitule_fonction_avec_org.getText().toString() + "",
                         date_debut_chez_org.getText().toString() + "",
-                        description_laureat.getText().toString() + "",checked_radio,lat,lon);*/
-                }
+                        description_laureat.getText().toString() + "",checked_radio,lat,lon);
+                }*/
             }
         });
     }
