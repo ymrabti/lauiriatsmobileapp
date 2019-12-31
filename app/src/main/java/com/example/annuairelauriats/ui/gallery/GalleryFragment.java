@@ -1,35 +1,74 @@
 package com.example.annuairelauriats.ui.gallery;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
+import com.example.annuairelauriats.ui.aide.HelpFragment;
+import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
+import com.example.annuairelauriats.ui.tools.ToolsFragment;
 
-public class GalleryFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.Objects;
+import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
+import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
+import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
 
-    private GalleryViewModel galleryViewModel;
+public class GalleryFragment extends Fragment{
+    static private ListView malist;public static ArrayList<Laureat> laureats_list;
+    private static Context context;
+    private static FragmentTransaction fragmentTransaction;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        galleryViewModel =
-                ViewModelProviders.of(this).get(GalleryViewModel.class);
+    @SuppressLint("SetTextI18n")
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        final TextView textView = root.findViewById(R.id.text_gallery);
-        galleryViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        malist = root.findViewById(R.id.list_laureat);context=getActivity();
+        setHasOptionsMenu(true);
+        assert getFragmentManager() != null;
+        fragmentTransaction = getFragmentManager().beginTransaction();
+
+        long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
+        String promo = get_filter_pref_string(getActivity(), "promotion");
+        String secteur ;long org;
+        malist.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Laureat laureat = laureats_list.get(position);
+                        //id_selected = laureat.getId();
+                        assert getFragmentManager() != null;
+                        Fragment fragment = new ToolsFragment();
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
+                        fragmentTransaction.commit();
+                    }}
+        );
         return root;
+    }
+    @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.findItem(R.id.action_filter_new).setVisible(true);
+        menu.findItem(R.id.action_goto_map).setVisible(true);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    public static void popup(){
+        ShowPopupfilter(context,malist,null,1);
+    }
+    public static void to_map(){
+        fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+        fragmentTransaction.replace(R.id.nav_host_fragment, new SlideshowFragment());
+        fragmentTransaction.commit();
+        MainActivity.navigationView.setCheckedItem(R.id.nav_slideshow);
     }
 }

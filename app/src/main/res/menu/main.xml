@@ -2,13 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_filter_new"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/appliquer_nouveau_filtre"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_zero"
+        android:id="@+id/action_filter_new_map"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/appliquer_nouveau_filtre"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_goto_map"
+        android:orderInCategory="100"
+        android:title="@string/afficher_dans_carte"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_goto_liste"
+        android:orderInCategory="100"
+        android:title="@string/afficher_dans_liste"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_edit_profile"
+        android:orderInCategory="100"
+        android:title="@string/modifier_votre_profile"
         app:showAsAction="never" />
 </menu>

@@ -1,47 +1,51 @@
 package com.example.annuairelauriats.ui.login;
 
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import android.util.Patterns;
+import android.content.Intent;
+import android.view.View;
+import android.widget.Toast;
 
-import com.example.annuairelauriats.data.LoginRepository;
-import com.example.annuairelauriats.data.Result;
-import com.example.annuairelauriats.data.model.LoggedInUser;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
+import static com.example.annuairelauriats.ui.home.Classtest.set0Pref;
+import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
+import static com.example.annuairelauriats.ui.login.LoginActivity.loadingProgressBar;
 
 public class LoginViewModel extends ViewModel {
 
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
-
-    LoginViewModel(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+    LiveData<LoginFormState> getLoginFormState() { return loginFormState; }
+    public void login(final String username, final String password) {
+        Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response.length()==0){
+                    loginFormState.setValue(new LoginFormState(R.string.invalid_doesnotexist, null));
+                }
+                else{ authen(username,password);}
+            }
+        };
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        };
+        connect_to_backend_array(LoginActivity.getContexte(),Request.Method.GET,  "/laureat/email/"+username,
+                null, listener, errorListener);
     }
 
-    LiveData<LoginFormState> getLoginFormState() {
-        return loginFormState;
-    }
-
-    LiveData<LoginResult> getLoginResult() {
-        return loginResult;
-    }
-
-    public void login(String username, String password) {
-        // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
-
-        if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
-        } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
-        }
-    }
-
-    public void loginDataChanged(String username, String password) {
+    void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
@@ -50,21 +54,42 @@ public class LoginViewModel extends ViewModel {
             loginFormState.setValue(new LoginFormState(true));
         }
     }
-
-    // A placeholder username validation check
     private boolean isUserNameValid(String username) {
-        if (username == null) {
-            return false;
-        }
-        if (username.contains("@")) {
-            return Patterns.EMAIL_ADDRESS.matcher(username).matches();
-        } else {
-            return !username.trim().isEmpty();
-        }
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
     }
-
-    // A placeholder password validation check
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
+    }
+    private void authen(final String email, String password){
+        try{
+            JSONObject passmail = new JSONObject();
+            passmail.put("email",email);passmail.put("password",password);
+            JSONArray jsonArray = new JSONArray();jsonArray.put(passmail);
+
+            Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    if (response.length()==0){
+                        loginFormState.setValue(new LoginFormState(null, R.string.wrong_password));
+                    }
+                    else{
+                        email_connected = email;
+                        loadingProgressBar.setVisibility(View.GONE);
+                        set0Pref(LoginActivity.getContexte(),email);
+                        Toast.makeText(LoginActivity.getContexte(),"success!!",Toast.LENGTH_LONG).show();
+                        LoginActivity.getContexte().startActivity(new Intent(LoginActivity.getContexte(), MainActivity.class));
+                    }
+                }
+            };
+            Response.ErrorListener errorListener  = new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(LoginActivity.getContexte(),error.toString(),Toast.LENGTH_LONG).show();
+                }
+            };
+            connect_to_backend_array(LoginActivity.getContexte(),Request.Method.POST, "/laureat/authentifie",
+                    jsonArray, listener, errorListener);
+
+        }catch (Exception e){Toast.makeText(LoginActivity.getContexte(),e.toString(),Toast.LENGTH_LONG).show();}
     }
 }

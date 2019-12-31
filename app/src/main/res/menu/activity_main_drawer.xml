@@ -11,13 +11,16 @@
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/filter"
+            android:visible="false"
             android:title="@string/menu_gallery" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/map"
+            android:visible="false"
             android:title="@string/menu_slideshow" />
         <item
             android:id="@+id/nav_tools"
+            android:visible="false"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/menu_tools" />
     </group>
@@ -26,6 +29,7 @@
         <menu>
             <item
                 android:id="@+id/nav_proposnous"
+                android:visible="false"
                 android:icon="@drawable/infos"
                 android:title="@string/menu_propos" />
             <item
@@ -34,16 +38,18 @@
                 android:title="@string/menu_standards" />
             <item
                 android:id="@+id/nav_aide"
+                android:visible="false"
                 android:icon="@drawable/help"
                 android:title="@string/menu_help" />
             <item
                 android:id="@+id/nav_signaler"
+                android:visible="false"
                 android:icon="@drawable/about"
                 android:title="@string/menu_Signaler" />
         </menu>
     </item>
 
-    <item android:title="@string/communicate">
+    <item android:title="@string/app_options">
         <menu>
             <item
                 android:id="@+id/nav_share"
@@ -51,7 +57,7 @@
                 android:title="@string/menu_share" />
             <item
                 android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/logout"
                 android:title="@string/menu_send" />
         </menu>
     </item>
