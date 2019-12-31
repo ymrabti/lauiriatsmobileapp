@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -80,10 +81,13 @@ public class Classtest  extends AppCompatActivity {
     public static int portBackend=3000;
     public static String ip_serverIP="192.168.137.1",ip_server="http://"+ip_serverIP+":"+portBackend,email_connected;
 
+    public static Dialog dialog_universelle;
     public static String sql="SELECT laureats.*,filieres.Nom as Nom_filiere,les_status.nom as status,motif,les_status.id_lesstatus,organisme.secteur,organisme.province ,organisme.Latitude,organisme.Longitude"
             +" FROM  laureats,filieres,les_status ,laureat_statut,organisme"
             +" WHERE laureats.Filiere=filieres.id_filieres and laureats.org=organisme.id_org"
-            +" and laureats.email=laureat_statut.id_laureat and laureat_statut.id_statut=les_status.id_lesstatus ";
+            +" and laureats.email=laureat_statut.id_laureat and laureat_statut.id_statut=les_status.id_lesstatus "
+    ,province_shared="SELECTIONNER",shared_secteur= "SELECTIONNER";
+    public static int shared_org,shared_promotion,shared_filiere;
     @SuppressLint("StaticFieldLeak")
     public static void promotion_peuplement(Context context,int premier,Spinner spinner) throws Exception {
         ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
@@ -184,6 +188,11 @@ public class Classtest  extends AppCompatActivity {
         };
         connect_to_backend_array(context,Request.Method.GET,  "/autres/provinces",
                 null, province_listener, null);
+        try {
+
+            promotion_peuplement(context, 1973, findbypromotion);
+        }
+        catch (Exception exc){exc.printStackTrace();}
 
 
 
@@ -191,7 +200,7 @@ public class Classtest  extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 try {if (position==0){
-                    promotion_peuplement(context, Calendar.getInstance().get(Calendar.YEAR)+2, findbypromotion);
+                    promotion_peuplement(context, 1973, findbypromotion);
                 }
                 else {
                     filiere_selected[0] =dates.get(position-1).get_Id();
@@ -281,23 +290,56 @@ public class Classtest  extends AppCompatActivity {
                         if (mark==0){
                             show_laureats_on_map(context,stringBuilder.toString(),googleMap);
                         }
+                        set_filter_pref(context,findbysecteur.getSelectedItemId()
+                                ,findbyprovince.getSelectedItemId(),findbyorganisation.getSelectedItemId()
+                                ,findbyfiliere.getSelectedItemId(),findbypromotion.getSelectedItemId());
 
                         dialogFilter.dismiss();
                     }
                 }
         );
         dialogFilter.setCancelable(false);
+
+
+        CountDownTimer countDownTimer = new CountDownTimer(1000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                long position_org = get_filter_pref_long(context,"organisation")
+                        , position_secteur=get_filter_pref_long(context,"sector")
+                        ,position_province=get_filter_pref_long(context,"province")
+                        ,position_filiere=get_filter_pref_long(context,"branch")
+                        ,position_promotion=get_filter_pref_long(context,"promotion");
+//setclipboard(position_filiere+"  "+position_org+"   "+position_promotion+"  "+position_secteur+"  "+position_province,context);
+
+                if (position_org!=0){
+                    findbyorganisation.setSelection((int)position_org);
+                }
+                else {
+                    findbysecteur.setSelection((int)position_secteur);findbyprovince.setSelection((int)position_province);
+                }
+                findbyfiliere.setSelection((int)position_filiere);findbypromotion.setSelection((int)position_promotion);
+            }
+        };countDownTimer.start();
         dialogFilter.show();
     }
     public static void show_laureats_on_list(final Context context, String sql_parameter, final ListView listView){
+        dialog_universelle = new Dialog(context);
+        dialog_universelle.setContentView(R.layout.popup_wait);
+        dialog_universelle.setCancelable(false);
+        dialog_universelle.show();
         connect_to_backend_array(context, Request.Method.GET, "/autres/requestAny/" + sql_parameter
                 , null
                 , new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        laureats_list = new ArrayList<>();
                         if (response.length()!=0){
                             try {
-                                laureats_list = new ArrayList<>();
                                 for (int i=0;i<response.length();i++){
                                     JSONObject laureat_courant = response.getJSONObject(i);
                                     Laureat laureat_to_add = new Laureat(0,laureat_courant.getString("photo")+" ",
@@ -310,9 +352,10 @@ public class Classtest  extends AppCompatActivity {
                                 setclipboard("error :"+er.toString(),context);
                                 Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
                             }
-                            LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
-                            listView.setAdapter(adaptateur);
                         }
+                        LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
+                        listView.setAdapter(adaptateur);
+                        dialog_universelle.dismiss();
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -324,14 +367,18 @@ public class Classtest  extends AppCompatActivity {
     public static void show_laureats_on_map(final Context context, String sql_parameter, final GoogleMap gmap){
         String new_sql = "SELECT org,Latitude,Longitude,count(*) as Nombre from ("+sql_parameter+") AS laureats_selection " +
                 "GROUP BY org,Latitude,Longitude";
+        dialog_universelle = new Dialog(context);
+        dialog_universelle.setContentView(R.layout.popup_wait);
+        dialog_universelle.setCancelable(false);
+        dialog_universelle.show();
         connect_to_backend_array(context, Request.Method.GET, "/autres/requestAny/" + new_sql
                 , null
                 , new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        gmap.clear();
                         if (response.length()!=0){
                             try {
-                                gmap.clear();
                                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                                 for (int i=0;i<response.length();i++){
                                     JSONObject organisation_courant = response.getJSONObject(i);
@@ -358,6 +405,7 @@ public class Classtest  extends AppCompatActivity {
                                 Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
                             }
                         }
+                        dialog_universelle.dismiss();
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -447,13 +495,12 @@ public class Classtest  extends AppCompatActivity {
         new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         return new_bitmap;
     }
-    public static void set_filter_pref(Context context,String secteur,String promo,long filieree,long org){
+    public static void set_filter_pref(Context context,long sector,long province,long org,long branch,long promotion){
         SharedPreferences sharedPreferences = context.getSharedPreferences("filter", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("sector",secteur);
-        editor.putString("promotion",promo);
-        editor.putLong("branch",filieree);
+        editor.putLong("sector",sector);editor.putLong("province",province);
         editor.putLong("organisation",org);
+        editor.putLong("promotion",promotion);editor.putLong("branch",branch);
         editor.apply();
     }
     public static long get_filter_pref_long(Context context,String key){
@@ -475,7 +522,7 @@ public class Classtest  extends AppCompatActivity {
     }
 
 
-    private static void setclipboard(String message,Context context){
+    public static void setclipboard(String message,Context context){
         ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(context).getSystemService(
                 Context.CLIPBOARD_SERVICE);
         ClipData cData = ClipData.newPlainText("text", message+"");

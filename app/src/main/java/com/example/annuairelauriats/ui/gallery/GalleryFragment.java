@@ -2,6 +2,7 @@ package com.example.annuairelauriats.ui.gallery;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,10 +24,8 @@ import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
 import com.example.annuairelauriats.ui.tools.ToolsFragment;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
-import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
-import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
+import static com.example.annuairelauriats.ui.home.Classtest.setclipboard;
 import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_list;
 import static com.example.annuairelauriats.ui.home.Classtest.sql;
 
@@ -42,11 +42,19 @@ public class GalleryFragment extends Fragment{
         assert getFragmentManager() != null;
         fragmentTransaction = getFragmentManager().beginTransaction();
 
-        long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
-        String promo = get_filter_pref_string(getActivity(), "promotion");
-        String secteur ;long org;
 
+
+        try {
+            Bundle bundle = getActivity().getIntent().getExtras();
+            long org= bundle.getLong("organisation");
+            Toast.makeText(getActivity(),org+"",Toast.LENGTH_LONG).show();
+        }
+        catch (Exception e){
+            setclipboard(e.getMessage(),getActivity());
+        }
         show_laureats_on_list(getActivity(),sql,malist);
+
+
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
