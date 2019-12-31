@@ -26,6 +26,8 @@ import java.util.Objects;
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
+import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_list;
+import static com.example.annuairelauriats.ui.home.Classtest.sql;
 
 public class GalleryFragment extends Fragment{
     static private ListView malist;public static ArrayList<Laureat> laureats_list;
@@ -43,6 +45,8 @@ public class GalleryFragment extends Fragment{
         long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
         String promo = get_filter_pref_string(getActivity(), "promotion");
         String secteur ;long org;
+
+        show_laureats_on_list(getActivity(),sql,malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

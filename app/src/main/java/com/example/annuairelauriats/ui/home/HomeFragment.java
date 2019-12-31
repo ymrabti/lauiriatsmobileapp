@@ -98,7 +98,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.popup_wait);
         dialog.setCancelable(false);
-        dialog.show();Toast.makeText(getContext(),email_connected,Toast.LENGTH_LONG).show();
+        dialog.show();
 
         final Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
             @Override

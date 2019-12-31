@@ -19,6 +19,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
+import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_map;
+import static com.example.annuairelauriats.ui.home.Classtest.sql;
 
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;
@@ -40,6 +42,7 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         mapView = root.findViewById(R.id.map_view) ;
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
+        show_laureats_on_map(getActivity(),sql,gmap);
 
         return root;
     }
