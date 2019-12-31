@@ -263,7 +263,28 @@ public class Classtest  extends AppCompatActivity {
                                 , new Response.Listener<JSONArray>() {
                                     @Override
                                     public void onResponse(JSONArray response) {
-                                        setclipboard("response :"+response.toString(),context);
+if (response.length()!=0){
+    if (mark==1){
+        laureats_list = new ArrayList<>();JSONObject laureat_courant = new JSONObject();
+        try {
+            for (int i=0;i<response.length();i++){
+                Laureat laureat_to_add = new Laureat(0,laureat_courant.getString("photo")+" ",
+                        laureat_courant.getString("Nom")+" "+laureat_courant.getString("Prenom"),
+                        laureat_courant.getString("email")+"", laureat_courant.getString("Description")+"");
+                laureats_list.add(laureat_to_add);
+            }
+        }
+        catch (Exception er){
+
+        }
+        LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
+        listView.setAdapter(adaptateur);
+    }
+    else{
+
+    }
+}
+            setclipboard("response :"+response.toString(),context);
                                     }
                                 }, new Response.ErrorListener() {
                                     @Override
