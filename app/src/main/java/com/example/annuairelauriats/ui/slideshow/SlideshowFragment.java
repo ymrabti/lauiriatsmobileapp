@@ -6,8 +6,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,22 +14,11 @@ import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.gallery.GalleryFragment;
-import com.example.annuairelauriats.ui.home.Classtest;
-import com.example.annuairelauriats.ui.tools.ToolsFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.Objects;
-
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
-import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
-import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
-import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
-import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_map;
 
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;

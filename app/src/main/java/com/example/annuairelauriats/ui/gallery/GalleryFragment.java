@@ -9,12 +9,9 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -23,19 +20,12 @@ import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
 import com.example.annuairelauriats.ui.tools.ToolsFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Objects;
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
-import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
 import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
-import static com.example.annuairelauriats.ui.home.Classtest.organismes;
-import static com.example.annuairelauriats.ui.home.Classtest.peupler_array_list;
-import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
 
 public class GalleryFragment extends Fragment{
     static private ListView malist;public static ArrayList<Laureat> laureats_list;
@@ -53,25 +43,11 @@ public class GalleryFragment extends Fragment{
         long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
         String promo = get_filter_pref_string(getActivity(), "promotion");
         String secteur ;long org;
-        try {
-            assert getArguments() != null;
-            org =getArguments().getLong("organisation");secteur="TOUT";
-            JSONObject jsonObject= getJsonObjectBycle(getActivity(),"id",org,organismes);
-            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
-                    .setTitle(jsonObject.getString("org"));
-        }
-        catch(Exception e){
-            org = get_filter_pref_long(getActivity(), "organisation");
-            secteur= get_filter_pref_string(getActivity(), "sector");
-            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
-                    .setTitle("Liste des Laureats");
-        }
-        peupler_array_list(getActivity(), filiere, promo,"TOUT", org, secteur,malist);
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Laureat laureat = laureats_list.get(position);
-                        id_selected = laureat.getId();
+                        //id_selected = laureat.getId();
                         assert getFragmentManager() != null;
                         Fragment fragment = new ToolsFragment();
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

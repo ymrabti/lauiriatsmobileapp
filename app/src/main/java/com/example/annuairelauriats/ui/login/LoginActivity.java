@@ -1,17 +1,21 @@
 package com.example.annuairelauriats.ui.login;
 
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.CountDownTimer;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -24,6 +28,9 @@ import android.widget.TextView;
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.register.RegisterActivity;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.get0Pref;
@@ -105,7 +112,37 @@ private static Context context ;
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);}
     }
+    public static String getUniqueIMEIId(Context context) {
+        try {
 
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String imei;
+
+            if (ContextCompat.checkSelfPermission(context
+                    , android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    imei =  telephonyManager.getImei();
+                } else {
+                    imei = telephonyManager.getDeviceId();
+                }
+
+                if (imei != null && !imei.isEmpty()) {
+                    return imei;
+                } else {
+                    return android.os.Build.SERIAL;
+                }
+            }
+
+        } catch (Exception e) {
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            return e.toString();
+//e.printStackTrace();
+        }
+
+        return "not_found";
+    }
     public static Context getContexte() {
         return context;
     }

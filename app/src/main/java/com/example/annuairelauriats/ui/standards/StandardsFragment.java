@@ -1,30 +1,19 @@
 package com.example.annuairelauriats.ui.standards;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,47 +21,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.annuairelauriats.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 
 import static android.app.Activity.RESULT_OK;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_serverIP;
 import static com.example.annuairelauriats.ui.home.Classtest.portBackend;
-import static com.example.annuairelauriats.ui.home.Classtest.write_file_data;
-import static java.lang.Math.random;
-import static java.lang.Math.round;
+import static com.example.annuairelauriats.ui.login.LoginActivity.getUniqueIMEIId;
 
 public class StandardsFragment extends Fragment {
     private TextView result_http_client,textView;private VideoView videoView;private EditText url;
@@ -102,10 +69,6 @@ public class StandardsFragment extends Fragment {
         });
         Button but_connect = root.findViewById(R.id.buttonSend);
 
-
-
-
-
         //result_http_client.append(connexion+" con");
         /*if (!connexion){
             CountDownTimer countDownTimer = new CountDownTimer(5000,500) {
@@ -126,7 +89,7 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
         try {
-            isPortOpen();
+            result_http_client.setText(getUniqueIMEIId(getActivity()));
         } catch (Exception e) {
             e.printStackTrace();
             result_http_client.append("ici"+e.toString());

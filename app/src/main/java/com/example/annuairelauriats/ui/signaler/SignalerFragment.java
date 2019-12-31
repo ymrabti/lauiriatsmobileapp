@@ -79,7 +79,6 @@ import static com.example.annuairelauriats.ui.home.Classtest.promotion_peuplemen
 import static com.example.annuairelauriats.ui.home.Classtest.resize_bitmap;
 import static com.example.annuairelauriats.ui.home.Classtest.resize_drawable;
 import static com.example.annuairelauriats.ui.home.Classtest.set0Pref;
-import static com.example.annuairelauriats.ui.home.Classtest.write_file_data;
 import static com.example.annuairelauriats.ui.home.HomeFragment.Orgedited;
 import static com.example.annuairelauriats.ui.home.HomeFragment.daaateee_deeebbuuuu;
 import static com.example.annuairelauriats.ui.home.HomeFragment.intiiiitullee;
@@ -584,10 +583,23 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                 else{
 
                     Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
-                        @Override
-                        public void onResponse(JSONArray response) {
+                        @Override public void onResponse(JSONArray response) {
                             if (response.length()!=0){
-                                usernameEditText.setError(getString(R.string.email_taken));
+                                try {
+                                    if (response.getJSONObject(0).getString("email").equals(email_connected))
+                                    {
+                                        generate_sql();
+                                    }
+                                    else
+                                    {
+                                        usernameEditText.setError(getString(R.string.email_taken));
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                    usernameEditText.setError(getString(R.string.email_taken));
+                                }
                             }
                             else{
                                 generate_sql();
