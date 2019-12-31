@@ -1,6 +1,8 @@
 package com.example.annuairelauriats.ui.home;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -81,6 +83,8 @@ public class Classtest  extends AppCompatActivity {
     public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
         final Dialog dialogFilter = new Dialog(context);
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
+        final int[] filiere_selected = new int[1];
+        final int[] organisation_selected = new int[1];
 
 
         final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
@@ -88,6 +92,103 @@ public class Classtest  extends AppCompatActivity {
         final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
         final Spinner findbyorganisation = dialogFilter.findViewById(R.id.snipper_filtre_laureat_organisation);
         final Spinner findbysecteur = dialogFilter.findViewById(R.id.snipper_filtre_laureat_secteur);
+
+
+        List<String> secteurs = new ArrayList<>();
+        secteurs.add("SELECTIONNER");secteurs.add("public");secteurs.add("prive");
+        ArrayAdapter<String> list_org_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,secteurs);
+        list_org_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        findbysecteur.setAdapter(list_org_adapter);
+        final List<Filiere> dates ;final List<Integer> organs;
+
+        dates = new ArrayList<>();organs = new ArrayList<>();
+        Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                List<String> filieres = new ArrayList<>();filieres.add("SELECTIONNER");
+                for (int i=0;i<response.length();i++){
+                    try {
+                        JSONObject filiere_actuelle= response.getJSONObject(i);
+                        filieres.add(filiere_actuelle.getString("Nom"));
+                        dates.add(new Filiere(Integer.parseInt(
+                                filiere_actuelle.getString("Date_Creation").substring(0,4).trim())
+                                ,filiere_actuelle.getInt("id_filieres")));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,filieres);
+                list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                findbyfiliere.setAdapter(list_adapter);
+            }
+        };
+        connect_to_backend_array(context, Request.Method.GET,"/autres/filieres",
+                null, listener, null);
+
+        Response.Listener<JSONArray> listener_org = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                List<String> organismes = new ArrayList<>();organismes.add("SELECTIONNER");
+                for (int i=0;i<response.length();i++){
+                    try {
+                        JSONObject organisme_actuelle= response.getJSONObject(i);
+                        organismes.add(organisme_actuelle.getString("Nom"));
+                        organs.add(organisme_actuelle.getInt("id_org"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                ArrayAdapter<String> list_adapter =
+                        new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,organismes);
+                list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                findbyorganisation.setAdapter(list_adapter);
+            }
+        };
+        connect_to_backend_array(context,Request.Method.GET,  "/autres/organismes",
+                null, listener_org, null);
+
+        Response.Listener<JSONArray> province_listener = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                List<String> provinces_names = new ArrayList<>();provinces_names.add("SELECTIONNER");
+                for (int i=0;i<response.length();i++){
+                    try {
+                        JSONObject organisme_actuelle= response.getJSONObject(i);
+                        provinces_names.add(organisme_actuelle.getString("provicne"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                ArrayAdapter<String> list_adapter =
+                        new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,provinces_names);
+                list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                findbyprovince.setAdapter(list_adapter);
+            }
+        };
+        connect_to_backend_array(context,Request.Method.GET,  "/autres/provinces",
+                null, province_listener, null);
+
+
+
+        findbyfiliere.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                try {if (position==0){
+                    promotion_peuplement(context, Calendar.getInstance().get(Calendar.YEAR)+2, findbypromotion);
+                }
+                else {
+                    filiere_selected[0] =dates.get(position-1).get_Id();
+                    promotion_peuplement(context, dates.get(position-1).getPrimier_promo(), findbypromotion);
+                }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
+        });
 
 
         dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(
@@ -103,8 +204,12 @@ public class Classtest  extends AppCompatActivity {
                 {
                     @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
                     {
-                        if (position!=0){findbysecteur.setEnabled(false);findbyprovince.setEnabled(false);}
-                        else {findbysecteur.setEnabled(true);findbyprovince.setEnabled(true);}
+                        if (position!=0){
+                            organisation_selected[0] =organs.get(position-1);
+                            findbysecteur.setEnabled(false);findbyprovince.setEnabled(false);
+                        }
+                        else {findbysecteur.setEnabled(true);findbyprovince.setEnabled(true);
+                            organisation_selected[0] =0;}
                     }
                     @Override public void onNothingSelected(AdapterView<?> parentView) {}
                 }
@@ -131,47 +236,39 @@ public class Classtest  extends AppCompatActivity {
         );
 
 
-        long filiere = get_filter_pref_long(context, "branch");
-
-        long org = get_filter_pref_long(context, "organisation");
-        String promo = get_filter_pref_string(context, "promotion");
-        String secteur = get_filter_pref_string(context, "sector");
-
-        findbyfiliere.setSelection((int)filiere);
-        if (org==0){
-            findbysecteur.setSelection(secteur_select(secteur));
-        }
-        else{findbyorganisation.setSelection((int)org);}
-        int promo_selec=0;
-        promo_selec=2000;
-        findbypromotion.setSelection(promo_selec+1);
-
-
         dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mark==1){
-                            /*peupler_array_list(context,
+                        StringBuilder stringBuilder= new StringBuilder();
+                        stringBuilder.append("secteur  ").append(findbysecteur.getSelectedItem())
+                                .append("province ").append(findbyprovince.getSelectedItem())
+                                .append("promotion ").append(findbypromotion.getSelectedItem())
+                                .append("organisation ").append(organisation_selected[0])
+                                .append("filiere ").append(filiere_selected[0]);
+                        setclipboard(stringBuilder.toString(),context);
+                        /*if (mark==1){
+                            *//*peupler_array_list(context,
                                     findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString(),
                                     findbyprovince.getSelectedItem().toString(),
-                                    findbyorganisation.getSelectedItemId(),findbysecteur.getSelectedItem().toString(),listView);*/
+                                    findbyorganisation.getSelectedItemId(),findbysecteur.getSelectedItem().toString(),listView);*//*
                         }
                         else
                         {
-                            /*show_laureats_on_map(context,findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString()+"",
+                            *//*show_laureats_on_map(context,findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString()+"",
                                     findbyprovince.getSelectedItem().toString()+"",findbyorganisation.getSelectedItemId(),
                                     findbysecteur.getSelectedItem().toString()+""
-                                    ,googleMap);*/
+                                    ,googleMap);*//*
                         }
                         try {
                             set_filter_pref(context,findbysecteur.getSelectedItem().toString()+""
-                                    ,findbypromotion.getSelectedItem().toString()+"", findbyfiliere.getSelectedItemId(),
+                                    , findbypromotion.getSelectedItem().toString()+"", findbyfiliere.getSelectedItemId(),
                                     findbyorganisation.getSelectedItemId()
                             );
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }
+                        }*/
+
                         dialogFilter.dismiss();
                     }
                 }
@@ -337,6 +434,15 @@ public class Classtest  extends AppCompatActivity {
     }
 
 
+    private static void setclipboard(String message,Context context){
+        ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(context).getSystemService(
+                Context.CLIPBOARD_SERVICE);
+        ClipData cData = ClipData.newPlainText("text", message+"");
+        if (cManager != null) {
+            cManager.setPrimaryClip(cData);
+            Toast.makeText(context,"copied to clipboard",Toast.LENGTH_LONG).show();
+        }
+    }
     public static void logout(Context context){
         set0Pref(context,"noreply");
         Intent intent = new Intent(context, LoginActivity.class);
