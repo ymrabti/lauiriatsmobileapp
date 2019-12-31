@@ -795,7 +795,6 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                         , jsonObject, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
-                                Toast.makeText(getContext(),"image posted",Toast.LENGTH_LONG).show();
                             }
                         },null);
             }
