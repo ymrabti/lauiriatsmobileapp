@@ -14,17 +14,28 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
 import com.example.annuairelauriats.ui.tools.ToolsFragment;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Objects;
+
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.setclipboard;
 import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_list;
 import static com.example.annuairelauriats.ui.home.Classtest.sql;
@@ -45,14 +56,32 @@ public class GalleryFragment extends Fragment{
 
 
         try {
-            Bundle bundle = getActivity().getIntent().getExtras();
-            long org= bundle.getLong("organisation");
-            Toast.makeText(getActivity(),org+"",Toast.LENGTH_LONG).show();
+            long org= getArguments().getLong("organisation");
+            show_laureats_on_list(getActivity(),sql+" and org = "+org,malist);
+            Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    try {
+                        JSONObject laureat = response.getJSONObject(0);
+                        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                                .setTitle(laureat.getString("Nom"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getContext(),"org  "+e.toString(),Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+            Response.ErrorListener errorListener = new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                }
+            };
+            connect_to_backend_array(getContext(), Request.Method.GET,  "/laureat/org/"+org,
+                    null, listener, errorListener);
         }
         catch (Exception e){
-            setclipboard(e.getMessage(),getActivity());
+            show_laureats_on_list(getActivity(),sql,malist);
         }
-        show_laureats_on_list(getActivity(),sql,malist);
 
 
         malist.setOnItemClickListener(
