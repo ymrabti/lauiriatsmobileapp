@@ -241,12 +241,36 @@ public class Classtest  extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         StringBuilder stringBuilder= new StringBuilder();
-                        stringBuilder.append("secteur  ").append(findbysecteur.getSelectedItem())
-                                .append("province ").append(findbyprovince.getSelectedItem())
-                                .append("promotion ").append(findbypromotion.getSelectedItem())
-                                .append("organisation ").append(organisation_selected[0])
-                                .append("filiere ").append(filiere_selected[0]);
-                        setclipboard(stringBuilder.toString(),context);
+                        stringBuilder.append("select from where id=3");
+                        if (!findbypromotion.getSelectedItem().equals("SELECTIONNER")){
+                                stringBuilder.append(" and Promotion= ").append(findbypromotion.getSelectedItem());
+                        }
+                        if (!findbyfiliere.getSelectedItem().equals("SELECTIONNER")){
+                            stringBuilder.append("   and Filiere=  ").append(filiere_selected[0]);
+                        }
+                        if (!findbysecteur.getSelectedItem().equals("SELECTIONNER")){
+                            stringBuilder.append(" and secteur= ").append("\"").append(findbysecteur.getSelectedItem()).append("\"");
+                        }
+                        if (!findbyprovince.getSelectedItem().equals("SELECTIONNER")){
+                            stringBuilder.append("   and province=  ").append("\"")
+                                    .append(findbyprovince.getSelectedItem()).append("\"");
+                        }
+                        if (!findbyorganisation.getSelectedItem().equals("SELECTIONNER")){
+                            stringBuilder.append("   and org =  ").append(organisation_selected[0]);
+                        }
+                        connect_to_backend(context, Request.Method.GET, "/laureat/filter/" + stringBuilder
+                                , null
+                                , new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        setclipboard("response :"+response.toString(),context);
+                                    }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        setclipboard("error :"+error.toString(),context);
+                                    }
+                                });
                         /*if (mark==1){
                             *//*peupler_array_list(context,
                                     findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString(),
