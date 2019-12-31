@@ -241,7 +241,6 @@ public class Classtest  extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         StringBuilder stringBuilder= new StringBuilder();
-                        stringBuilder.append("select from where id=3");
                         if (!findbypromotion.getSelectedItem().equals("SELECTIONNER")){
                                 stringBuilder.append(" and Promotion= ").append(findbypromotion.getSelectedItem());
                         }
@@ -258,11 +257,12 @@ public class Classtest  extends AppCompatActivity {
                         if (!findbyorganisation.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append("   and org =  ").append(organisation_selected[0]);
                         }
-                        connect_to_backend(context, Request.Method.GET, "/laureat/filter/" + stringBuilder
+                        stringBuilder.append(" ;");
+                        connect_to_backend_array(context, Request.Method.GET, "/laureat/filter/" + stringBuilder
                                 , null
-                                , new Response.Listener<JSONObject>() {
+                                , new Response.Listener<JSONArray>() {
                                     @Override
-                                    public void onResponse(JSONObject response) {
+                                    public void onResponse(JSONArray response) {
                                         setclipboard("response :"+response.toString(),context);
                                     }
                                 }, new Response.ErrorListener() {
