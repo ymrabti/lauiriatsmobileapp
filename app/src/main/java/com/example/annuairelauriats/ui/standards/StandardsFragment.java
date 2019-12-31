@@ -39,7 +39,6 @@ import static android.app.Activity.RESULT_OK;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_serverIP;
 import static com.example.annuairelauriats.ui.home.Classtest.portBackend;
-import static com.example.annuairelauriats.ui.login.LoginActivity.getUniqueIMEIId;
 
 public class StandardsFragment extends Fragment {
     private TextView result_http_client,textView;private VideoView videoView;private EditText url;
@@ -89,7 +88,6 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
         try {
-            result_http_client.setText(getUniqueIMEIId(getActivity()));
         } catch (Exception e) {
             e.printStackTrace();
             result_http_client.append("ici"+e.toString());
