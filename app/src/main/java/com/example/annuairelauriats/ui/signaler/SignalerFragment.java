@@ -598,7 +598,7 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                                 catch (Exception e)
                                 {
                                     e.printStackTrace();
-                                    usernameEditText.setError(getString(R.string.email_taken));
+                                    generate_sql();
                                 }
                             }
                             else{
@@ -765,6 +765,21 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                 sql_laureat.append(",Promotion= ").append(promotion.getSelectedItem().toString()).append(" ");
                 modifications_laureat+=1;
             }
+
+            try {
+                JSONObject statut_laureat= new JSONObject();
+                statut_laureat.put("id_statut",3);
+                statut_laureat.put("motif","re-inscrit");
+                statut_laureat.put("id_laureat",usernameEditText.getText().toString());
+                connect_to_backend(getActivity(),Request.Method.POST,
+                        "/laureat/update_row_statut_laureat", statut_laureat
+                        , new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                            }
+                        },null);
+            }
+            catch (JSONException e) { e.printStackTrace(); }
         }
         if (!numtel_laureat_static.equals(NumTeleEditText.getText().toString())){
             sql_laureat.append(",Telephone= \"").append(NumTeleEditText.getText().toString()).append( "\"  ");
@@ -772,8 +787,21 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         }
         if (!base64TextView.getText().toString().equals("initialised from web")){
             Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-            sql_laureat.append(",photo= ").append( "\"").append(encodeImage(icon)).append( "\"  ");
-            modifications_laureat+=1;
+            String image = encodeImage(icon);
+            try {
+                JSONObject jsonObject= new JSONObject();
+                jsonObject.put("photo",image);jsonObject.put("email",usernameEditText.getText().toString());
+                connect_to_backend(getActivity(), Request.Method.POST, "/laureat/update"
+                        , jsonObject, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                Toast.makeText(getContext(),"image posted",Toast.LENGTH_LONG).show();
+                            }
+                        },null);
+            }
+            catch(Exception e){
+                setclipboard(e.getMessage());
+            }
         }
         if (!email_connected.equals(usernameEditText.getText().toString())){
             sql_laureat.append(",email= ").append( "\"").append(usernameEditText.getText().toString()).append( "\"  ");
@@ -861,29 +889,10 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
             }
             catch (Exception e){e.printStackTrace();}
         }
-        try {
-            JSONObject statut_laureat= new JSONObject();
-            statut_laureat.put("id_statut",3);
-            statut_laureat.put("motif","re-inscrit");
-            statut_laureat.put("id_laureat",usernameEditText.getText().toString());
-            connect_to_backend(getActivity(),Request.Method.POST,
-                    "/laureat/update_row_statut_laureat", statut_laureat
-                    , new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                        }
-                    },null);
-        }
-        catch (JSONException e) { e.printStackTrace(); }
 
         sql_laureat.append(" WHERE email= ").append( "\"").append(email_connected).append("\" ");
         sql_laureat.replace(19,20," ");
-        ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData cData = ClipData.newPlainText("text", sql_laureat+"");
-        if (cManager != null) {
-            cManager.setPrimaryClip(cData);
-            Toast.makeText(getActivity(),"copied to clipboard",Toast.LENGTH_LONG).show();
-        }
+
         if (modifications_laureat!=0){
             connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/" + sql_laureat
                     , null, new Response.Listener<JSONObject>() {
@@ -902,5 +911,14 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
         fragmentTransaction.replace(R.id.nav_host_fragment, new HomeFragment());
         fragmentTransaction.commit();
+    }
+    private void setclipboard(String message){
+        ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(
+                Context.CLIPBOARD_SERVICE);
+        ClipData cData = ClipData.newPlainText("text", message+"");
+        if (cManager != null) {
+            cManager.setPrimaryClip(cData);
+            Toast.makeText(getActivity(),"copied to clipboard",Toast.LENGTH_LONG).show();
+        }
     }
 }

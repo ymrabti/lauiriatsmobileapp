@@ -75,12 +75,9 @@ import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_l
 import static java.lang.Math.min;
 
 public class Classtest  extends AppCompatActivity {
-    private static VolleyError volleyError;public static int portBackend=3000;
-    public static String ip_serverIP="192.168.137.1"
-            ,ip_server="http://"+ip_serverIP+":"+portBackend,email_connected;
+    public static int portBackend=3000;
+    public static String ip_serverIP="192.168.137.1",ip_server="http://"+ip_serverIP+":"+portBackend,email_connected;
     @SuppressLint("StaticFieldLeak")
-
-
     public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
         final Dialog dialogFilter = new Dialog(context);
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
