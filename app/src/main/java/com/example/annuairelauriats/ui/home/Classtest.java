@@ -265,9 +265,10 @@ public class Classtest  extends AppCompatActivity {
                                     public void onResponse(JSONArray response) {
 if (response.length()!=0){
     if (mark==1){
-        laureats_list = new ArrayList<>();JSONObject laureat_courant = new JSONObject();
         try {
+            laureats_list = new ArrayList<>();
             for (int i=0;i<response.length();i++){
+                JSONObject laureat_courant = response.getJSONObject(i);
                 Laureat laureat_to_add = new Laureat(0,laureat_courant.getString("photo")+" ",
                         laureat_courant.getString("Nom")+" "+laureat_courant.getString("Prenom"),
                         laureat_courant.getString("email")+"", laureat_courant.getString("Description")+"");
@@ -275,16 +276,16 @@ if (response.length()!=0){
             }
         }
         catch (Exception er){
-
+            setclipboard("error :"+er.toString(),context);
+            Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
         }
         LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
         listView.setAdapter(adaptateur);
     }
     else{
-
+        Toast.makeText(context,"carte ",Toast.LENGTH_LONG).show();
     }
 }
-            setclipboard("response :"+response.toString(),context);
                                     }
                                 }, new Response.ErrorListener() {
                                     @Override
