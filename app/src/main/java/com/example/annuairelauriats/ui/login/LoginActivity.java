@@ -63,10 +63,9 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(i);
         }
 
-        usernameEditText = findViewById(R.id.username);//usernameEditText.setText("younes.mrabti50@gmail.com");
+        usernameEditText = findViewById(R.id.username);usernameEditText.setText("younes.mrabti50@gmail.com");
         passwordEditText = findViewById(R.id.password);
         passwordEditText.setText("123123");
-        usernameEditText.setText(getUniqueIMEIId());
         loginButton = findViewById(R.id.login);
         loadingProgressBar = findViewById(R.id.loading);
         go_to_register = findViewById(R.id.go_to_register);
@@ -137,32 +136,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("HardwareIds")
-    public String getUniqueIMEIId() {
-        try {
-            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface nif : all) {
-                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
-                byte[] macBytes = nif.getHardwareAddress();
-                if (macBytes == null) {
-                    return "";
-                }
-
-                StringBuilder res1 = new StringBuilder();
-                for (byte b : macBytes) {
-                    res1.append(String.format("%02X:",b));
-                }
-
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                }
-                return res1.toString();
-            }
-        } catch (Exception ex) {
-        }
-        return "02:00";
-    }
     public static Context getContexte() {
         return context;
     }
