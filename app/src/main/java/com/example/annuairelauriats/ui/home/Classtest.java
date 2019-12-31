@@ -81,50 +81,71 @@ public class Classtest  extends AppCompatActivity {
     public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
         final Dialog dialogFilter = new Dialog(context);
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
+
+
         final Spinner findbyfiliere = dialogFilter.findViewById(R.id.snipper_filtre_laureat_filiere);
         final Spinner findbypromotion = dialogFilter.findViewById(R.id.snipper_filtre_laureat_promotion);
         final Spinner findbyprovince = dialogFilter.findViewById(R.id.snipper_filtre_laureat_province);
         final Spinner findbyorganisation = dialogFilter.findViewById(R.id.snipper_filtre_laureat_organisation);
         final Spinner findbysecteur = dialogFilter.findViewById(R.id.snipper_filtre_laureat_secteur);
 
+
+        dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) { dialogFilter.dismiss(); }
+                }
+            );
+
+
+        findbyorganisation.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener()
+                {
+                    @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+                    {
+                        if (position!=0){findbysecteur.setEnabled(false);findbyprovince.setEnabled(false);}
+                        else {findbysecteur.setEnabled(true);findbyprovince.setEnabled(true);}
+                    }
+                    @Override public void onNothingSelected(AdapterView<?> parentView) {}
+                }
+            );
+        findbysecteur.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+            {
+                if (position!=0){findbyorganisation.setEnabled(false);}
+                else{findbyorganisation.setEnabled(true);}
+            }
+            @Override public void onNothingSelected(AdapterView<?> parentView) {}
+                }
+            );
+        findbyprovince.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
+                    {
+                        if (position!=0){findbyorganisation.setEnabled(false);}
+                        else{findbyorganisation.setEnabled(true);}
+                    }
+                    @Override public void onNothingSelected(AdapterView<?> parentView) {}
+                }
+        );
+
+
         long filiere = get_filter_pref_long(context, "branch");
-        /*try {
-            promotion_peuplement(context,filiere,findbypromotion);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+
         long org = get_filter_pref_long(context, "organisation");
         String promo = get_filter_pref_string(context, "promotion");
         String secteur = get_filter_pref_string(context, "sector");
+
         findbyfiliere.setSelection((int)filiere);
         if (org==0){
             findbysecteur.setSelection(secteur_select(secteur));
         }
         else{findbyorganisation.setSelection((int)org);}
         int promo_selec=0;
-        try {
-        if (!promo.equals("SELECTIONNER")){
-            promo_selec=2000;
-            findbypromotion.setSelection(promo_selec+1);
-            Toast.makeText(context,filiere+"\n"+org+"\n"+promo+"\n"+secteur+"\n"+promo_selec+"\n",Toast.LENGTH_LONG).show();
-        }
-        } catch (Exception e) {
-        e.printStackTrace();
-    }
+        promo_selec=2000;
+        findbypromotion.setSelection(promo_selec+1);
 
-        dialogFilter.findViewById(R.id.button_dismiss_filter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { dialogFilter.dismiss(); }});
-        findbyorganisation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (position!=0){findbysecteur.setEnabled(false);}
-                else {findbysecteur.setEnabled(true);} }
-            @Override public void onNothingSelected(AdapterView<?> parentView) {}});
-        findbysecteur.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (position!=0){findbyorganisation.setEnabled(false);}
-                else{findbyorganisation.setEnabled(true);}}
-            @Override public void onNothingSelected(AdapterView<?> parentView) {}});
 
         dialogFilter.findViewById(R.id.button_save_filter).setOnClickListener(
                 new View.OnClickListener() {

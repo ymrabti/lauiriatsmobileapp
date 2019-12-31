@@ -34,6 +34,9 @@ import com.example.annuairelauriats.ui.register.RegisterActivity;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.List;
 
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.get0Pref;
@@ -63,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         usernameEditText = findViewById(R.id.username);//usernameEditText.setText("younes.mrabti50@gmail.com");
         passwordEditText = findViewById(R.id.password);
         passwordEditText.setText("123123");
-        usernameEditText.setText(getUniqueIMEIId(this));
+        usernameEditText.setText(getUniqueIMEIId());
         loginButton = findViewById(R.id.login);
         loadingProgressBar = findViewById(R.id.loading);
         go_to_register = findViewById(R.id.go_to_register);
@@ -135,17 +138,30 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @SuppressLint("HardwareIds")
-    public String getUniqueIMEIId(Context context) {
-        @SuppressLint("WifiManagerPotentialLeak")
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = null;
-        if (wifiManager != null) {
-            wifiInfo = wifiManager.getConnectionInfo();
+    public String getUniqueIMEIId() {
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
+                }
+
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    res1.append(String.format("%02X:",b));
+                }
+
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                return res1.toString();
+            }
+        } catch (Exception ex) {
         }
-        if (wifiInfo != null) {
-            return wifiInfo.getMacAddress();
-        }
-        else{return "wifi info null";}
+        return "02:00";
     }
     public static Context getContexte() {
         return context;
