@@ -18,6 +18,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.regex.Matcher;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend;
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
+import static com.example.annuairelauriats.ui.home.Classtest.getUniqueIMEIId;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 import static com.example.annuairelauriats.ui.home.Classtest.set0Pref;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
@@ -150,6 +152,26 @@ public class RegisterViewModel extends ViewModel {
                         RegisterActivity.getContextext().startActivity(
                                 new Intent(RegisterActivity.getContextext()
                                         , MainActivity.class));
+
+                        try {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("laureat",email_connected);
+                            jsonObject.put("IME",getUniqueIMEIId());
+                            connect_to_backend(RegisterActivity.getContextext(), Request.Method.POST
+                                    , "/autres/insert_device", jsonObject, new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+
+                                        }
+                                    }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+
+                                        }
+                                    });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
                     @Override

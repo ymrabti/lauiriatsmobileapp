@@ -84,7 +84,9 @@ public class Classtest  extends AppCompatActivity {
     public static String ip_serverIP="192.168.137.1",ip_server="http://"+ip_serverIP+":"+portBackend,email_connected;
 
     public static Dialog dialog_universelle;
-    public static String sql="SELECT laureats.*,filieres.Nom as Nom_filiere,les_status.nom as status,motif,les_status.id_lesstatus,organisme.secteur,organisme.province ,organisme.Latitude,organisme.Longitude"
+    public static String sql="SELECT laureats.*,filieres.Nom as Nom_filiere,les_status.nom as status" +
+            ",motif,les_status.id_lesstatus,organisme.secteur,organisme.province" +
+            " ,organisme.Latitude,organisme.Longitude,organisme.Nom as NomOrg"
             +" FROM  laureats,filieres,les_status ,laureat_statut,organisme"
             +" WHERE laureats.Filiere=filieres.id_filieres and laureats.org=organisme.id_org"
             +" and laureats.email=laureat_statut.id_laureat and laureat_statut.id_statut=les_status.id_lesstatus "
@@ -345,34 +347,35 @@ public class Classtest  extends AppCompatActivity {
         connect_to_backend_array(context, Request.Method.GET, "/autres/requestAny/" + sql_parameter
                 , null
                 , new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        laureats_list = new ArrayList<>();
-                        if (response.length()!=0){
-                            try {
-                                for (int i=0;i<response.length();i++){
-                                    JSONObject laureat_courant = response.getJSONObject(i);
-                                    Laureat laureat_to_add = new Laureat(0,laureat_courant.getString("photo")+" ",
-                                            laureat_courant.getString("Nom")+" "+laureat_courant.getString("Prenom"),
-                                            laureat_courant.getString("email")+"", laureat_courant.getString("Description")+"");
-                                    laureats_list.add(laureat_to_add);
-                                }
-                            }
-                            catch (Exception er){
-                                setclipboard("error :"+er.toString(),context);
-                                Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
-                        listView.setAdapter(adaptateur);
-                        dialog_universelle.dismiss();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        setclipboard("error :"+error.toString(),context);
-                    }
-                });
+@Override
+public void onResponse(JSONArray response) {
+    laureats_list = new ArrayList<>();
+    if (response.length()!=0){
+        try {
+            for (int i=0;i<response.length();i++){
+                JSONObject laureat_courant = response.getJSONObject(i);
+                Laureat laureat_to_add = new Laureat(laureat_courant.getString("email")+""
+                        ,laureat_courant.getString("photo")+" ",
+                        laureat_courant.getString("Nom")+" "+laureat_courant.getString("Prenom"),
+                        laureat_courant.getString("NomOrg")+"", laureat_courant.getString("Description")+"");
+                laureats_list.add(laureat_to_add);
+            }
+        }
+        catch (Exception er){
+            setclipboard("error :"+er.toString(),context);
+            Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
+        }
+    }
+    LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
+    listView.setAdapter(adaptateur);
+    dialog_universelle.dismiss();
+}
+}, new Response.ErrorListener() {
+@Override
+public void onErrorResponse(VolleyError error) {
+    setclipboard("error :"+error.toString(),context);
+}
+});
     }
     public static void show_laureats_on_map(final Context context, String sql_parameter, final GoogleMap gmap){
         String new_sql = "SELECT org,Latitude,Longitude,count(*) as Nombre from ("+sql_parameter+") AS laureats_selection " +
