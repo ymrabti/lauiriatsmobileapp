@@ -88,8 +88,8 @@ public class Classtest  extends AppCompatActivity {
             +" FROM  laureats,filieres,les_status ,laureat_statut,organisme"
             +" WHERE laureats.Filiere=filieres.id_filieres and laureats.org=organisme.id_org"
             +" and laureats.email=laureat_statut.id_laureat and laureat_statut.id_statut=les_status.id_lesstatus "
-    ,additional_sql="",shared_secteur= "SELECTIONNER";
-    public static int shared_org,shared_promotion,shared_filiere;
+    ,additional_sql="",email_selected;
+    public static int shared_org;
     @SuppressLint("StaticFieldLeak")
     public static void promotion_peuplement(Context context,int premier,Spinner spinner) throws Exception {
         ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
