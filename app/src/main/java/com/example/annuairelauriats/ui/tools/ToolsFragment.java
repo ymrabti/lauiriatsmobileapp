@@ -20,7 +20,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Gravity;
@@ -176,6 +178,26 @@ public class ToolsFragment extends Fragment implements OnMapReadyCallback {
         top=root.findViewById(R.id.visite_go_top);bottom=root.findViewById(R.id.visite_go_bottom);
         right=root.findViewById(R.id.visite_go_right);left=root.findViewById(R.id.visite_go_left);
 
+        email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto",email.getText().toString(), null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Annuaire Laureats");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Bonjour");
+                startActivity(Intent.createChooser(emailIntent, "Send email..."));
+            }
+        });
+        tel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phone = tel.getText().toString();
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                startActivity(intent);
+            }
+        });
+        email.setTextColor(getResources().getColor(R.color.email));
+        tel.setTextColor(getResources().getColor(R.color.email));
         return root;
     }
     private void orgnaisation_(int _id_org)  {
