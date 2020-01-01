@@ -22,6 +22,8 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.Marker;
 
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
+import static com.example.annuairelauriats.ui.home.Classtest.additional_sql;
+import static com.example.annuairelauriats.ui.home.Classtest.shared_org;
 import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_map;
 import static com.example.annuairelauriats.ui.home.Classtest.sql;
 
@@ -73,7 +75,17 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-        show_laureats_on_map(getActivity(),sql,gmap);
+        try {
+
+            if (getArguments().getLong("mark")==1){
+                if (shared_org!=0){additional_sql=additional_sql+" and org = "+shared_org;}
+                show_laureats_on_map(getActivity(),sql+additional_sql,gmap);
+            }
+        }
+        catch (Exception e){
+            show_laureats_on_map(getActivity(),sql,gmap);
+        }
+
         gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {

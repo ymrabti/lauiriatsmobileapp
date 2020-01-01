@@ -117,7 +117,11 @@ public class GalleryFragment extends Fragment{
     }
     public static void to_map(){
         fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
-        fragmentTransaction.replace(R.id.nav_host_fragment, new SlideshowFragment());
+        Fragment fragment = new SlideshowFragment();
+        Bundle bundle=new Bundle();
+        bundle.putLong("mark", 1);
+        fragment.setArguments(bundle);
+        fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
         fragmentTransaction.commit();
         MainActivity.navigationView.setCheckedItem(R.id.nav_slideshow);
     }
