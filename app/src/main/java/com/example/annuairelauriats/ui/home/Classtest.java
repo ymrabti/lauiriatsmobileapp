@@ -76,6 +76,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static com.example.annuairelauriats.ui.gallery.GalleryFragment.imageView_nodata;
 import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_list;
 import static java.lang.Math.min;
 
@@ -351,6 +352,7 @@ public class Classtest  extends AppCompatActivity {
 public void onResponse(JSONArray response) {
     laureats_list = new ArrayList<>();
     if (response.length()!=0){
+        imageView_nodata.setVisibility(View.GONE);
         try {
             for (int i=0;i<response.length();i++){
                 JSONObject laureat_courant = response.getJSONObject(i);
@@ -365,6 +367,9 @@ public void onResponse(JSONArray response) {
             setclipboard("error :"+er.toString(),context);
             Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
         }
+    }
+    else{
+        imageView_nodata.setVisibility(View.VISIBLE);
     }
     LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
     listView.setAdapter(adaptateur);

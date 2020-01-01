@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class GalleryFragment extends Fragment{
     static private ListView malist;public static ArrayList<Laureat> laureats_list;
     private static Context context;
     private static FragmentTransaction fragmentTransaction;
+    public static ImageView imageView_nodata;
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,7 +57,7 @@ public class GalleryFragment extends Fragment{
         setHasOptionsMenu(true);
         assert getFragmentManager() != null;
         fragmentTransaction = getFragmentManager().beginTransaction();
-
+        imageView_nodata= root.findViewById(R.id.image_no_data);
 
 
         try {
