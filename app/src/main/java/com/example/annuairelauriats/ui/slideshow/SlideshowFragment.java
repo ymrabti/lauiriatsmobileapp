@@ -83,6 +83,7 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
                 Fragment fragment = new GalleryFragment();
                 Bundle bundle=new Bundle();
                 bundle.putLong("organisation", Integer.parseInt(marker.getTitle().trim()));
+                bundle.putLong("mark", 0);
                 fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
                 fragmentTransaction.commit();
@@ -101,7 +102,11 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
     }
     public static void to_list(){
         fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
-        fragmentTransaction.replace(R.id.nav_host_fragment, new GalleryFragment());
+        Fragment fragment = new GalleryFragment();
+        Bundle bundle=new Bundle();
+        bundle.putLong("mark", 1);
+        fragment.setArguments(bundle);
+        fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
         fragmentTransaction.commit();
         MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
     }

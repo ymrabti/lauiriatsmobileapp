@@ -35,8 +35,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
+import static com.example.annuairelauriats.ui.home.Classtest.additional_sql;
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.setclipboard;
+import static com.example.annuairelauriats.ui.home.Classtest.shared_org;
 import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_list;
 import static com.example.annuairelauriats.ui.home.Classtest.sql;
 
@@ -56,28 +58,34 @@ public class GalleryFragment extends Fragment{
 
 
         try {
-            long org= getArguments().getLong("organisation");
-            show_laureats_on_list(getActivity(),sql+" and org = "+org,malist);
-            Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
-                @Override
-                public void onResponse(JSONArray response) {
-                    try {
-                        JSONObject laureat = response.getJSONObject(0);
-                        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
-                                .setTitle(laureat.getString("Nom"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getContext(),"org  "+e.toString(),Toast.LENGTH_LONG).show();
+            if (getArguments().getLong("mark")==0){
+                long org= getArguments().getLong("organisation");
+                show_laureats_on_list(getActivity(),sql+additional_sql+" and org = "+org,malist);
+                Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            JSONObject laureat = response.getJSONObject(0);
+                            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                                    .setTitle(laureat.getString("Nom"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(),"org  "+e.toString(),Toast.LENGTH_LONG).show();
+                        }
                     }
-                }
-            };
-            Response.ErrorListener errorListener = new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                }
-            };
-            connect_to_backend_array(getContext(), Request.Method.GET,  "/laureat/org/"+org,
-                    null, listener, errorListener);
+                };
+                Response.ErrorListener errorListener = new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                };
+                connect_to_backend_array(getContext(), Request.Method.GET,  "/laureat/org/"+org,
+                        null, listener, errorListener);
+            }
+            if (getArguments().getLong("mark")==1){
+                if (shared_org!=0){additional_sql=additional_sql+" and org = "+shared_org;}
+                show_laureats_on_list(getActivity(),sql+additional_sql,malist);
+            }
         }
         catch (Exception e){
             show_laureats_on_list(getActivity(),sql,malist);

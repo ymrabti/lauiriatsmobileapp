@@ -88,7 +88,7 @@ public class Classtest  extends AppCompatActivity {
             +" FROM  laureats,filieres,les_status ,laureat_statut,organisme"
             +" WHERE laureats.Filiere=filieres.id_filieres and laureats.org=organisme.id_org"
             +" and laureats.email=laureat_statut.id_laureat and laureat_statut.id_statut=les_status.id_lesstatus "
-    ,province_shared="SELECTIONNER",shared_secteur= "SELECTIONNER";
+    ,additional_sql="",shared_secteur= "SELECTIONNER";
     public static int shared_org,shared_promotion,shared_filiere;
     @SuppressLint("StaticFieldLeak")
     public static void promotion_peuplement(Context context,int premier,Spinner spinner) throws Exception {
@@ -246,8 +246,8 @@ public class Classtest  extends AppCompatActivity {
                 new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
-                if (position!=0){findbyorganisation.setEnabled(false);}
-                else{findbyorganisation.setEnabled(true);}
+                if (position==0 && findbyprovince.getSelectedItemId()==0){findbyorganisation.setEnabled(true);}
+                else{findbyorganisation.setEnabled(false);}
             }
             @Override public void onNothingSelected(AdapterView<?> parentView) {}
                 }
@@ -256,8 +256,8 @@ public class Classtest  extends AppCompatActivity {
                 new AdapterView.OnItemSelectedListener() {
                     @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
                     {
-                        if (position!=0){findbyorganisation.setEnabled(false);}
-                        else{findbyorganisation.setEnabled(true);}
+                        if (position==0 && findbysecteur.getSelectedItemId()==0){findbyorganisation.setEnabled(true);}
+                        else{findbyorganisation.setEnabled(false);}
                     }
                     @Override public void onNothingSelected(AdapterView<?> parentView) {}
                 }
@@ -269,23 +269,31 @@ public class Classtest  extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         StringBuilder stringBuilder= new StringBuilder();
+                        StringBuilder stringBuilder1= new StringBuilder();stringBuilder1.append(" ");
                         stringBuilder.append(sql);
                         if (!findbypromotion.getSelectedItem().equals("SELECTIONNER")){
                                 stringBuilder.append(" and Promotion= ").append(findbypromotion.getSelectedItem());
+                                stringBuilder1.append(" and Promotion= ").append(findbypromotion.getSelectedItem());
                         }
                         if (!findbyfiliere.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append("   and Filiere=  ").append(filiere_selected[0]);
+                            stringBuilder1.append("   and Filiere=  ").append(filiere_selected[0]);
                         }
                         if (!findbysecteur.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append(" and secteur= ").append("\"").append(findbysecteur.getSelectedItem()).append("\"");
+                            stringBuilder1.append(" and secteur= ").append("\"").append(findbysecteur.getSelectedItem()).append("\"");
                         }
                         if (!findbyprovince.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append("   and province=  ").append("\"")
                                     .append(findbyprovince.getSelectedItem()).append("\"");
+                            stringBuilder1.append("   and province=  ").append("\"")
+                                    .append(findbyprovince.getSelectedItem()).append("\"");
                         }
                         if (!findbyorganisation.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append("   and org =  ").append(organisation_selected[0]);
+                            shared_org=organisation_selected[0];
                         }
+                        additional_sql=stringBuilder1.toString();
                         if (mark==1){
                             show_laureats_on_list(context,stringBuilder.toString(),listView);
                         }
