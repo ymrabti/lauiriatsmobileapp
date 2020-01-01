@@ -37,6 +37,7 @@ import java.util.Objects;
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
 import static com.example.annuairelauriats.ui.home.Classtest.additional_sql;
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
+import static com.example.annuairelauriats.ui.home.Classtest.email_selected;
 import static com.example.annuairelauriats.ui.home.Classtest.setclipboard;
 import static com.example.annuairelauriats.ui.home.Classtest.shared_org;
 import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_list;
@@ -96,7 +97,7 @@ public class GalleryFragment extends Fragment{
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Laureat laureat = laureats_list.get(position);
-                        //id_selected = laureat.getId();
+                        email_selected = laureat.getId();
                         assert getFragmentManager() != null;
                         Fragment fragment = new ToolsFragment();
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

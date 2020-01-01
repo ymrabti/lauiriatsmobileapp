@@ -363,7 +363,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             status_profile.append("votre demande en cours de traitement");
         }
         else if (statut==4){
-            linearLayout.setBackgroundColor(Color.GREEN);
+            linearLayout.setBackground(getActivity().getDrawable(R.drawable.gradientbackground));
         }
     }
     private void parcours_pro_data(){
