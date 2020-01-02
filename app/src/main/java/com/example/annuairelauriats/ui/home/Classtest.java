@@ -341,6 +341,7 @@ public class Classtest  extends AppCompatActivity {
         dialogFilter.show();
     }
     public static void show_laureats_on_list(final Context context, String sql_parameter, final ListView listView){
+        sql_parameter= sql_parameter+"  and id_lesstatus=4  ";
         dialog_universelle = new Dialog(context);
         dialog_universelle.setContentView(R.layout.popup_wait);
         dialog_universelle.setCancelable(false);
@@ -383,6 +384,7 @@ public void onErrorResponse(VolleyError error) {
 });
     }
     public static void show_laureats_on_map(final Context context, String sql_parameter, final GoogleMap gmap){
+        sql_parameter= sql_parameter+"  and id_lesstatus=4  ";
         String new_sql = "SELECT org,Latitude,Longitude,count(*) as Nombre from ("+sql_parameter+") AS laureats_selection " +
                 "GROUP BY org,Latitude,Longitude";
         dialog_universelle = new Dialog(context);
@@ -431,11 +433,6 @@ public void onErrorResponse(VolleyError error) {
                         setclipboard("error :"+error.toString(),context);
                     }
                 });
-    }
-    private static int secteur_select(String secteur){
-        if (secteur.equals("Public")){return 1;}
-        else if(secteur.equals("Prive")){return 2;}
-        else {return 0;}
     }
 
 

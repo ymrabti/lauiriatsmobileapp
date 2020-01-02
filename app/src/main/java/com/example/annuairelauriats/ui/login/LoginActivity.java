@@ -63,9 +63,8 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(i);
         }
 
-        usernameEditText = findViewById(R.id.username);usernameEditText.setText("younes.mrabti50@gmail.com");
+        usernameEditText = findViewById(R.id.username);
         passwordEditText = findViewById(R.id.password);
-        passwordEditText.setText("123123");
         loginButton = findViewById(R.id.login);
         loadingProgressBar = findViewById(R.id.loading);
         go_to_register = findViewById(R.id.go_to_register);
