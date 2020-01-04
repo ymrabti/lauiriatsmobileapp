@@ -1,26 +1,35 @@
 package com.example.annuairelauriats.ui.register;
 
+
+import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
-import com.example.annuairelauriats.ui.home.Classtest;
-import com.example.annuairelauriats.ui.login.LoginActivity;
-
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static com.example.annuairelauriats.ui.home.Classtest.getLastID;
-import static com.example.annuairelauriats.ui.home.Classtest.id_connected;
-import static com.example.annuairelauriats.ui.home.Classtest.is_email_exist;
-import static com.example.annuairelauriats.ui.home.Classtest.new_Laureat_Register;
-import static com.example.annuairelauriats.ui.home.Classtest.new_org_attente_admin;
-import static com.example.annuairelauriats.ui.home.Classtest.setNewImgLaureat;
-import static com.example.annuairelauriats.ui.home.Classtest.setPref;
+
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend;
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
+import static com.example.annuairelauriats.ui.home.Classtest.getUniqueIMEIId;
+import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
+import static com.example.annuairelauriats.ui.home.Classtest.set0Pref;
+import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.register.RegisterActivity.lat;
 import static com.example.annuairelauriats.ui.register.RegisterActivity.lon;
 
@@ -30,58 +39,153 @@ public class RegisterViewModel extends ViewModel {
         return registerFormState;
     }
     public void register(
-            String emailUser, String Password, String LaureatNom, String LaureatPrenom, String LaureatNumTel,
-            String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
-            long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
-            String date_debut_travail_chez_org_,String description) {
-        try {
-            if (!is_email_exist(RegisterActivity.getContextext(),emailUser)){
-                Calendar rightNow = Calendar.getInstance();
-                int seconde = rightNow.get(Calendar.SECOND);int minute = rightNow.get(Calendar.MINUTE);
-                int heur = rightNow.get(Calendar.HOUR_OF_DAY);
-                int jour = rightNow.get(Calendar.DAY_OF_MONTH);int mois = rightNow.get(Calendar.MONTH)+1;
-                int annee = rightNow.get(Calendar.YEAR);
-                String dateNow = annee+"-"+mois+"-"+jour+" "+heur+":"+minute+":"+seconde;
-                int id_laureat_actuelle = getLastID(RegisterActivity.getContextext(),Classtest.laureats);
-                id_connected = id_laureat_actuelle;
-                new_Laureat_Register(
-                        RegisterActivity.getContextext(),id_laureat_actuelle,
-                        LaureatNom+"", LaureatPrenom +"", LaureatGender+"",
-                        LaureatPromotion+"", LaureatFiliere, emailUser+"",
-                        Password+"", LaureatNumTel+"", dateNow+"",
-                        description+"");
-                setNewImgLaureat(RegisterActivity.getContextext(),LaureatImageBase64,id_laureat_actuelle);
-                if(!nomOrgEdited.isEmpty()){
-                    new_org_attente_admin(RegisterActivity.getContextext(),nomOrgEdited+"",id_laureat_actuelle,
-                            lat,lon,secteurOrgEdited,
-                            date_debut_travail_chez_org_+"",initulePost+"");
+            final String emailUser, final String Password, final String LaureatNom, final String LaureatPrenom, final String LaureatNumTel,
+            final String LaureatImageBase64, final String LaureatGender, final String LaureatPromotion, final long LaureatFiliere,
+            final long org_selected, final String nomOrgEdited, final String secteurOrgEdited, final String initulePost,
+            final String date_debut_travail_chez_org_, final String description, final long radio) {
+        Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                if (response.length()!=0){
+                    registerFormState.setValue(new RegisterFormState(
+                            null,
+                            null, null,R.string.email_taken,
+                            null,null,null,null,
+                            null,null,null,null,null,
+                            null,null,null,null));
+                    Toast.makeText(RegisterActivity.getContextext(),R.string.email_taken,Toast.LENGTH_LONG).show();
                 }
                 else{
-                    Classtest.new_org_laureat(RegisterActivity.getContextext(),org_selected,id_laureat_actuelle,
-                            date_debut_travail_chez_org_,initulePost+"");
-                }
-                setPref(LoginActivity.getContexte(),id_connected);
-                RegisterActivity.getContextext().startActivity(new Intent(RegisterActivity.getContextext(), MainActivity.class));
+                    try{
+                        Calendar rightNow = Calendar.getInstance();
+                        int seconde = rightNow.get(Calendar.SECOND);int minute = rightNow.get(Calendar.MINUTE);
+                        int heur = rightNow.get(Calendar.HOUR_OF_DAY);
+                        int jour = rightNow.get(Calendar.DAY_OF_MONTH);int mois = rightNow.get(Calendar.MONTH)+1;
+                        int annee = rightNow.get(Calendar.YEAR);
+                        String dateNow = annee+"-"+mois+"-"+jour+" "+heur+":"+minute+":"+seconde;
+                        JSONObject laureat_nouveau = new JSONObject();
+                        laureat_nouveau.put("Nom",LaureatNom);laureat_nouveau.put("Prenom",LaureatPrenom);
+                        laureat_nouveau.put("Gender",LaureatGender);laureat_nouveau.put("Promotion",LaureatPromotion);
+                        laureat_nouveau.put("Filiere",LaureatFiliere);laureat_nouveau.put("DATE_INSCRIPTION",dateNow);
+                        laureat_nouveau.put("Description",description);laureat_nouveau.put("Telephone",LaureatNumTel);
+                        laureat_nouveau.put("email",emailUser);laureat_nouveau.put("Pass_word",Password);
+                        laureat_nouveau.put("photo",LaureatImageBase64);
+                        JSONObject statut_laureat = new JSONObject();
+                        statut_laureat.put("id_statut",1);
+                        statut_laureat.put("id_laureat",emailUser);
+                        statut_laureat.put("motif","nouveau");
 
+                        JSONObject new_org_attentente = new JSONObject();
+                        new_org_attentente.put("Nom",nomOrgEdited);
+                        new_org_attentente.put("Latitude",lat);
+                        new_org_attentente.put("Longitude",lon);
+                        new_org_attentente.put("laureat",emailUser);
+                        new_org_attentente.put("intitule",initulePost);
+                        new_org_attentente.put("secteur",secteurOrgEdited);
+                        new_org_attentente.put("date_debut",date_debut_travail_chez_org_);
+
+
+                        JSONObject org_laureat_new = new JSONObject();
+                        org_laureat_new.put("org",org_selected);org_laureat_new.put("laureat",emailUser);
+                        org_laureat_new.put("date_debut",date_debut_travail_chez_org_);
+                        org_laureat_new.put("fonction",initulePost);
+
+                        if (radio==0){
+                            laureat_nouveau.put("org",org_selected);
+                            signup(emailUser,laureat_nouveau,statut_laureat,org_laureat_new,null);
+                        }
+                        else{
+                            laureat_nouveau.put("org",0);
+                            signup(emailUser,laureat_nouveau,statut_laureat,null,new_org_attentente);
+                        }
+
+                    }
+                    catch(Exception e){
+                        Toast.makeText(RegisterActivity.getContextext(),"hna  hh ",Toast.LENGTH_LONG).show();
+                    }
+                }
             }
-            else{
-                registerFormState.setValue(new RegisterFormState(
-                        null,
-                        null, null,R.string.email_taken,
-                        null,null,null,null,
-                        null,null,null,null,null,
-                        null,null,null,null));
+        };
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        };
+        connect_to_backend_array(RegisterActivity.getContextext(), Request.Method.GET,"/laureat/email/"+emailUser,null
+                ,listener,errorListener);
+    }
+
+    private void signup(final String emailUser, JSONObject laureat_nouveau,JSONObject statut_laureat
+            ,JSONObject org_laureat_new,JSONObject new_org_attentente){
+
+        if(org_laureat_new==null){
+            connect_to_backend(RegisterActivity.getContextext(),Request.Method.POST, "/autres/insert_org_attente", new_org_attentente
+                    , new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    },null);
         }
+        else if (new_org_attentente==null){
+            connect_to_backend(RegisterActivity.getContextext(),Request.Method.POST,"/laureat/new_row_org_laureat",org_laureat_new
+                    ,new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    }, null);
+        }
+
+        connect_to_backend(RegisterActivity.getContextext(),Request.Method.POST, "/laureat/new_row_statut_laureat", statut_laureat
+                , new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                    }
+                },null);
+
+        connect_to_backend(RegisterActivity.getContextext(),Request.Method.POST,"/laureat", laureat_nouveau,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        email_connected = emailUser;
+                        set0Pref(RegisterActivity.getContextext(), emailUser);
+                        Toast.makeText(RegisterActivity.getContextext(), "success!!", Toast.LENGTH_LONG).show();
+                        RegisterActivity.getContextext().startActivity(
+                                new Intent(RegisterActivity.getContextext()
+                                        , MainActivity.class));
+
+                        try {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("laureat",email_connected);
+                            jsonObject.put("IME",getUniqueIMEIId());
+                            connect_to_backend(RegisterActivity.getContextext(), Request.Method.POST
+                                    , "/autres/insert_device", jsonObject, new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+
+                                        }
+                                    }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+
+                                        }
+                                    });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+
     }
 
     void loginDataChanged(
             String LaureatNom,String LaureatPrenom,  String LaureatNumTel,String emailUser, String Password,
             String LaureatImageBase64, String LaureatGender, String LaureatPromotion, long LaureatFiliere,
-            long org_selected, String nomOrgEdited, String secteurOrgEdited,String initulePost,
-            String date_debut_travail_chez_org_,String description,long radio) {
+            String initulePost,
+            String date_debut_travail_chez_org_,String description) {
         if (!isNomValid(LaureatNom)) {
             registerFormState.setValue(new RegisterFormState(
                     R.string.invalid_Nom,
@@ -100,7 +204,7 @@ public class RegisterViewModel extends ViewModel {
                     null,null,null,null));
 
         }
-        else if (!isGenderValid(LaureatGender)) {
+        else if (!isSelectDropDownValid(LaureatGender)) {
             registerFormState.setValue(new RegisterFormState(
                     null,
                     null, null,null,
@@ -150,38 +254,16 @@ public class RegisterViewModel extends ViewModel {
                     null,null,null,null));
         }
         else if (!isPasswordValid(Password)) {
+
             registerFormState.setValue(new RegisterFormState(
-                    null,
-                    null, null,null,
-                    null,R.string.invalid_password,null,null,
-                    null,null,null,null,null,
-                    null,null,null,null));
+            null,
+            null, null,null,
+            null,R.string.invalid_password,null,null,
+            null,null,null,null,null,
+            null,null,null,null));
         }
-        else if (radio==0 ) {
-            if (!isSelectDropDownValid(org_selected)){
-                registerFormState.setValue(new RegisterFormState(
-                        null,
-                        null, null,null,
-                        null,null,null,null,
-                        null,null,null,null,null,
-                        null,null,R.string.invalid_org,null));}
-        }
-        else if (radio==1 ) {
-            if (!isNomValid(nomOrgEdited)){
-                registerFormState.setValue(new RegisterFormState(
-                        null,
-                        null, null,null,
-                        null,null,null,R.string.invalid_Nom,
-                        null,null,null,null,null,
-                        null,null,null,null));}
-            else if (!isSelectDropDownValid(secteurOrgEdited)){
-                registerFormState.setValue(new RegisterFormState(
-                        null,
-                        null, null,null,
-                        null,null,null,null,
-                        null,null,null,null,null,
-                        null,null,null,R.string.invalid_secteur));}
-        }
+
+
         else if (!isLegalDate(date_debut_travail_chez_org_)) {
             registerFormState.setValue(new RegisterFormState(
                     null,
@@ -210,45 +292,27 @@ public class RegisterViewModel extends ViewModel {
             registerFormState.setValue(new RegisterFormState(true));
         }
     }
-
-    // A placeholder username validation check
     private boolean isEmailValid(String username) {
-        String expression = "([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9._-]+)$";
-            String regExpn = "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
-                            +"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                            +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
-                            +"([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                            +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
-                            +"([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
-            Pattern pattern = Pattern.compile(expression,Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(username);
-        //return matcher.matches();
         return android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches();
     }
-    boolean isLegalDate(String s) {
+    private boolean isLegalDate(String s) {
         Matcher m = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}$", Pattern.CASE_INSENSITIVE).matcher(s);
         return m.matches();
     }
-
     private boolean isPasswordValid(String password) {
         return password != null && password.trim().length() > 5;
     }
-    private boolean isNomValid(String Nom) {
+    static boolean isNomValid(String Nom) {
         return Nom != null && Nom.trim().length() > 3;
     }
     private boolean isNumtelValid(String tel){
         Matcher m = Pattern.compile("\\d{5,16}$", Pattern.CASE_INSENSITIVE).matcher(tel);
         return m.matches();
     }
-
-    private boolean isGenderValid(String gender){
-        return (gender.equals("M")||gender.equals("F"));
-    }
-
-    private boolean isSelectDropDownValid(long selcected_id){
+    static boolean isSelectDropDownValid(long selcected_id){
         return selcected_id!=0;
     }
-    private boolean isSelectDropDownValid(String selcected){
+    static boolean isSelectDropDownValid(String selcected){
         return !selcected.equals("SELECTIONNER");
     }
 

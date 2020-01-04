@@ -5,6 +5,15 @@
     android:layout_width="match_parent"
     android:background="@drawable/colors_list_laureats"
     android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/image_no_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/no_trouve"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <ListView
         android:id="@+id/list_laureat"
@@ -12,72 +21,5 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
         app:layout_constraintTop_toTopOf="parent"/>
-
-
-
-
-    <LinearLayout
-        android:id="@+id/appliquer_nouveau_filtre_ll_gallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-        <TextView
-            android:id="@+id/appliquer_nouveau_filtre_gallery"
-            android:layout_width="wrap_content"
-            android:text="@string/appliquer_nouveau_filtre"
-            android:elevation="16dp"
-            android:background="@drawable/colors_login"
-            android:visibility="gone"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="6dp"
-            android:layout_height="wrap_content"/>
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_filter_laureat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_search_category_default"
-            android:layout_gravity="end"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/afficher_dans_liste_ll_gallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-        <TextView
-            android:id="@+id/afficher_dans_liste_gallery"
-            android:layout_width="wrap_content"
-            android:text="@string/afficher_dans_carte"
-            android:elevation="16dp"
-            android:background="@drawable/colors_login"
-            android:visibility="gone"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="6dp"
-            android:layout_height="wrap_content"/>
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/go_to_slideshow_gallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_dialog_map"
-            android:layout_gravity="end"/>
-
-    </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_filter_choice_gallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_input_add"
-        android:overScrollMode="always"
-        android:layout_margin="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

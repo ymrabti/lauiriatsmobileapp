@@ -1,71 +1,105 @@
 package com.example.annuairelauriats.ui.gallery;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.slideshow.SlideshowFragment;
 import com.example.annuairelauriats.ui.tools.ToolsFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
-import static com.example.annuairelauriats.ui.home.Classtest.getJsonObjectBycle;
-import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_long;
-import static com.example.annuairelauriats.ui.home.Classtest.get_filter_pref_string;
-import static com.example.annuairelauriats.ui.home.Classtest.organismes;
-import static com.example.annuairelauriats.ui.home.Classtest.peupler_array_list;
-import static com.example.annuairelauriats.ui.home.Classtest.id_selected;
+import static com.example.annuairelauriats.ui.home.Classtest.additional_sql;
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
+import static com.example.annuairelauriats.ui.home.Classtest.email_selected;
+import static com.example.annuairelauriats.ui.home.Classtest.setclipboard;
+import static com.example.annuairelauriats.ui.home.Classtest.shared_org;
+import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_list;
+import static com.example.annuairelauriats.ui.home.Classtest.sql;
 
 public class GalleryFragment extends Fragment{
-    private ListView malist;public static ArrayList<Laureat> laureats_list;
-    private boolean isFABOpen;
-    private FloatingActionButton fab;
-    private LinearLayout fm1,fm2; private TextView t1,t2;
+    static private ListView malist;public static ArrayList<Laureat> laureats_list;
+    private static Context context;
+    private static FragmentTransaction fragmentTransaction;
+    public static ImageView imageView_nodata;
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
-        malist = root.findViewById(R.id.list_laureat);
+        malist = root.findViewById(R.id.list_laureat);context=getActivity();
+        setHasOptionsMenu(true);
+        assert getFragmentManager() != null;
+        fragmentTransaction = getFragmentManager().beginTransaction();
+        imageView_nodata= root.findViewById(R.id.image_no_data);
 
-        long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
-        String promo = get_filter_pref_string(getActivity(), "promotion");
-        String secteur ;long org;
+
         try {
-            assert getArguments() != null;
-            org =getArguments().getLong("organisation");secteur="TOUT";
-            JSONObject jsonObject= getJsonObjectBycle(getActivity(),"id",org,organismes);
-            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
-                    .setTitle(jsonObject.getString("org"));
+            if (getArguments().getLong("mark")==0){
+                long org= getArguments().getLong("organisation");
+                show_laureats_on_list(getActivity(),sql+additional_sql+" and org = "+org,malist);
+                Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            JSONObject laureat = response.getJSONObject(0);
+                            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                                    .setTitle(laureat.getString("Nom"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(),"org  "+e.toString(),Toast.LENGTH_LONG).show();
+                        }
+                    }
+                };
+                Response.ErrorListener errorListener = new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                };
+                connect_to_backend_array(getContext(), Request.Method.GET,  "/laureat/org/"+org,
+                        null, listener, errorListener);
+            }
+            if (getArguments().getLong("mark")==1){
+                if (shared_org!=0){additional_sql=additional_sql+" and org = "+shared_org;}
+                show_laureats_on_list(getActivity(),sql+additional_sql,malist);
+            }
         }
-        catch(Exception e){
-            org = get_filter_pref_long(getActivity(), "organisation");
-            secteur= get_filter_pref_string(getActivity(), "sector");
-            Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
-                    .setTitle("Liste des Laureats");
+        catch (Exception e){
+            show_laureats_on_list(getActivity(),sql,malist);
         }
-        peupler_array_list(getActivity(), filiere, promo,"TOUT", org, secteur,malist);
+
+
         malist.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Laureat laureat = laureats_list.get(position);
-                        id_selected = laureat.getId();
+                        email_selected = laureat.getId();
                         assert getFragmentManager() != null;
                         Fragment fragment = new ToolsFragment();
                         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -73,58 +107,24 @@ public class GalleryFragment extends Fragment{
                         fragmentTransaction.commit();
                     }}
         );
-        FloatingActionButton filter_fab = root.findViewById(R.id.fab_filter_laureat);
-        filter_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                 ShowPopupfilter(getActivity(),malist,null,1);
-                 fab.animate().rotation(0);closeFABMenu();
-            }
-        });
-        isFABOpen=false;
-        FloatingActionButton fab1 = root.findViewById(R.id.go_to_slideshow_gallery);
-        fm1=root.findViewById(R.id.afficher_dans_liste_ll_gallery);
-        fm2=root.findViewById(R.id.appliquer_nouveau_filtre_ll_gallery);
-        t1=root.findViewById(R.id.afficher_dans_liste_gallery);
-        t2=root.findViewById(R.id.appliquer_nouveau_filtre_gallery);
-        fab =  root.findViewById(R.id.fab_filter_choice_gallery);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isFABOpen){
-                    fab.animate().rotation(45);
-                    showFABMenu();
-                }else{
-                    fab.animate().rotation(0);
-                    closeFABMenu();
-                }
-            }
-        });
-        fab1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                assert getFragmentManager() != null;
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
-                fragmentTransaction.replace(R.id.nav_host_fragment, new SlideshowFragment());
-                fragmentTransaction.commit();
-                MainActivity.navigationView.setCheckedItem(R.id.nav_slideshow);
-            }
-        });
         return root;
     }
-
-    private void showFABMenu(){
-        isFABOpen=true;
-        fm1.animate().translationY(-(fab.getHeight()+10));
-        fm2.animate().translationY(-2*(fab.getHeight()+10));
-        t1.setVisibility(View.VISIBLE);t2.setVisibility(View.VISIBLE);
+    @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.findItem(R.id.action_filter_new).setVisible(true);
+        menu.findItem(R.id.action_goto_map).setVisible(true);
+        super.onCreateOptionsMenu(menu, inflater);
     }
-
-    private void closeFABMenu(){
-        isFABOpen=false;
-        fm1.animate().translationY(0);
-        fm2.animate().translationY(0);
-        t1.setVisibility(View.GONE);t2.setVisibility(View.GONE);
+    public static void popup(){
+        ShowPopupfilter(context,malist,null,1);
+    }
+    public static void to_map(){
+        fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
+        Fragment fragment = new SlideshowFragment();
+        Bundle bundle=new Bundle();
+        bundle.putLong("mark", 1);
+        fragment.setArguments(bundle);
+        fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
+        fragmentTransaction.commit();
+        MainActivity.navigationView.setCheckedItem(R.id.nav_slideshow);
     }
 }
