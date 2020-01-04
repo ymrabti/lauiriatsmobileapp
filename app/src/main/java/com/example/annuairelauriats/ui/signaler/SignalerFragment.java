@@ -609,27 +609,6 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
                     connect_to_backend_array(getActivity(), Request.Method.GET
                             ,"/laureat/email/"+usernameEditText.getText().toString(),null
                             ,listener,null);
-                    /*
-                    loadingProgressBar.setVisibility(View.VISIBLE);
-                    Bitmap icon = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                    registerButton.setShadowLayer(45,10,10,R.color.colorPrimary);
-                    Toast.makeText(getActivity(),statut+"",Toast.LENGTH_LONG).show();
-                signalerViewModel.update_data(
-                        usernameEditText.getText().toString() + "",
-                        passwordEditText.getText().toString() + "",
-                        nomEditText.getText().toString() + "",
-                        prenomEditText.getText().toString() + "",
-                        NumTeleEditText.getText().toString() + "",
-                        Classtest.encodeImage(icon) + "",
-                         "",
-                        promotion.getSelectedItem().toString() + "",
-                        filiere.getSelectedItemId(),
-                        organisation.getSelectedItemId(),
-                        nouveau_org_nom.getText().toString() + "",
-                        organisation_secteur.getSelectedItem().toString() + "",
-                        intitule_fonction_avec_org.getText().toString() + "",
-                        date_debut_chez_org.getText().toString() + "",
-                        description_laureat.getText().toString() + "",checked_radio,lat,lon);*/
                 }
             }
         });
@@ -805,42 +784,76 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         if (!email_connected.equals(usernameEditText.getText().toString())){
             sql_laureat.append(",email= ").append( "\"").append(usernameEditText.getText().toString()).append( "\"  ");
             modifications_laureat+=1;
-            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/"
-                            + "UPDATE laureat_org_association SET laureat=\""+usernameEditText.getText().toString()
-                            +"\" WHERE laureat=\""+email_connected
-                            +"\""
-                    , null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                        }
-                    },null);
-            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/"
-                            + "UPDATE organisme_en_attente SET laureat=\""+usernameEditText.getText().toString()
-                            +"\" WHERE laureat=\""+email_connected
-                            +"\""
-                    , null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                        }
-                    },null);
-            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/"
-                            + "UPDATE posts SET laureat=\""+usernameEditText.getText().toString()
-                            +"\" WHERE laureat=\""+email_connected
-                            +"\""
-                    , null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                        }
-                    },null);
-            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/"
-                            + "UPDATE laureat_statut SET id_laureat=\""+usernameEditText.getText().toString()
-                            +"\" WHERE id_laureat=\""+email_connected
-                            +"\""
-                    , null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                        }
-                    },null);
+            try {
+                JSONObject jsonObject = new JSONObject();
+                String sql1 = "UPDATE laureat_org_association SET laureat=\""+usernameEditText.getText().toString()
+                        +"\" WHERE laureat=\""+email_connected
+                        +"\"";
+                jsonObject.put("sql",sql1);
+                JSONArray jsonArray= new JSONArray();
+                jsonArray.put(jsonObject);
+
+
+                JSONObject jsonObject2 = new JSONObject();
+                String sql2 = "UPDATE organisme_en_attente SET laureat=\""+usernameEditText.getText().toString()
+                        +"\" WHERE laureat=\""+email_connected
+                        +"\"";
+                jsonObject2.put("sql",sql2);
+                JSONArray jsonArray2= new JSONArray();
+                jsonArray2.put(jsonObject);
+
+
+
+                JSONObject jsonObject3 = new JSONObject();
+                String sql3 = "UPDATE posts SET laureat=\""+usernameEditText.getText().toString()
+                        +"\" WHERE laureat=\""+email_connected
+                        +"\"";
+                jsonObject3.put("sql",sql3);
+                JSONArray jsonArray3= new JSONArray();
+                jsonArray3.put(jsonObject3);
+
+
+
+                JSONObject jsonObject4 = new JSONObject();
+                String sql4 = "UPDATE laureat_statut SET id_laureat=\""+usernameEditText.getText().toString()
+                        +"\" WHERE id_laureat=\""+email_connected
+                        +"\"";
+                jsonObject4.put("sql",sql4);
+                JSONArray jsonArray4= new JSONArray();
+                jsonArray4.put(jsonObject4);
+
+                connect_to_backend_array(getActivity(), Request.Method.POST, "/autres/requestAny"
+                        , jsonArray, new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                            }
+                        },null);
+
+                connect_to_backend_array(getActivity(), Request.Method.POST, "/autres/requestAny"
+                        , jsonArray2, new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                            }
+                        },null);
+
+                connect_to_backend_array(getActivity(), Request.Method.POST, "/autres/requestAny"
+                        , jsonArray3, new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                            }
+                        },null);
+
+                connect_to_backend_array(getActivity(), Request.Method.POST, "/autres/requestAny"
+                        , jsonArray4, new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                            }
+                        },null);
+
+
+            }
+            catch (Exception ecx){ecx.printStackTrace();}
+
         }
         if (!password_laureat_static.equals(passwordEditText.getText().toString())){
             sql_laureat.append(",Pass_word= ").append( "\"").append(passwordEditText.getText().toString()).append( "\"  ");
@@ -893,12 +906,20 @@ public class SignalerFragment extends Fragment implements OnMapReadyCallback {
         sql_laureat.replace(19,20," ");
 
         if (modifications_laureat!=0){
-            connect_to_backend(getActivity(), Request.Method.GET, "/autres/requestAny/" + sql_laureat
-                    , null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                        }
-                    },null);
+            try {
+                JSONObject jsonObject4 = new JSONObject();
+                jsonObject4.put("sql",sql_laureat);
+                JSONArray jsonArray4= new JSONArray();
+                jsonArray4.put(jsonObject4);
+
+                connect_to_backend_array(getActivity(), Request.Method.POST, "/autres/requestAny"
+                        , jsonArray4, new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                            }
+                        },null);
+            }
+            catch (Exception exc){exc.printStackTrace();}
         }
         save_edits();
         email_connected = usernameEditText.getText().toString();
