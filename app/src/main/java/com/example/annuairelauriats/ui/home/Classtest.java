@@ -346,42 +346,51 @@ public class Classtest  extends AppCompatActivity {
         dialog_universelle.setContentView(R.layout.popup_wait);
         dialog_universelle.setCancelable(false);
         dialog_universelle.show();
-        connect_to_backend_array(context, Request.Method.GET, "/autres/requestAny/" + sql_parameter
-                , null
-                , new Response.Listener<JSONArray>() {
-@Override
-public void onResponse(JSONArray response) {
-    laureats_list = new ArrayList<>();
-    if (response.length()!=0){
-        imageView_nodata.setVisibility(View.GONE);
-        try {
-            for (int i=0;i<response.length();i++){
-                JSONObject laureat_courant = response.getJSONObject(i);
-                Laureat laureat_to_add = new Laureat(laureat_courant.getString("email")+""
-                        ,laureat_courant.getString("photo")+" ",
-                        laureat_courant.getString("Nom")+" "+laureat_courant.getString("Prenom"),
-                        laureat_courant.getString("NomOrg")+"", laureat_courant.getString("Description")+"");
-                laureats_list.add(laureat_to_add);
-            }
+        try{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("sql",sql_parameter);
+            JSONArray jsonArray= new JSONArray();
+            jsonArray.put(jsonObject);
+            connect_to_backend_array(context, Request.Method.POST, "/autres/requestAny"
+                    , jsonArray
+                    , new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            laureats_list = new ArrayList<>();
+                            if (response.length()!=0){
+                                imageView_nodata.setVisibility(View.GONE);
+                                try {
+                                    for (int i=0;i<response.length();i++){
+                                        JSONObject laureat_courant = response.getJSONObject(i);
+                                        Laureat laureat_to_add = new Laureat(laureat_courant.getString("email")+""
+                                                ,laureat_courant.getString("photo")+" ",
+                                                laureat_courant.getString("Nom")+" "+laureat_courant.getString("Prenom"),
+                                                laureat_courant.getString("NomOrg")+"", laureat_courant.getString("Description")+"");
+                                        laureats_list.add(laureat_to_add);
+                                    }
+                                }
+                                catch (Exception er){
+                                    setclipboard("error :"+er.toString(),context);
+                                    Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
+                                }
+                            }
+                            else{
+                                imageView_nodata.setVisibility(View.VISIBLE);
+                            }
+                            LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
+                            listView.setAdapter(adaptateur);
+                            dialog_universelle.dismiss();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            setclipboard("error :"+error.toString(),context);
+                        }
+                    });
         }
-        catch (Exception er){
-            setclipboard("error :"+er.toString(),context);
-            Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
+        catch (Exception ec){
+            ec.printStackTrace();setclipboard(ec.getMessage(),context);
         }
-    }
-    else{
-        imageView_nodata.setVisibility(View.VISIBLE);
-    }
-    LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
-    listView.setAdapter(adaptateur);
-    dialog_universelle.dismiss();
-}
-}, new Response.ErrorListener() {
-@Override
-public void onErrorResponse(VolleyError error) {
-    setclipboard("error :"+error.toString(),context);
-}
-});
     }
     public static void show_laureats_on_map(final Context context, String sql_parameter, final GoogleMap gmap){
         sql_parameter= sql_parameter+"  and id_lesstatus=4 and email != \""+email_connected+"\"";
@@ -391,48 +400,57 @@ public void onErrorResponse(VolleyError error) {
         dialog_universelle.setContentView(R.layout.popup_wait);
         dialog_universelle.setCancelable(false);
         dialog_universelle.show();
-        connect_to_backend_array(context, Request.Method.GET, "/autres/requestAny/" + new_sql
-                , null
-                , new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        gmap.clear();
-                        if (response.length()!=0){
-                            try {
-                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                for (int i=0;i<response.length();i++){
-                                    JSONObject organisation_courant = response.getJSONObject(i);
+        try{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("sql",new_sql);
+            JSONArray jsonArray= new JSONArray();
+            jsonArray.put(jsonObject);
+            connect_to_backend_array(context, Request.Method.POST, "/autres/requestAny"
+                    , jsonArray
+                    , new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            gmap.clear();
+                            if (response.length()!=0){
+                                try {
+                                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                    for (int i=0;i<response.length();i++){
+                                        JSONObject organisation_courant = response.getJSONObject(i);
 
-                                    MarkerOptions markerOptions = new MarkerOptions();
-                                    markerOptions.position(new LatLng(organisation_courant.getDouble("Latitude")
-                                            ,organisation_courant.getDouble("Longitude")));
-                                    markerOptions.title(""+organisation_courant.getInt("org"));
-                                    Bitmap icoon = getRoundedShape(get_Bitmap(context,R.drawable.circle_shape));
-                                    markerOptions.icon(BitmapDescriptorFactory.fromBitmap(add_text(icoon,
-                                            organisation_courant.getInt("Nombre")+"")));
-                                    builder.include(new LatLng(organisation_courant.getDouble("Latitude")
-                                            ,organisation_courant.getDouble("Longitude")));
-                                    markerOptions.flat(true);
-                                    gmap.addMarker(markerOptions);
+                                        MarkerOptions markerOptions = new MarkerOptions();
+                                        markerOptions.position(new LatLng(organisation_courant.getDouble("Latitude")
+                                                ,organisation_courant.getDouble("Longitude")));
+                                        markerOptions.title(""+organisation_courant.getInt("org"));
+                                        Bitmap icoon = getRoundedShape(get_Bitmap(context,R.drawable.circle_shape));
+                                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(add_text(icoon,
+                                                organisation_courant.getInt("Nombre")+"")));
+                                        builder.include(new LatLng(organisation_courant.getDouble("Latitude")
+                                                ,organisation_courant.getDouble("Longitude")));
+                                        markerOptions.flat(true);
+                                        gmap.addMarker(markerOptions);
+                                    }
+                                    LatLngBounds bounds = builder.build();
+                                    int padding = 50;
+                                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                                    gmap.moveCamera(cu);gmap.animateCamera(cu);
                                 }
-                                LatLngBounds bounds = builder.build();
-                                int padding = 50;
-                                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-                                gmap.moveCamera(cu);gmap.animateCamera(cu);
+                                catch (Exception er){
+                                    setclipboard("error :"+er.toString(),context);
+                                    Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
+                                }
                             }
-                            catch (Exception er){
-                                setclipboard("error :"+er.toString(),context);
-                                Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
-                            }
+                            dialog_universelle.dismiss();
                         }
-                        dialog_universelle.dismiss();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        setclipboard("error :"+error.toString(),context);
-                    }
-                });
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            setclipboard("error :"+error.toString(),context);
+                        }
+                    });
+        }
+        catch (Exception ec){
+            ec.printStackTrace();setclipboard(ec.getMessage(),context);
+        }
     }
 
 
