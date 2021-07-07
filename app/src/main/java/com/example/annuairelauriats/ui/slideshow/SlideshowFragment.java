@@ -14,11 +14,18 @@ import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 import com.example.annuairelauriats.ui.aide.HelpFragment;
 import com.example.annuairelauriats.ui.gallery.GalleryFragment;
+import com.example.annuairelauriats.ui.tools.ToolsFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.Marker;
+
 import static com.example.annuairelauriats.ui.home.Classtest.ShowPopupfilter;
+import static com.example.annuairelauriats.ui.home.Classtest.additional_sql;
+import static com.example.annuairelauriats.ui.home.Classtest.shared_org;
+import static com.example.annuairelauriats.ui.home.Classtest.show_laureats_on_map;
+import static com.example.annuairelauriats.ui.home.Classtest.sql;
 
 public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
      private MapView mapView;
@@ -68,35 +75,34 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
         uiSettings.setMapToolbarEnabled(true);
         uiSettings.setCompassEnabled(true);
         uiSettings.setZoomControlsEnabled(true);
-        /*
-        long filiere = get_filter_pref_long(Objects.requireNonNull(getActivity()), "branch");
-        String promo = get_filter_pref_string(getActivity(), "promotion");
-        long org = get_filter_pref_long(getActivity(), "organisation");
-        String secteur = get_filter_pref_string(getActivity(), "sector");
-        show_laureats_on_map(getActivity(), filiere, promo,"TOUT", org, secteur,gmap);
+        try {
+
+            if (getArguments().getLong("mark")==1){
+                if (shared_org!=0){additional_sql=additional_sql+" and org = "+shared_org;}
+                show_laureats_on_map(getActivity(),sql+additional_sql,gmap);
+            }
+        }
+        catch (Exception e){
+            show_laureats_on_map(getActivity(),sql,gmap);
+        }
+
         gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 assert getFragmentManager() != null;
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
-                if(marker.isFlat()){
-                    Fragment fragment = new GalleryFragment();
-                    Bundle bundle=new Bundle();
-                    bundle.putLong("organisation", Integer.parseInt(marker.getTitle().trim()));
-                    fragment.setArguments(bundle);
-                    fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
-                    fragmentTransaction.commit();
-                    MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
-                }
-                else{
-                    id_selected=Integer.parseInt(marker.getTitle().trim());
-                    fragmentTransaction.replace(R.id.nav_host_fragment, new ToolsFragment());
-                    fragmentTransaction.commit();
-                }
+                Fragment fragment = new GalleryFragment();
+                Bundle bundle=new Bundle();
+                bundle.putLong("organisation", Integer.parseInt(marker.getTitle().trim()));
+                bundle.putLong("mark", 0);
+                fragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
+                fragmentTransaction.commit();
+                MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
                 return true;
             }
-        });*/
+        });
     }
     @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.findItem(R.id.action_filter_new_map).setVisible(true);
@@ -108,7 +114,11 @@ public class SlideshowFragment extends Fragment  implements OnMapReadyCallback{
     }
     public static void to_list(){
         fragmentTransaction.replace(R.id.nav_host_fragment, new HelpFragment());
-        fragmentTransaction.replace(R.id.nav_host_fragment, new GalleryFragment());
+        Fragment fragment = new GalleryFragment();
+        Bundle bundle=new Bundle();
+        bundle.putLong("mark", 1);
+        fragment.setArguments(bundle);
+        fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
         fragmentTransaction.commit();
         MainActivity.navigationView.setCheckedItem(R.id.nav_gallery);
     }

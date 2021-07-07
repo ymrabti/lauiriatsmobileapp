@@ -53,6 +53,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.annuairelauriats.MainActivity.navigationView;
 import static com.example.annuairelauriats.ui.home.Classtest.base64toImage;
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend;
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
@@ -98,7 +99,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.popup_wait);
         dialog.setCancelable(false);
-        dialog.show();Toast.makeText(getContext(),email_connected,Toast.LENGTH_LONG).show();
+        dialog.show();
 
         final Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
             @Override
@@ -199,7 +200,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         return root;
     }
     private void orgnaisation_(int _id_org)  {
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         Response.Listener<JSONArray> listener = new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -222,10 +222,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             public void onErrorResponse(VolleyError error) {
             }
         };
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                Request.Method.GET, ip_server + "/laureat/org/"+_id_org,
+        connect_to_backend_array(getContext(),Request.Method.GET,  "/laureat/org/"+_id_org,
                 null, listener, errorListener);
-        requestQueue.add(jsonArrayRequest);
     }
     private void orgnaisation_attente()  {
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
@@ -365,7 +363,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             status_profile.append("votre demande en cours de traitement");
         }
         else if (statut==4){
-            linearLayout.setBackgroundColor(Color.GREEN);
+            linearLayout.setBackground(getActivity().getDrawable(R.drawable.gradientbackground));
         }
     }
     private void parcours_pro_data(){

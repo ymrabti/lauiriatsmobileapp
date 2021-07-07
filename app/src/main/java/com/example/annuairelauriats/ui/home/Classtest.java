@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -66,20 +67,45 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static com.example.annuairelauriats.ui.gallery.GalleryFragment.imageView_nodata;
 import static com.example.annuairelauriats.ui.gallery.GalleryFragment.laureats_list;
 import static java.lang.Math.min;
 
 public class Classtest  extends AppCompatActivity {
     public static int portBackend=3000;
-    public static String ip_serverIP="172.16.136.122",ip_server="http://"+ip_serverIP+":"+portBackend,email_connected;
+    public static String ip_serverIP="192.168.137.1",ip_server="http://"+ip_serverIP+":"+portBackend,email_connected;
+
+    public static Dialog dialog_universelle;
+    public static String sql="SELECT laureats.*,filieres.Nom as Nom_filiere,les_status.nom as status" +
+            ",motif,les_status.id_lesstatus,organisme.secteur,organisme.province" +
+            " ,organisme.Latitude,organisme.Longitude,organisme.Nom as NomOrg"
+            +" FROM  laureats,filieres,les_status ,laureat_statut,organisme"
+            +" WHERE laureats.Filiere=filieres.id_filieres and laureats.org=organisme.id_org"
+            +" and laureats.email=laureat_statut.id_laureat and laureat_statut.id_statut=les_status.id_lesstatus "
+    ,additional_sql="",email_selected;
+    public static int shared_org;
     @SuppressLint("StaticFieldLeak")
+    public static void promotion_peuplement(Context context,int premier,Spinner spinner) throws Exception {
+        ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
+        Calendar rightNow = Calendar.getInstance();
+        if (premier!=0){
+            for (int i=premier;i<=rightNow.get(Calendar.YEAR)+1;i++){
+                promos_filier.add(i+"");
+            }
+        }
+        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
+        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(list_adapter);
+    }
     public static void ShowPopupfilter(final Context context, final ListView listView, final GoogleMap googleMap, final int mark) {
         final Dialog dialogFilter = new Dialog(context);
         dialogFilter.setContentView(R.layout.filter_pop_up_liste);
@@ -167,6 +193,11 @@ public class Classtest  extends AppCompatActivity {
         };
         connect_to_backend_array(context,Request.Method.GET,  "/autres/provinces",
                 null, province_listener, null);
+        try {
+
+            promotion_peuplement(context, 1973, findbypromotion);
+        }
+        catch (Exception exc){exc.printStackTrace();}
 
 
 
@@ -174,7 +205,7 @@ public class Classtest  extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 try {if (position==0){
-                    promotion_peuplement(context, Calendar.getInstance().get(Calendar.YEAR)+2, findbypromotion);
+                    promotion_peuplement(context, 1973, findbypromotion);
                 }
                 else {
                     filiere_selected[0] =dates.get(position-1).get_Id();
@@ -218,8 +249,8 @@ public class Classtest  extends AppCompatActivity {
                 new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
             {
-                if (position!=0){findbyorganisation.setEnabled(false);}
-                else{findbyorganisation.setEnabled(true);}
+                if (position==0 && findbyprovince.getSelectedItemId()==0){findbyorganisation.setEnabled(true);}
+                else{findbyorganisation.setEnabled(false);}
             }
             @Override public void onNothingSelected(AdapterView<?> parentView) {}
                 }
@@ -228,8 +259,8 @@ public class Classtest  extends AppCompatActivity {
                 new AdapterView.OnItemSelectedListener() {
                     @Override public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id)
                     {
-                        if (position!=0){findbyorganisation.setEnabled(false);}
-                        else{findbyorganisation.setEnabled(true);}
+                        if (position==0 && findbysecteur.getSelectedItemId()==0){findbyorganisation.setEnabled(true);}
+                        else{findbyorganisation.setEnabled(false);}
                     }
                     @Override public void onNothingSelected(AdapterView<?> parentView) {}
                 }
@@ -241,140 +272,185 @@ public class Classtest  extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         StringBuilder stringBuilder= new StringBuilder();
+                        StringBuilder stringBuilder1= new StringBuilder();stringBuilder1.append(" ");
+                        stringBuilder.append(sql);
                         if (!findbypromotion.getSelectedItem().equals("SELECTIONNER")){
                                 stringBuilder.append(" and Promotion= ").append(findbypromotion.getSelectedItem());
+                                stringBuilder1.append(" and Promotion= ").append(findbypromotion.getSelectedItem());
                         }
                         if (!findbyfiliere.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append("   and Filiere=  ").append(filiere_selected[0]);
+                            stringBuilder1.append("   and Filiere=  ").append(filiere_selected[0]);
                         }
                         if (!findbysecteur.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append(" and secteur= ").append("\"").append(findbysecteur.getSelectedItem()).append("\"");
+                            stringBuilder1.append(" and secteur= ").append("\"").append(findbysecteur.getSelectedItem()).append("\"");
                         }
                         if (!findbyprovince.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append("   and province=  ").append("\"")
                                     .append(findbyprovince.getSelectedItem()).append("\"");
+                            stringBuilder1.append("   and province=  ").append("\"")
+                                    .append(findbyprovince.getSelectedItem()).append("\"");
                         }
                         if (!findbyorganisation.getSelectedItem().equals("SELECTIONNER")){
                             stringBuilder.append("   and org =  ").append(organisation_selected[0]);
+                            shared_org=organisation_selected[0];
                         }
-                        stringBuilder.append(" ;");
-                        connect_to_backend_array(context, Request.Method.GET, "/laureat/filter/" + stringBuilder
-                                , null
-                                , new Response.Listener<JSONArray>() {
-                                    @Override
-                                    public void onResponse(JSONArray response) {
-if (response.length()!=0){
-    if (mark==1){
-        try {
-            laureats_list = new ArrayList<>();
-            for (int i=0;i<response.length();i++){
-                JSONObject laureat_courant = response.getJSONObject(i);
-                Laureat laureat_to_add = new Laureat(0,laureat_courant.getString("photo")+" ",
-                        laureat_courant.getString("Nom")+" "+laureat_courant.getString("Prenom"),
-                        laureat_courant.getString("email")+"", laureat_courant.getString("Description")+"");
-                laureats_list.add(laureat_to_add);
-            }
-        }
-        catch (Exception er){
-            setclipboard("error :"+er.toString(),context);
-            Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
-        }
-        LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
-        listView.setAdapter(adaptateur);
-    }
-    else{
-        Toast.makeText(context,"carte ",Toast.LENGTH_LONG).show();
-    }
-}
-                                    }
-                                }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        setclipboard("error :"+error.toString(),context);
-                                    }
-                                });
-                        /*if (mark==1){
-                            *//*peupler_array_list(context,
-                                    findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString(),
-                                    findbyprovince.getSelectedItem().toString(),
-                                    findbyorganisation.getSelectedItemId(),findbysecteur.getSelectedItem().toString(),listView);*//*
+                        additional_sql=stringBuilder1.toString();
+                        if (mark==1){
+                            show_laureats_on_list(context,stringBuilder.toString(),listView);
                         }
-                        else
-                        {
-                            *//*show_laureats_on_map(context,findbyfiliere.getSelectedItemId(), findbypromotion.getSelectedItem().toString()+"",
-                                    findbyprovince.getSelectedItem().toString()+"",findbyorganisation.getSelectedItemId(),
-                                    findbysecteur.getSelectedItem().toString()+""
-                                    ,googleMap);*//*
+                        if (mark==0){
+                            show_laureats_on_map(context,stringBuilder.toString(),googleMap);
                         }
-                        try {
-                            set_filter_pref(context,findbysecteur.getSelectedItem().toString()+""
-                                    , findbypromotion.getSelectedItem().toString()+"", findbyfiliere.getSelectedItemId(),
-                                    findbyorganisation.getSelectedItemId()
-                            );
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }*/
+                        set_filter_pref(context,findbysecteur.getSelectedItemId()
+                                ,findbyprovince.getSelectedItemId(),findbyorganisation.getSelectedItemId()
+                                ,findbyfiliere.getSelectedItemId(),findbypromotion.getSelectedItemId());
 
                         dialogFilter.dismiss();
                     }
                 }
         );
         dialogFilter.setCancelable(false);
+
+
+        CountDownTimer countDownTimer = new CountDownTimer(1000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                long position_org = get_filter_pref_long(context,"organisation")
+                        , position_secteur=get_filter_pref_long(context,"sector")
+                        ,position_province=get_filter_pref_long(context,"province")
+                        ,position_filiere=get_filter_pref_long(context,"branch")
+                        ,position_promotion=get_filter_pref_long(context,"promotion");
+//setclipboard(position_filiere+"  "+position_org+"   "+position_promotion+"  "+position_secteur+"  "+position_province,context);
+
+                if (position_org!=0){
+                    findbyorganisation.setSelection((int)position_org);
+                }
+                else {
+                    findbysecteur.setSelection((int)position_secteur);findbyprovince.setSelection((int)position_province);
+                }
+                findbyfiliere.setSelection((int)position_filiere);findbypromotion.setSelection((int)position_promotion);
+            }
+        };countDownTimer.start();
         dialogFilter.show();
     }
-    public static void promotion_peuplement(Context context,int premier,Spinner spinner) throws Exception {
-        ArrayList<String> promos_filier = new ArrayList<>();promos_filier.add("SELECTIONNER");
-        Calendar rightNow = Calendar.getInstance();
-        if (premier!=0){
-            for (int i=premier;i<=rightNow.get(Calendar.YEAR)+1;i++){
-                promos_filier.add(i+"");
-            }
+    public static void show_laureats_on_list(final Context context, String sql_parameter, final ListView listView){
+        sql_parameter= sql_parameter+"  and id_lesstatus=4 and email != \""+email_connected+"\"";
+        dialog_universelle = new Dialog(context);
+        dialog_universelle.setContentView(R.layout.popup_wait);
+        dialog_universelle.setCancelable(false);
+        dialog_universelle.show();
+        try{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("sql",sql_parameter);
+            JSONArray jsonArray= new JSONArray();
+            jsonArray.put(jsonObject);
+            connect_to_backend_array(context, Request.Method.POST, "/autres/requestAny"
+                    , jsonArray
+                    , new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            laureats_list = new ArrayList<>();
+                            if (response.length()!=0){
+                                imageView_nodata.setVisibility(View.GONE);
+                                try {
+                                    for (int i=0;i<response.length();i++){
+                                        JSONObject laureat_courant = response.getJSONObject(i);
+                                        Laureat laureat_to_add = new Laureat(laureat_courant.getString("email")+""
+                                                ,laureat_courant.getString("photo")+" ",
+                                                laureat_courant.getString("Nom")+" "+laureat_courant.getString("Prenom"),
+                                                laureat_courant.getString("NomOrg")+"", laureat_courant.getString("Description")+"");
+                                        laureats_list.add(laureat_to_add);
+                                    }
+                                }
+                                catch (Exception er){
+                                    setclipboard("error :"+er.toString(),context);
+                                    Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
+                                }
+                            }
+                            else{
+                                imageView_nodata.setVisibility(View.VISIBLE);
+                            }
+                            LaureatAdapter adaptateur = new LaureatAdapter(context, laureats_list);
+                            listView.setAdapter(adaptateur);
+                            dialog_universelle.dismiss();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            setclipboard("error :"+error.toString(),context);
+                        }
+                    });
         }
-        ArrayAdapter<String> list_adapter = new ArrayAdapter<>(context,android.R.layout.simple_spinner_item,promos_filier);
-        list_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(list_adapter);
-    }
-    public static void show_laureats_on_map(Context context
-            ,long filiere, String promotion,String province
-            , long organisation,String secteurr, GoogleMap gmap){
-        List<Orglatlonid> latLngsIds= new ArrayList<>();
-        gmap.clear();
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for(int i=0;i<latLngsIds.size();i++){
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLngsIds.get(i).getLatLng());
-            markerOptions.title(""+latLngsIds.get(i).getIden());
-            Bitmap icoon = getRoundedShape(get_Bitmap(context,R.drawable.circle_shape));
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(add_text(icoon,markerOptions.getTitle())));
-            builder.include(latLngsIds.get(i).getLatLng());markerOptions.flat(true);
-            gmap.addMarker(markerOptions);
+        catch (Exception ec){
+            ec.printStackTrace();setclipboard(ec.getMessage(),context);
         }
-        List<Orglatlonid> latLngListe = new ArrayList<>();
-         for(int i=0;i<latLngListe.size();i++){
-         MarkerOptions markerOptions = new MarkerOptions();
-         markerOptions.position(latLngListe.get(i).getLatLng());
-         markerOptions.title(""+latLngListe.get(i).getIden());
-             try {
-                 JSONObject image= new JSONObject();
-                 Bitmap icon =resize_icon(base64toImage(image.getString("image")));
-                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(getRoundedShape(icon)));
-             } catch (Exception e) {
-                 e.printStackTrace();
-                 Toast.makeText(context,e.toString(),Toast.LENGTH_LONG).show();
-                 //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-             }
-         builder.include(latLngListe.get(i).getLatLng());markerOptions.flat(false);
-         gmap.addMarker(markerOptions);
-         }
-        LatLngBounds bounds = builder.build();
-        int padding = 50;
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        gmap.moveCamera(cu);gmap.animateCamera(cu);
     }
-    private static int secteur_select(String secteur){
-        if (secteur.equals("Public")){return 1;}
-        else if(secteur.equals("Prive")){return 2;}
-        else {return 0;}
+    public static void show_laureats_on_map(final Context context, String sql_parameter, final GoogleMap gmap){
+        sql_parameter= sql_parameter+"  and id_lesstatus=4 and email != \""+email_connected+"\"";
+        String new_sql = "SELECT org,Latitude,Longitude,count(*) as Nombre from ("+sql_parameter+") AS laureats_selection " +
+                "GROUP BY org,Latitude,Longitude";
+        dialog_universelle = new Dialog(context);
+        dialog_universelle.setContentView(R.layout.popup_wait);
+        dialog_universelle.setCancelable(false);
+        dialog_universelle.show();
+        try{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("sql",new_sql);
+            JSONArray jsonArray= new JSONArray();
+            jsonArray.put(jsonObject);
+            connect_to_backend_array(context, Request.Method.POST, "/autres/requestAny"
+                    , jsonArray
+                    , new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            gmap.clear();
+                            if (response.length()!=0){
+                                try {
+                                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                    for (int i=0;i<response.length();i++){
+                                        JSONObject organisation_courant = response.getJSONObject(i);
+
+                                        MarkerOptions markerOptions = new MarkerOptions();
+                                        markerOptions.position(new LatLng(organisation_courant.getDouble("Latitude")
+                                                ,organisation_courant.getDouble("Longitude")));
+                                        markerOptions.title(""+organisation_courant.getInt("org"));
+                                        Bitmap icoon = getRoundedShape(get_Bitmap(context,R.drawable.circle_shape));
+                                        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(add_text(icoon,
+                                                organisation_courant.getInt("Nombre")+"")));
+                                        builder.include(new LatLng(organisation_courant.getDouble("Latitude")
+                                                ,organisation_courant.getDouble("Longitude")));
+                                        markerOptions.flat(true);
+                                        gmap.addMarker(markerOptions);
+                                    }
+                                    LatLngBounds bounds = builder.build();
+                                    int padding = 50;
+                                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                                    gmap.moveCamera(cu);gmap.animateCamera(cu);
+                                }
+                                catch (Exception er){
+                                    setclipboard("error :"+er.toString(),context);
+                                    Toast.makeText(context,er.toString()+"\n"+er.getMessage(),Toast.LENGTH_LONG).show();
+                                }
+                            }
+                            dialog_universelle.dismiss();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            setclipboard("error :"+error.toString(),context);
+                        }
+                    });
+        }
+        catch (Exception ec){
+            ec.printStackTrace();setclipboard(ec.getMessage(),context);
+        }
     }
 
 
@@ -452,13 +528,12 @@ if (response.length()!=0){
         new_bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         return new_bitmap;
     }
-    public static void set_filter_pref(Context context,String secteur,String promo,long filieree,long org){
+    public static void set_filter_pref(Context context,long sector,long province,long org,long branch,long promotion){
         SharedPreferences sharedPreferences = context.getSharedPreferences("filter", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("sector",secteur);
-        editor.putString("promotion",promo);
-        editor.putLong("branch",filieree);
+        editor.putLong("sector",sector);editor.putLong("province",province);
         editor.putLong("organisation",org);
+        editor.putLong("promotion",promotion);editor.putLong("branch",branch);
         editor.apply();
     }
     public static long get_filter_pref_long(Context context,String key){
@@ -480,7 +555,7 @@ if (response.length()!=0){
     }
 
 
-    private static void setclipboard(String message,Context context){
+    public static void setclipboard(String message,Context context){
         ClipboardManager cManager = (ClipboardManager) Objects.requireNonNull(context).getSystemService(
                 Context.CLIPBOARD_SERVICE);
         ClipData cData = ClipData.newPlainText("text", message+"");
@@ -511,6 +586,33 @@ if (response.length()!=0){
                 , ip_server + url, jsonArray
                 , listener, errorListener);
         requestQueue.add(jsonArrayRequest);
+    }
+
+    @SuppressLint("HardwareIds")
+    public static String getUniqueIMEIId() {
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
+                }
+
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    res1.append(String.format("%02X:",b));
+                }
+
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                return res1.toString();
+            }
+        } catch (Exception ex) {
+        }
+        return "02:00";
     }
     /*private void read_json(){
         try {

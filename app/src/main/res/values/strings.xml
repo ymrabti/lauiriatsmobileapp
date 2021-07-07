@@ -115,4 +115,5 @@
     <string name="verifier_votre_connexion_internet_et_reessayer">verifier votre connexion internet et reessayer</string>
     <string name="ok_ok">OK</string>
     <string name="parcours_professionnelle">Parcours Professionnelle</string>
+    <string name="descriptipn_de_profil">Description de laureat :</string>
 </resources>

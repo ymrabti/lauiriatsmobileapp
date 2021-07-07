@@ -5,9 +5,9 @@ public class Laureat {
     private String nom;
     private String organisation;
     private String description;
-    private int id;
+    private String id;
     private boolean status;
-    public Laureat(int id,String image ,String name , String org,String desc){
+    public Laureat(String id,String image ,String name , String org,String desc){
         this.imgbase64= image;this.nom=name;this.organisation=org;this.description=desc;this.id = id;
     }
 
@@ -15,7 +15,7 @@ public class Laureat {
         return imgbase64;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

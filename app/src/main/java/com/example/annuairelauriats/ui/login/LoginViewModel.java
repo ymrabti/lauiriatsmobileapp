@@ -15,9 +15,12 @@ import com.example.annuairelauriats.MainActivity;
 import com.example.annuairelauriats.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend;
 import static com.example.annuairelauriats.ui.home.Classtest.connect_to_backend_array;
+import static com.example.annuairelauriats.ui.home.Classtest.getUniqueIMEIId;
 import static com.example.annuairelauriats.ui.home.Classtest.set0Pref;
 import static com.example.annuairelauriats.ui.home.Classtest.email_connected;
 import static com.example.annuairelauriats.ui.login.LoginActivity.loadingProgressBar;
@@ -78,6 +81,26 @@ public class LoginViewModel extends ViewModel {
                         set0Pref(LoginActivity.getContexte(),email);
                         Toast.makeText(LoginActivity.getContexte(),"success!!",Toast.LENGTH_LONG).show();
                         LoginActivity.getContexte().startActivity(new Intent(LoginActivity.getContexte(), MainActivity.class));
+                        try {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("laureat",email_connected);
+                            jsonObject.put("IME",getUniqueIMEIId());
+                            connect_to_backend(LoginActivity.getContexte(), Request.Method.POST
+                                    , "/autres/insert_device", jsonObject, new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+
+                                        }
+                                    }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+
+                                        }
+                                    });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             };
@@ -90,6 +113,7 @@ public class LoginViewModel extends ViewModel {
             connect_to_backend_array(LoginActivity.getContexte(),Request.Method.POST, "/laureat/authentifie",
                     jsonArray, listener, errorListener);
 
-        }catch (Exception e){Toast.makeText(LoginActivity.getContexte(),e.toString(),Toast.LENGTH_LONG).show();}
+        }
+        catch (Exception e){Toast.makeText(LoginActivity.getContexte(),e.toString(),Toast.LENGTH_LONG).show();}
     }
 }

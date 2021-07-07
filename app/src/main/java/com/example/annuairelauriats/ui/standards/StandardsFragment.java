@@ -36,6 +36,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import static android.app.Activity.RESULT_OK;
+import static com.example.annuairelauriats.ui.home.Classtest.getUniqueIMEIId;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_server;
 import static com.example.annuairelauriats.ui.home.Classtest.ip_serverIP;
 import static com.example.annuairelauriats.ui.home.Classtest.portBackend;
@@ -88,6 +89,7 @@ public class StandardsFragment extends Fragment {
             @Override
             public void onClick(View v) {
         try {
+            result_http_client.setText(getUniqueIMEIId());
         } catch (Exception e) {
             e.printStackTrace();
             result_http_client.append("ici"+e.toString());
